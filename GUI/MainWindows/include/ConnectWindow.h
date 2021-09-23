@@ -1,3 +1,4 @@
+// Copyright 2021 byteihq <kotov038@gmail.com>
 
 #ifndef TCPCLIENT_CONNECTWINDOW_H
 #define TCPCLIENT_CONNECTWINDOW_H

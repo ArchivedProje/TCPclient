@@ -1,7 +1,8 @@
+// Copyright 2021 byteihq <kotov038@gmail.com>
 
 #include <MainWindow.h>
-#include <QPalette>
 #include <QPixmap>
+#include <StyleSettings.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), stackedWidgets_(new QStackedWidget(this)),
                                           connectWindow_(new ConnectWindow(parent)),
@@ -10,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), stackedWidgets_(n
                                           actionGUI_(new QAction(QPixmap("img/settingsGUIIcon.jpg"), "GUI", this)),
                                           actionNetrok_(new QAction(QPixmap("img/settingsNetworkIcon.jpg"), "Network",
                                                                     this)) {
-    setStyle(false);
+    StyleSettings::setDarkMode(this);
 
     menuSettings_->addAction(actionGUI_);
     menuSettings_->addAction(actionNetrok_);
@@ -21,30 +22,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), stackedWidgets_(n
     stackedWidgets_->setCurrentIndex(0);
 
     connect(actionGUI_, &QAction::triggered, this, &MainWindow::showGUISettings);
+    connect(guiSettings_, &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
+    connect(guiSettings_, &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
 }
 
-void MainWindow::setStyle(bool dark) {
-    QPalette palette;
-    if (dark) {
-        palette.setColor(QPalette::Window, QColor(53, 53, 53));
-        palette.setColor(QPalette::WindowText, Qt::white);
-        palette.setColor(QPalette::ToolTipText, Qt::white);
-        palette.setColor(QPalette::Text, Qt::black);
-        palette.setColor(QPalette::Button, QColor(53, 53, 53));
-        palette.setColor(QPalette::ButtonText, Qt::white);
-        palette.setColor(QPalette::Highlight, QColor(103, 192, 252));
-        palette.setColor(QPalette::HighlightedText, Qt::black);
-    } else {
-        palette.setColor(QPalette::Window, QColor(230, 230, 230));
-        palette.setColor(QPalette::WindowText, Qt::black);
-        palette.setColor(QPalette::ToolTipText, Qt::black);
-        palette.setColor(QPalette::Text, Qt::black);
-        palette.setColor(QPalette::Button, QColor(230, 230, 230));
-        palette.setColor(QPalette::ButtonText, Qt::black);
-        palette.setColor(QPalette::Highlight, QColor(103, 192, 252));
-        palette.setColor(QPalette::HighlightedText, Qt::black);
-    }
-    setPalette(palette);
+void MainWindow::setDarkMode() {
+    StyleSettings::setDarkMode(this);
+}
+
+void MainWindow::setLightMode() {
+    StyleSettings::setLightMode(this);
 }
 
 void MainWindow::showGUISettings() {

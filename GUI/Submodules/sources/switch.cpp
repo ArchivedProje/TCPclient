@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
 */
 
-#include <switch.h>
+#include "switch.h"
 
 Animator::Animator(QObject* target, QObject* parent) : QVariantAnimation(parent) {
     setTargetObject(target);
@@ -103,7 +103,7 @@ Qt::CheckState SelectionControl::checkState() const {
 }
 
 void SelectionControl::checkStateSet() {
-    const auto state = checkState();
+    Qt::CheckState state = checkState();
     emit stateChanged(state);
     toggle(state);
 }

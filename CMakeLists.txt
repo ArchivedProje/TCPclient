@@ -3,6 +3,25 @@ project(TCPclient)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(PROJECT_SOURCES
+        demo/main.cpp
+        GUI/MainWindows/include/ConnectWindow.h
+        GUI/MainWindows/include/MainWindow.h
+        GUI/MainWindows/sources/ConnectWindow.cpp
+        GUI/MainWindows/sources/MainWindow.cpp
+        GUI/Settings/include/GUISettingsWindow.h
+        GUI/Settings/sources/GUISettingsWindow.cpp
+        GUI/Settings/include/StyleSettings.h
+        GUI/Settings/sources/StyleSettings.cpp
+        GUI/Submodules/include/style.h
+        GUI/Submodules/include/switch.h
+        GUI/Submodules/sources/switch.cpp
+        )
+
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
 
@@ -20,6 +39,7 @@ file(COPY GUI/img DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(Settings STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/GUISettingsWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/StyleSettings.cpp
         )
 
 target_include_directories(Settings PUBLIC
@@ -42,9 +62,9 @@ target_link_libraries(Settings Submodules)
 
 target_link_libraries(GUI Settings)
 
-add_executable(demo
-        ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp
-        )
 
+add_executable(demo
+        ${PROJECT_SOURCES}
+        )
 
 target_link_libraries(demo GUI)

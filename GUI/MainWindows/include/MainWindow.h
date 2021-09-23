@@ -1,4 +1,4 @@
-
+// Copyright 2021 byteihq <kotov038@gmail.com>
 
 #ifndef TCPCLIENT_MAINWINDOW_H
 #define TCPCLIENT_MAINWINDOW_H
@@ -18,8 +18,9 @@ private:
     QMenu *menuSettings_;
     QAction *actionGUI_;
     QAction *actionNetrok_;
-    void setStyle(bool dark = true);
 private slots:
+    void setDarkMode();
+    void setLightMode();
     void showGUISettings();
 public:
     explicit MainWindow(QWidget *parent = nullptr);

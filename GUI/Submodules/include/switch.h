@@ -1,6 +1,5 @@
 #ifndef TCPCLIENT_SWITCH_H
 #define TCPCLIENT_SWITCH_H
-
 /*
  * This is nearly complete Material design Switch widget implementation in qtwidgets module.
  * More info: https://material.io/design/components/selection-controls.html#switches
@@ -16,10 +15,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
 */
+
 #include <QtWidgets>
 #include "style.h"
 
 class Animator final : public QVariantAnimation {
+Q_OBJECT
     Q_PROPERTY(QObject* targetObject READ targetObject WRITE setTargetObject)
 
 public:
@@ -47,6 +48,7 @@ private:
 };
 
 class SelectionControl : public QAbstractButton {
+Q_OBJECT
 
 public:
     explicit SelectionControl(QWidget* parent = nullptr);
@@ -55,7 +57,7 @@ public:
     Qt::CheckState checkState() const;
 
 Q_SIGNALS:
-    void stateChanged(int);
+    void stateChanged(Qt::CheckState);
 
 protected:
     void enterEvent(QEvent*) override;
@@ -65,6 +67,7 @@ protected:
 };
 
 class Switch final : public SelectionControl {
+Q_OBJECT
 
     static constexpr auto CORNER_RADIUS = 8.0;
     static constexpr auto THUMB_RADIUS = 14.5;
@@ -104,4 +107,5 @@ private:
     QPointer<Animator> trackBrushAnimation;
     QPointer<Animator> thumbPosAniamtion;
 };
+
 #endif //TCPCLIENT_SWITCH_H
