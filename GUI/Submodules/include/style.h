@@ -1,7 +1,3 @@
-//
-// Created by byteihq on 20.09.2021.
-//
-
 #ifndef TCPCLIENT_STYLE_H
 #define TCPCLIENT_STYLE_H
 
@@ -21,7 +17,6 @@
  * GNU General Public License for more details.
 */
 
-//#include <QtCore/qeasingcurve.h>
 #include <QColor>
 
 #define cyan500 QColor("#00bcd4")

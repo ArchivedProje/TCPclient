@@ -9,6 +9,7 @@
 #include <QAction>
 #include <ConnectWindow.h>
 #include <GUISettingsWindow.h>
+#include <Connection.h>
 
 class MainWindow : public QMainWindow {
 private:
@@ -18,12 +19,14 @@ private:
     QMenu *menuSettings_;
     QAction *actionGUI_;
     QAction *actionNetrok_;
+
+    Connection& connection_;
 private slots:
     void setDarkMode();
     void setLightMode();
     void showGUISettings();
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(Connection& connection, QWidget *parent = nullptr);
     ~MainWindow();
 };
 

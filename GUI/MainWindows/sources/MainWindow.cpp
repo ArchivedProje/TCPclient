@@ -4,13 +4,18 @@
 #include <QPixmap>
 #include <StyleSettings.h>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), stackedWidgets_(new QStackedWidget(this)),
-                                          connectWindow_(new ConnectWindow(parent)),
-                                          guiSettings_(new GUISettingsWindow(parent)),
-                                          menuSettings_(menuBar()->addMenu("Settings")),
-                                          actionGUI_(new QAction(QPixmap("img/settingsGUIIcon.jpg"), "GUI", this)),
-                                          actionNetrok_(new QAction(QPixmap("img/settingsNetworkIcon.jpg"), "Network",
-                                                                    this)) {
+MainWindow::MainWindow(Connection &connection, QWidget *parent) : QMainWindow(parent), connection_(connection),
+                                                                  stackedWidgets_(new QStackedWidget(this)),
+                                                                  connectWindow_(new ConnectWindow(connection, parent)),
+                                                                  guiSettings_(new GUISettingsWindow(parent)),
+                                                                  menuSettings_(menuBar()->addMenu("Settings")),
+                                                                  actionGUI_(new QAction(
+                                                                          QPixmap("img/settingsGUIIcon.jpg"), "GUI",
+                                                                          this)),
+                                                                  actionNetrok_(new QAction(
+                                                                          QPixmap("img/settingsNetworkIcon.jpg"),
+                                                                          "Network",
+                                                                          this)) {
     StyleSettings::setDarkMode(this);
 
     menuSettings_->addAction(actionGUI_);
@@ -24,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), stackedWidgets_(n
     connect(actionGUI_, &QAction::triggered, this, &MainWindow::showGUISettings);
     connect(guiSettings_, &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
     connect(guiSettings_, &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
+
+    connect(connectWindow_, &ConnectWindow::closeWindow, this, &MainWindow::close);
 }
 
 void MainWindow::setDarkMode() {

@@ -5,8 +5,7 @@
 
 #include <QWidget>
 
-class StyleSettings : public QObject {
-    Q_OBJECT
+class StyleSettings {
 public:
     static void setDarkMode(QWidget *window);
     static void setLightMode(QWidget *window);

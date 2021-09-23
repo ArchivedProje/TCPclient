@@ -9,24 +9,33 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <Connection.h>
 
 class ConnectWindow : public QWidget {
+    Q_OBJECT
 private:
-    QVBoxLayout *qvbox_;
-    QHBoxLayout *qhboxIp_;
-    QHBoxLayout *qhboxLogin_;
-    QHBoxLayout *qhboxPass_;
-    QHBoxLayout *qhboxButtons_;
+    QHBoxLayout *qhbox_;
+    QVBoxLayout *leftQvbox_;
+    QVBoxLayout *rightQvbox_;
     QLabel *ipLabel_;
+    QLabel *portLabel_;
     QLabel *loginLabel_;
     QLabel *passLabel_;
     QLineEdit *ipLine_;
+    QLineEdit *portLine_;
     QLineEdit *loginLine_;
     QLineEdit *passLine_;
     QPushButton *connectBtn_;
     QPushButton *exitBtn_;
+
+    Connection& connection_;
+private slots:
+    void exitBtnClicked();
+    void connectBtnClicked();
+signals:
+    void closeWindow();
 public:
-    explicit ConnectWindow(QWidget *parent);
+    explicit ConnectWindow(Connection& connection, QWidget *parent);
     ~ConnectWindow();
 };
 
