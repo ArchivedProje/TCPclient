@@ -12,6 +12,7 @@
 #include <Connection.h>
 
 class MainWindow : public QMainWindow {
+    Q_OBJECT
 private:
     QStackedWidget *stackedWidgets_;
     ConnectWindow *connectWindow_;
@@ -20,13 +21,16 @@ private:
     QAction *actionGUI_;
     QAction *actionNetrok_;
 
-    Connection& connection_;
+    Connection connection_;
+signals:
+    void closeAllWindows();
 private slots:
     void setDarkMode();
     void setLightMode();
     void showGUISettings();
+    void exitBtnClicked();
 public:
-    explicit MainWindow(Connection& connection, QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 };
 

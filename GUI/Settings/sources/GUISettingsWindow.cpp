@@ -8,6 +8,8 @@ GUISettingsWindow::GUISettingsWindow(QWidget *parent) : QWidget(parent), qvbox_(
 
     StyleSettings::setDarkMode(this);
 
+    setWindowTitle("GUI settings");
+
     enableDarkMode_->setLayoutDirection(Qt::RightToLeft);
     enableDarkMode_->setChecked(true);
 

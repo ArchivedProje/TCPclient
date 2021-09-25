@@ -72,10 +72,13 @@ target_include_directories(Network PUBLIC
         $<INSTALL_INTERFACE:include>
         )
 
+hunter_add_package(nlohmann_json)
+find_package(nlohmann_json REQUIRED)
 
 hunter_add_package(Boost COMPONENTS system)
 find_package(Boost CONFIG REQUIRED system)
-target_link_libraries(Network Boost::system)
+
+target_link_libraries(Network Boost::system nlohmann_json::nlohmann_json)
 
 target_link_libraries(Submodules Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui)
 

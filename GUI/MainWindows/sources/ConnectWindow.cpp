@@ -71,6 +71,12 @@ void ConnectWindow::connectBtnClicked() {
         msgBox.exec();
         return;
     }
+    status = connection_.authorize(loginLine_->text().toStdString(), passLine_->text().toStdString());
+    if (status == -1) {
+        msgBox.setText("Error sending message");
+        msgBox.exec();
+        return;
+    }
 }
 
 ConnectWindow::~ConnectWindow() {

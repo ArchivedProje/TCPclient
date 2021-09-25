@@ -4,18 +4,18 @@
 #include <QPixmap>
 #include <StyleSettings.h>
 
-MainWindow::MainWindow(Connection &connection, QWidget *parent) : QMainWindow(parent), connection_(connection),
-                                                                  stackedWidgets_(new QStackedWidget(this)),
-                                                                  connectWindow_(new ConnectWindow(connection, parent)),
-                                                                  guiSettings_(new GUISettingsWindow(parent)),
-                                                                  menuSettings_(menuBar()->addMenu("Settings")),
-                                                                  actionGUI_(new QAction(
-                                                                          QPixmap("img/settingsGUIIcon.jpg"), "GUI",
-                                                                          this)),
-                                                                  actionNetrok_(new QAction(
-                                                                          QPixmap("img/settingsNetworkIcon.jpg"),
-                                                                          "Network",
-                                                                          this)) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+                                          stackedWidgets_(new QStackedWidget(this)),
+                                          connectWindow_(new ConnectWindow(connection_, parent)),
+                                          guiSettings_(new GUISettingsWindow(parent)),
+                                          menuSettings_(menuBar()->addMenu("Settings")),
+                                          actionGUI_(new QAction(
+                                                  QPixmap("img/settingsGUIIcon.jpg"), "GUI",
+                                                  this)),
+                                          actionNetrok_(new QAction(
+                                                  QPixmap("img/settingsNetworkIcon.jpg"),
+                                                  "Network",
+                                                  this)) {
     StyleSettings::setDarkMode(this);
 
     menuSettings_->addAction(actionGUI_);
@@ -29,8 +29,9 @@ MainWindow::MainWindow(Connection &connection, QWidget *parent) : QMainWindow(pa
     connect(actionGUI_, &QAction::triggered, this, &MainWindow::showGUISettings);
     connect(guiSettings_, &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
     connect(guiSettings_, &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
+    connect(this, &MainWindow::closeAllWindows, guiSettings_, &GUISettingsWindow::close);
 
-    connect(connectWindow_, &ConnectWindow::closeWindow, this, &MainWindow::close);
+    connect(connectWindow_, &ConnectWindow::closeWindow, this, &MainWindow::exitBtnClicked);
 }
 
 void MainWindow::setDarkMode() {
@@ -43,6 +44,11 @@ void MainWindow::setLightMode() {
 
 void MainWindow::showGUISettings() {
     guiSettings_->show();
+}
+
+void MainWindow::exitBtnClicked() {
+    emit closeAllWindows();
+    close();
 }
 
 MainWindow::~MainWindow() {
