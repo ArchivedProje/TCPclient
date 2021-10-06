@@ -10,33 +10,40 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <Connection.h>
+#include <memory>
+#include <QGridLayout>
 
 class ConnectWindow : public QWidget {
-    Q_OBJECT
+Q_OBJECT
 private:
-    QHBoxLayout *qhbox_;
-    QVBoxLayout *leftQvbox_;
-    QVBoxLayout *rightQvbox_;
-    QLabel *ipLabel_;
-    QLabel *portLabel_;
-    QLabel *loginLabel_;
-    QLabel *passLabel_;
-    QLineEdit *ipLine_;
-    QLineEdit *portLine_;
-    QLineEdit *loginLine_;
-    QLineEdit *passLine_;
-    QPushButton *connectBtn_;
-    QPushButton *exitBtn_;
+    using upL = std::unique_ptr<QLabel>;
+    using upLE = std::unique_ptr<QLineEdit>;
+    using upPB = std::unique_ptr<QPushButton>;
+    upL ipLabel_;
+    upL portLabel_;
+    upL loginLabel_;
+    upL passLabel_;
+    upLE ipLine_;
+    upLE portLine_;
+    upLE loginLine_;
+    upLE passLine_;
+    upPB connectBtn_;
+    upPB exitBtn_;
 
-    Connection& connection_;
+    std::unique_ptr<QGridLayout> gridLayout_;
+    Connection &connection_;
 private slots:
+
     void exitBtnClicked();
+
     void connectBtnClicked();
+
 signals:
+
     void closeWindow();
+
 public:
-    explicit ConnectWindow(Connection& connection, QWidget *parent);
-    ~ConnectWindow();
+    explicit ConnectWindow(Connection &connection, QWidget *parent);
 };
 
 #endif //TCPCLIENT_CONNECTWINDOW_H

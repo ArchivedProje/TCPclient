@@ -3,22 +3,24 @@
 #include <GUISettingsWindow.h>
 #include <StyleSettings.h>
 
-GUISettingsWindow::GUISettingsWindow(QWidget *parent) : QWidget(parent), qvbox_(new QVBoxLayout(this)), darkModeQhbox_(new QHBoxLayout),
-                                                        enableDarkMode_(new Switch()), enableDarkModeLabel_(new QLabel("Enable dark mode")) {
+GUISettingsWindow::GUISettingsWindow(QWidget *parent) : QWidget(parent), gridLayout_(std::make_unique<QGridLayout>(this)),
+                                                        enableDarkMode_(std::make_unique<Switch>()),
+                                                        enableDarkModeLabel_(
+                                                                std::make_unique<QLabel>("Enable dark mode")) {
 
     StyleSettings::setDarkMode(this);
 
     setWindowTitle("GUI settings");
 
-    enableDarkMode_->setLayoutDirection(Qt::RightToLeft);
+    enableDarkMode_->
+            setLayoutDirection(Qt::RightToLeft);
     enableDarkMode_->setChecked(true);
 
-    darkModeQhbox_->addWidget(enableDarkModeLabel_);
-    darkModeQhbox_->addWidget(enableDarkMode_);
+    gridLayout_->addWidget(enableDarkModeLabel_.get(), 0, 0);
+    gridLayout_->addWidget(enableDarkMode_.get(), 0, 1);
 
-    qvbox_->addLayout(darkModeQhbox_);
-
-    connect(enableDarkMode_, &Switch::stateChanged, this, &GUISettingsWindow::getCurrentModeState);
+    connect(enableDarkMode_.get(), &Switch::stateChanged,
+            this, &GUISettingsWindow::getCurrentModeState);
 }
 
 void GUISettingsWindow::getCurrentModeState(Qt::CheckState state) {
@@ -29,11 +31,4 @@ void GUISettingsWindow::getCurrentModeState(Qt::CheckState state) {
         StyleSettings::setLightMode(this);
         emit lightModeEnabled();
     }
-}
-
-GUISettingsWindow::~GUISettingsWindow() {
-    delete qvbox_;
-    delete enableDarkMode_;
-    delete enableDarkModeLabel_;
-    delete darkModeQhbox_;
 }

@@ -7,15 +7,16 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QGridLayout>
+#include <memory>
 #include <switch.h>
 
 class GUISettingsWindow : public QWidget {
     Q_OBJECT
 private:
-    QVBoxLayout *qvbox_;
-    QHBoxLayout *darkModeQhbox_;
-    Switch *enableDarkMode_;
-    QLabel *enableDarkModeLabel_;
+    std::unique_ptr<QGridLayout> gridLayout_;
+    std::unique_ptr<Switch> enableDarkMode_;
+    std::unique_ptr<QLabel> enableDarkModeLabel_;
 private slots:
     void getCurrentModeState(Qt::CheckState state);
 signals:
@@ -23,7 +24,6 @@ signals:
     void darkModeEnabled();
 public:
     explicit GUISettingsWindow(QWidget *parent);
-    ~GUISettingsWindow();
 };
 
 #endif //TCPCLIENT_GUISETTINGSWINDOW_H

@@ -3,40 +3,47 @@
 #include <ConnectWindow.h>
 #include <QMessageBox>
 
-ConnectWindow::ConnectWindow(Connection& connection, QWidget *parent) : QWidget(parent), connection_(connection), qhbox_(new QHBoxLayout(this)),
-                                                leftQvbox_(new QVBoxLayout), rightQvbox_(new QVBoxLayout),
-                                                ipLabel_(new QLabel("Ip:", this)),
-                                                portLabel_(new QLabel("Port:", this)),
-                                                loginLabel_(new QLabel("Login:", this)),
-                                                passLabel_(new QLabel("Password:", this)), ipLine_(new QLineEdit),
-                                                portLine_(new QLineEdit),
-                                                loginLine_(new QLineEdit), passLine_(new QLineEdit),
-                                                connectBtn_(new QPushButton("Connect", this)),
-                                                exitBtn_(new QPushButton("Exit", this)) {
+ConnectWindow::ConnectWindow(Connection &connection, QWidget *parent) : QWidget(parent), connection_(connection),
+                                                                        ipLabel_(std::make_unique<QLabel>("Ip:", this)),
+                                                                        portLabel_(std::make_unique<QLabel>("Port:",
+                                                                                                            this)),
+                                                                        loginLabel_(std::make_unique<QLabel>("Login:",
+                                                                                                             this)),
+                                                                        passLabel_(std::make_unique<QLabel>("Password:",
+                                                                                                            this)),
+                                                                        ipLine_(std::make_unique<QLineEdit>()),
+                                                                        portLine_(std::make_unique<QLineEdit>()),
+                                                                        loginLine_(std::make_unique<QLineEdit>()),
+                                                                        passLine_(std::make_unique<QLineEdit>()),
+                                                                        connectBtn_(
+                                                                                std::make_unique<QPushButton>("Connect",
+                                                                                                              this)),
+                                                                        exitBtn_(std::make_unique<QPushButton>("Exit",
+                                                                                                               this)),
+                                                                        gridLayout_(std::make_unique<QGridLayout>(this)){
 
     resize(150, 100);
+    gridLayout_->addWidget(ipLabel_.get(), 0, 0);
+    gridLayout_->addWidget(ipLine_.get(), 0, 1);
 
-    leftQvbox_->addWidget(ipLabel_);
-    rightQvbox_->addWidget(ipLine_);
+    gridLayout_->addWidget(ipLabel_.get(), 1, 0);
+    gridLayout_->addWidget(ipLine_.get(), 1, 1);
 
-    leftQvbox_->addWidget(portLabel_);
-    rightQvbox_->addWidget(portLine_);
+    gridLayout_->addWidget(portLabel_.get(), 2, 0);
+    gridLayout_->addWidget(portLine_.get(), 2, 1);
 
-    leftQvbox_->addWidget(loginLabel_);
-    rightQvbox_->addWidget(loginLine_);
+    gridLayout_->addWidget(loginLabel_.get(), 3, 0);
+    gridLayout_->addWidget(loginLine_.get(), 3, 1);
 
-    leftQvbox_->addWidget(passLabel_);
+    gridLayout_->addWidget(passLabel_.get(), 4, 0);
     passLine_->setEchoMode(QLineEdit::Password);
-    rightQvbox_->addWidget(passLine_);
+    gridLayout_->addWidget(passLine_.get(), 4, 1);
 
-    leftQvbox_->addWidget(connectBtn_);
-    rightQvbox_->addWidget(exitBtn_);
+    gridLayout_->addWidget(connectBtn_.get(), 5, 0);
+    gridLayout_->addWidget(exitBtn_.get(), 5, 1);
 
-    qhbox_->addLayout(leftQvbox_);
-    qhbox_->addLayout(rightQvbox_);
-
-    connect(connectBtn_, &QPushButton::clicked, this, &ConnectWindow::connectBtnClicked);
-    connect(exitBtn_, &QPushButton::clicked, this, &ConnectWindow::exitBtnClicked);
+    connect(connectBtn_.get(), &QPushButton::clicked, this, &ConnectWindow::connectBtnClicked);
+    connect(exitBtn_.get(), &QPushButton::clicked, this, &ConnectWindow::exitBtnClicked);
 }
 
 void ConnectWindow::exitBtnClicked() {
@@ -77,18 +84,4 @@ void ConnectWindow::connectBtnClicked() {
         msgBox.exec();
         return;
     }
-}
-
-ConnectWindow::~ConnectWindow() {
-    delete qhbox_;
-    delete leftQvbox_;
-    delete rightQvbox_;
-    delete ipLabel_;
-    delete loginLabel_;
-    delete passLabel_;
-    delete ipLine_;
-    delete loginLine_;
-    delete passLine_;
-    delete connectBtn_;
-    delete exitBtn_;
 }

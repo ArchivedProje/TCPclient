@@ -24,6 +24,8 @@ set(PROJECT_SOURCES
         GUI/Settings/sources/GUISettingsWindow.cpp
         GUI/Settings/include/StyleSettings.h
         GUI/Settings/sources/StyleSettings.cpp
+        GUI/Settings/include/NetworkSettings.h
+        GUI/Settings/sources/NetworkSettings.cpp
         GUI/Submodules/include/style.h
         GUI/Submodules/include/switch.h
         GUI/Submodules/sources/switch.cpp
@@ -47,7 +49,10 @@ file(COPY GUI/img DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 add_library(Settings STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/GUISettingsWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/StyleSettings.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/NetworkSettings.cpp
         )
+
+file(COPY GUI/Settings/Config DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 target_include_directories(Settings PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/include>

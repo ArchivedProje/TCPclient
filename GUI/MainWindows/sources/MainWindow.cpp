@@ -5,33 +5,43 @@
 #include <StyleSettings.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-                                          stackedWidgets_(new QStackedWidget(this)),
-                                          connectWindow_(new ConnectWindow(connection_, parent)),
-                                          guiSettings_(new GUISettingsWindow(parent)),
+                                          stackedWidgets_(std::make_unique<QStackedWidget>(this)),
+                                          connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
+                                          guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
+                                          networkSettings_(std::make_unique<NetworkSettingsWindow>(parent)),
                                           menuSettings_(menuBar()->addMenu("Settings")),
-                                          actionGUI_(new QAction(
+                                          actionGUI_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsGUIIcon.jpg"), "GUI",
                                                   this)),
-                                          actionNetrok_(new QAction(
+                                          actionNetwork_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsNetworkIcon.jpg"),
                                                   "Network",
                                                   this)) {
     StyleSettings::setDarkMode(this);
 
-    menuSettings_->addAction(actionGUI_);
-    menuSettings_->addAction(actionNetrok_);
+    menuSettings_->addAction(actionGUI_.get());
+    menuSettings_->addAction(actionNetwork_.get());
 
-    stackedWidgets_->addWidget(connectWindow_);
-    setCentralWidget(stackedWidgets_);
+    stackedWidgets_->addWidget(connectWindow_.get());
+    setCentralWidget(stackedWidgets_.get());
     show();
     stackedWidgets_->setCurrentIndex(0);
 
-    connect(actionGUI_, &QAction::triggered, this, &MainWindow::showGUISettings);
-    connect(guiSettings_, &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
-    connect(guiSettings_, &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
-    connect(this, &MainWindow::closeAllWindows, guiSettings_, &GUISettingsWindow::close);
+    connect(actionNetwork_.get(), &QAction::triggered, this, &MainWindow::showNetworkSettings);
+    connect(actionGUI_.get(), &QAction::triggered, this, &MainWindow::showGUISettings);
 
-    connect(connectWindow_, &ConnectWindow::closeWindow, this, &MainWindow::exitBtnClicked);
+    connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
+    connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
+
+    connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, networkSettings_.get(),
+            &NetworkSettingsWindow::setDarkMode);
+    connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, networkSettings_.get(),
+            &NetworkSettingsWindow::setLightMode);
+
+    connect(this, &MainWindow::closeAllWindows, guiSettings_.get(), &GUISettingsWindow::close);
+    connect(this, &MainWindow::closeAllWindows, networkSettings_.get(), &NetworkSettingsWindow::close);
+
+    connect(connectWindow_.get(), &ConnectWindow::closeWindow, this, &MainWindow::exitBtnClicked);
 }
 
 void MainWindow::setDarkMode() {
@@ -46,16 +56,11 @@ void MainWindow::showGUISettings() {
     guiSettings_->show();
 }
 
+void MainWindow::showNetworkSettings() {
+    networkSettings_->show();
+}
+
 void MainWindow::exitBtnClicked() {
     emit closeAllWindows();
     close();
-}
-
-MainWindow::~MainWindow() {
-    delete stackedWidgets_;
-    delete connectWindow_;
-    delete guiSettings_;
-    delete menuSettings_;
-    delete actionGUI_;
-    delete actionNetrok_;
 }
