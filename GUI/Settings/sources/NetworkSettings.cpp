@@ -7,10 +7,7 @@
 #include <ios>
 #include <boost/asio.hpp>
 
-NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent) : QWidget(parent),
-                                                                qhbox_(std::make_unique<QHBoxLayout>(this)),
-                                                                leftQvbox_(std::make_unique<QVBoxLayout>()),
-                                                                rightQVbox_(std::make_unique<QVBoxLayout>()),
+NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, Mode mode) : QWidget(parent),
                                                                 defIpLabel_(
                                                                         std::make_unique<QLabel>("Default IP", this)),
                                                                 defIpLineEdit_(std::make_unique<QLineEdit>()),
@@ -19,18 +16,24 @@ NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent) : QWidget(parent),
                                                                 defPortSlider_(std::make_unique<QSlider>(Qt::Horizontal,
                                                                                                          this)),
                                                                 defPortSpinBox_(std::make_unique<QSpinBox>(this)),
-                                                                rightPortPart_(std::make_unique<QHBoxLayout>()),
                                                                 applyBtn_(std::make_unique<QPushButton>("Apply", this)),
                                                                 cancelBtn_(
-                                                                        std::make_unique<QPushButton>("Cancel", this)) {
-    StyleSettings::setDarkMode(this);
+                                                                        std::make_unique<QPushButton>("Cancel", this)),
+                                                                gridLayout_(std::make_unique<QGridLayout>(this)) {
+    setWindowTitle("Network settings");
+
+    if (mode == Mode::Dark) {
+        StyleSettings::setDarkMode(this);
+    } else {
+        StyleSettings::setLightMode(this);
+    }
 
     parseValues();
 
-    leftQvbox_->addWidget(defIpLabel_.get());
+    gridLayout_->addWidget(defIpLabel_.get(), 0, 0);
 
     defIpLineEdit_->setText(QString::fromStdString(defIpValue_));
-    rightQVbox_->addWidget(defIpLineEdit_.get());
+    gridLayout_->addWidget(defIpLineEdit_.get(), 0, 1, 1, 2);
 
     defPortSlider_->setMinimum(1);
     defPortSlider_->setMaximum(65536);
@@ -38,19 +41,17 @@ NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent) : QWidget(parent),
     defPortSpinBox_->setMinimum(1);
     defPortSpinBox_->setMaximum(65536);
     defPortSpinBox_->setValue(defPortValue_);
-    rightPortPart_->addWidget(defPortSlider_.get());
-    rightPortPart_->addWidget(defPortSpinBox_.get());
 
-    leftQvbox_->addWidget(defPortLabel_.get());
-    rightQVbox_->addLayout(rightPortPart_.get());
+    gridLayout_->addWidget(defPortLabel_.get(), 1, 0);
+    gridLayout_->addWidget(defPortSlider_.get(), 1, 1);
+    gridLayout_->addWidget(defPortSpinBox_.get(), 1, 2);
 
     applyBtn_->setDisabled(true);
     applyBtn_->setStyleSheet("background-color: blue");
-    leftQvbox_->addWidget(applyBtn_.get());
-    rightQVbox_->addWidget(cancelBtn_.get());
 
-    qhbox_->addLayout(leftQvbox_.get());
-    qhbox_->addLayout(rightQVbox_.get());
+
+    gridLayout_->addWidget(applyBtn_.get(), 2, 0);
+    gridLayout_->addWidget(cancelBtn_.get(), 2, 1, 1, 2);
 
     connect(cancelBtn_.get(), &QPushButton::clicked, this, &NetworkSettingsWindow::close);
     connect(applyBtn_.get(), &QPushButton::clicked, this, &NetworkSettingsWindow::applyBtnClicked);
@@ -66,7 +67,7 @@ NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent) : QWidget(parent),
 }
 
 void NetworkSettingsWindow::parseValues() {
-    std::ifstream cfgFile("Config/settings.cfg", std::ios::in);
+    std::ifstream cfgFile("Config/networkSettings.cfg", std::ios::in);
     cfgFile >> defIpValue_ >> defPortValue_;
     cfgFile.close();
 }
@@ -105,7 +106,15 @@ void NetworkSettingsWindow::portUpdated() {
 
 void NetworkSettingsWindow::applyBtnClicked() {
     applyBtn_->setDisabled(true);
-    std::ofstream cfgFile("Config/settings.cfg", std::ios::out);
+    std::ofstream cfgFile("Config/networkSettings.cfg", std::ios::out);
     cfgFile << defIpLineEdit_->text().toStdString() << std::endl << defPortSlider_->value();
     cfgFile.close();
+}
+
+std::string NetworkSettingsWindow::getIp() const {
+    return defIpValue_;
+}
+
+size_t NetworkSettingsWindow::getPort() const {
+    return defPortValue_;
 }

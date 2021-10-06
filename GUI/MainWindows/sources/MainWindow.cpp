@@ -8,7 +8,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           stackedWidgets_(std::make_unique<QStackedWidget>(this)),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
                                           guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
-                                          networkSettings_(std::make_unique<NetworkSettingsWindow>(parent)),
+                                          networkSettings_(std::make_unique<NetworkSettingsWindow>(parent,
+                                                                                                   guiSettings_->getMode())),
                                           menuSettings_(menuBar()->addMenu("Settings")),
                                           actionGUI_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsGUIIcon.jpg"), "GUI",
@@ -17,14 +18,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                                   QPixmap("img/settingsNetworkIcon.jpg"),
                                                   "Network",
                                                   this)) {
-    StyleSettings::setDarkMode(this);
+    if (guiSettings_->getMode() == Mode::Dark) {
+        StyleSettings::setDarkMode(this);
+    } else {
+        StyleSettings::setLightMode(this);
+    }
+
+    connectWindow_->setIp(networkSettings_->getIp());
+    connectWindow_->setPort(networkSettings_->getPort());
 
     menuSettings_->addAction(actionGUI_.get());
     menuSettings_->addAction(actionNetwork_.get());
 
     stackedWidgets_->addWidget(connectWindow_.get());
     setCentralWidget(stackedWidgets_.get());
-    show();
+
     stackedWidgets_->setCurrentIndex(0);
 
     connect(actionNetwork_.get(), &QAction::triggered, this, &MainWindow::showNetworkSettings);

@@ -5,6 +5,11 @@
 
 #include <QWidget>
 
+enum Mode {
+    Dark,
+    Light,
+};
+
 class StyleSettings {
 public:
     static void setDarkMode(QWidget *window);

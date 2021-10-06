@@ -85,3 +85,11 @@ void ConnectWindow::connectBtnClicked() {
         return;
     }
 }
+
+void ConnectWindow::setIp(const std::string &ip) {
+    ipLine_->setText(QString::fromStdString(ip));
+}
+
+void ConnectWindow::setPort(size_t port) {
+    portLine_->setText(QString::number(port));
+}

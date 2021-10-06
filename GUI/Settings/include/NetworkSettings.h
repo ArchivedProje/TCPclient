@@ -9,38 +9,37 @@
 #include <QSlider>
 #include <QSpinBox>
 #include <QLabel>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <string>
 #include <memory>
+#include <QGridLayout>
 #include <StyleSettings.h>
+
+class MainWindow;
 
 class NetworkSettingsWindow : public QWidget {
 Q_OBJECT
 private:
-    using upQH = std::unique_ptr<QHBoxLayout>;
-    using upQV = std::unique_ptr<QVBoxLayout>;
+    friend class MainWindow;
+
     using upL = std::unique_ptr<QLabel>;
     using upLE = std::unique_ptr<QLineEdit>;
     using upPB = std::unique_ptr<QPushButton>;
-
-    upQH qhbox_;
-    upQV leftQvbox_;
-    upQV rightQVbox_;
     upL defIpLabel_;
     upLE defIpLineEdit_;
     upL defPortLabel_;
     std::unique_ptr<QSlider> defPortSlider_;
     std::unique_ptr<QSpinBox> defPortSpinBox_;
-    upQH rightPortPart_;
     upPB applyBtn_;
     upPB cancelBtn_;
-
+    std::unique_ptr<QGridLayout> gridLayout_;
     std::string defIpValue_;
     int defPortValue_;
 
     void parseValues();
 
+    std::string getIp() const;
+
+    size_t getPort() const;
 public slots:
 
     void setDarkMode();
@@ -56,7 +55,7 @@ private slots:
     void portUpdated();
 
 public:
-    explicit NetworkSettingsWindow(QWidget *parent);
+    explicit NetworkSettingsWindow(QWidget *parent, Mode mode);
 };
 
 #endif //TCPCLIENT_NETWORKSETTINGS_H

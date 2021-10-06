@@ -1,5 +1,4 @@
 // Copyright 2021 byteihq <kotov038@gmail.com>
-// Copyright 2021 byteihq <kotov038@gmail.com>
 
 #ifndef TCPCLIENT_MAINWINDOW_H
 #define TCPCLIENT_MAINWINDOW_H

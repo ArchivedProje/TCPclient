@@ -4,8 +4,6 @@
 #define TCPCLIENT_CONNECTWINDOW_H
 
 #include <QWidget>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
@@ -13,9 +11,13 @@
 #include <memory>
 #include <QGridLayout>
 
+class MainWindow;
+
 class ConnectWindow : public QWidget {
 Q_OBJECT
 private:
+    friend class MainWindow;
+
     using upL = std::unique_ptr<QLabel>;
     using upLE = std::unique_ptr<QLineEdit>;
     using upPB = std::unique_ptr<QPushButton>;
@@ -32,6 +34,11 @@ private:
 
     std::unique_ptr<QGridLayout> gridLayout_;
     Connection &connection_;
+
+    void setIp(const std::string &ip);
+
+    void setPort(size_t port);
+
 private slots:
 
     void exitBtnClicked();
