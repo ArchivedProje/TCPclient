@@ -1,11 +1,14 @@
 // Copyright 2021 byteihq <kotov038@gmail.com>
 
+#include <istream>
 #include <Connection.h>
+#include <NetworkCommunication.h>
 #include <boost/lambda/lambda.hpp>
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
+#include <RequestHandler.h>
 
-Connection::Connection() : socket_(ioService_), deadline_(ioService_) {
+Connection::Connection() : socket_(ioService_), deadline_(ioService_), handler_(std::make_unique<RequestHandler>()) {
     deadline_.expires_at(boost::posix_time::pos_infin);
     checkDeadline();
 }
@@ -32,14 +35,15 @@ int Connection::connect(const std::string &ip_, int port_) {
 }
 
 int Connection::authorize(const std::string &login, const std::string &password) {
+    boost::system::error_code ec;
     nlohmann::json msg = {
             {"sender", login},
-            {"type",   "auth"},
-            {"data",   {{"login", login}, {"pass", password}}}
+            {"type",   Requests::Auth},
+            {"data",   {{"login", login}, {"password", password}}}
     };
-    boost::system::error_code ec;
 
     boost::asio::write(socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1), ec);
+
     /*
      * -1 - error
      * 0 - message sent
@@ -48,12 +52,43 @@ int Connection::authorize(const std::string &login, const std::string &password)
 }
 
 void Connection::checkDeadline() {
-    if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now())
-    {
+    if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
         boost::system::error_code ignored_ec;
         socket_.close(ignored_ec);
 
         deadline_.expires_at(boost::posix_time::pos_infin);
     }
     deadline_.async_wait(boost::bind(&Connection::checkDeadline, this));
+}
+
+void Connection::listen() {
+    while (true) {
+        // other logic
+
+        getMessage();
+    }
+}
+
+void Connection::getMessage() {
+    boost::system::error_code ec;
+    boost::asio::read_until(socket_, data_, '\n', ec);
+    if (!ec) {
+        std::istream ss(&data_);
+        std::string sData;
+        std::getline(ss, sData);
+        sendMessage(handler_->handle(sData).dump());
+    }
+}
+
+void Connection::sendMessage(const std::string& msg) {
+    boost::system::error_code ec;
+    if (!msg.empty()) {
+        boost::asio::write(socket_, boost::asio::buffer(msg + '\n', msg.size() + 1),
+                           ec);
+        if (!ec) {
+            // log
+        } else {
+            // log
+        }
+    }
 }

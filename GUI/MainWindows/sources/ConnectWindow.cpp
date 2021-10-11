@@ -2,8 +2,9 @@
 
 #include <ConnectWindow.h>
 #include <QMessageBox>
+#include <RequestHandler.h>
 
-ConnectWindow::ConnectWindow(Connection &connection, QWidget *parent) : QWidget(parent), connection_(connection),
+ConnectWindow::ConnectWindow(Connection& connection, QWidget *parent) : QWidget(parent), connection_(connection),
                                                                         ipLabel_(std::make_unique<QLabel>("Ip:", this)),
                                                                         portLabel_(std::make_unique<QLabel>("Port:",
                                                                                                             this)),
@@ -44,6 +45,9 @@ ConnectWindow::ConnectWindow(Connection &connection, QWidget *parent) : QWidget(
 
     connect(connectBtn_.get(), &QPushButton::clicked, this, &ConnectWindow::connectBtnClicked);
     connect(exitBtn_.get(), &QPushButton::clicked, this, &ConnectWindow::exitBtnClicked);
+
+    connect(connection_.handler_.get(), &RequestHandler::authorizeFailed, this, &ConnectWindow::showAuthFailed);
+    connect(connection_.handler_.get(), &RequestHandler::unknownStatus, this, &ConnectWindow::showUnStatus);
 }
 
 void ConnectWindow::exitBtnClicked() {
@@ -54,36 +58,31 @@ void ConnectWindow::exitBtnClicked() {
 void ConnectWindow::connectBtnClicked() {
     bool fieldsEmpty = ipLine_->text().isEmpty() || portLine_->text().isEmpty() || loginLine_->text().isEmpty() ||
                        passLine_->text().isEmpty();
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("Error");
     if (fieldsEmpty) {
-        msgBox.setText("Fill in all the fields!");
-        msgBox.exec();
+        showErrWindow("Fill in all the fields!");
         return;
     }
     int port = portLine_->text().toInt();
     if (port <= 0 || port > 65'536) {
-        msgBox.setText("Port number is wrong");
-        msgBox.exec();
+        showErrWindow("Port number is wrong");
         return;
     }
     int status = connection_.connect(ipLine_->text().toStdString(), port);
     if (status == -2) {
-        msgBox.setText("Server not responding");
-        msgBox.exec();
+        showErrWindow("Server not responding");
         return;
     }
     if (status == -1) {
-        msgBox.setText("Ip is wrong");
-        msgBox.exec();
+        showErrWindow("Ip is wrong");
         return;
     }
     status = connection_.authorize(loginLine_->text().toStdString(), passLine_->text().toStdString());
     if (status == -1) {
-        msgBox.setText("Error sending message");
-        msgBox.exec();
+        showErrWindow("Error sending message");
         return;
     }
+
+    emit startListening();
 }
 
 void ConnectWindow::setIp(const std::string &ip) {
@@ -92,4 +91,19 @@ void ConnectWindow::setIp(const std::string &ip) {
 
 void ConnectWindow::setPort(size_t port) {
     portLine_->setText(QString::number(port));
+}
+
+void ConnectWindow::showAuthFailed() {
+    showErrWindow("Authorised failed. Wrong login or password");
+}
+
+void ConnectWindow::showUnStatus() {
+    showErrWindow("Server sent message with unknown status");
+}
+
+void ConnectWindow::showErrWindow(const std::string& errMsg) {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Error");
+    msgBox.setText(QString::fromStdString(errMsg));
+    msgBox.exec();
 }

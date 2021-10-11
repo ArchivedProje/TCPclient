@@ -1,0 +1,3 @@
+[submodule "third-party/NetworkCommunication"]
+	path = third-party/NetworkCommunication
+	url = https://github.com/byteihq/NetworkCommunication

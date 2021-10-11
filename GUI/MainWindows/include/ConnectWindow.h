@@ -7,9 +7,9 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
-#include <Connection.h>
-#include <memory>
 #include <QGridLayout>
+#include <memory>
+#include <Connection.h>
 
 class MainWindow;
 
@@ -33,7 +33,7 @@ private:
     upPB exitBtn_;
 
     std::unique_ptr<QGridLayout> gridLayout_;
-    Connection &connection_;
+    Connection& connection_;
 
     void setIp(const std::string &ip);
 
@@ -45,12 +45,19 @@ private slots:
 
     void connectBtnClicked();
 
+    void showErrWindow(const std::string& errMsg);
+
+    void showAuthFailed();
+
+    void showUnStatus();
 signals:
 
     void closeWindow();
 
+    void startListening();
+
 public:
-    explicit ConnectWindow(Connection &connection, QWidget *parent);
+    explicit ConnectWindow(Connection& connection, QWidget *parent);
 };
 
 #endif //TCPCLIENT_CONNECTWINDOW_H

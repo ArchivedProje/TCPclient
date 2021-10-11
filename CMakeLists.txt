@@ -29,6 +29,10 @@ set(PROJECT_SOURCES
         GUI/Submodules/include/style.h
         GUI/Submodules/include/switch.h
         GUI/Submodules/sources/switch.cpp
+        Network/include/Connection.h
+        Network/sources/Connection.cpp
+        RequestHandling/include/RequestHandler.h
+        RequestHandling/sources/RequestHandler.cpp
         )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
@@ -77,13 +81,26 @@ target_include_directories(Network PUBLIC
         $<INSTALL_INTERFACE:include>
         )
 
+add_library(RequestHandling STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/RequestHandling/sources/RequestHandler.cpp
+        )
+
+target_include_directories(RequestHandling PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/RequestHandling/include>
+        $<INSTALL_INTERFACE:include>
+        )
+
+add_subdirectory(third-party/NetworkCommunication)
+
 hunter_add_package(nlohmann_json)
 find_package(nlohmann_json REQUIRED)
 
 hunter_add_package(Boost COMPONENTS system)
 find_package(Boost CONFIG REQUIRED system)
 
-target_link_libraries(Network Boost::system nlohmann_json::nlohmann_json)
+target_link_libraries(RequestHandling nlohmann_json::nlohmann_json NetworkCommunication Qt${QT_VERSION_MAJOR}::Widgets)
+
+target_link_libraries(Network Boost::system nlohmann_json::nlohmann_json NetworkCommunication Qt${QT_VERSION_MAJOR}::Widgets RequestHandling)
 
 target_link_libraries(Submodules Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui)
 

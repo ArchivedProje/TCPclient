@@ -5,6 +5,7 @@
 #include <StyleSettings.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+                                          thread_(std::make_unique<QThread>()),
                                           stackedWidgets_(std::make_unique<QStackedWidget>(this)),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
                                           guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
@@ -50,6 +51,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(this, &MainWindow::closeAllWindows, networkSettings_.get(), &NetworkSettingsWindow::close);
 
     connect(connectWindow_.get(), &ConnectWindow::closeWindow, this, &MainWindow::exitBtnClicked);
+
+    connect(connectWindow_.get(), &ConnectWindow::startListening, &connection_, &Connection::listen);
+    connection_.moveToThread(thread_.get());
+    thread_->start();
 }
 
 void MainWindow::setDarkMode() {

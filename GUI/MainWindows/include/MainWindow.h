@@ -8,6 +8,7 @@
 #include <QStackedWidget>
 #include <QMenuBar>
 #include <QAction>
+#include <QThread>
 #include <ConnectWindow.h>
 #include <GUISettingsWindow.h>
 #include <NetworkSettings.h>
@@ -16,6 +17,9 @@
 class MainWindow : public QMainWindow {
 Q_OBJECT
 private:
+    Connection connection_;
+    std::unique_ptr<QThread> thread_;
+
     std::unique_ptr<QStackedWidget> stackedWidgets_;
     std::unique_ptr<ConnectWindow> connectWindow_;
     std::unique_ptr<GUISettingsWindow> guiSettings_;
@@ -23,8 +27,6 @@ private:
     std::unique_ptr<QMenu> menuSettings_;
     std::unique_ptr<QAction> actionGUI_;
     std::unique_ptr<QAction> actionNetwork_;
-
-    Connection connection_;
 signals:
 
     void closeAllWindows();
