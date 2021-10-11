@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include <RequestHandler.h>
 
-ConnectWindow::ConnectWindow(Connection& connection, QWidget *parent) : QWidget(parent), connection_(connection),
+ConnectWindow::ConnectWindow(Connection &connection, QWidget *parent) : QWidget(parent), connection_(connection),
                                                                         ipLabel_(std::make_unique<QLabel>("Ip:", this)),
                                                                         portLabel_(std::make_unique<QLabel>("Port:",
                                                                                                             this)),
@@ -21,9 +21,11 @@ ConnectWindow::ConnectWindow(Connection& connection, QWidget *parent) : QWidget(
                                                                                                               this)),
                                                                         exitBtn_(std::make_unique<QPushButton>("Exit",
                                                                                                                this)),
-                                                                        gridLayout_(std::make_unique<QGridLayout>(this)){
+                                                                        gridLayout_(
+                                                                                std::make_unique<QGridLayout>(this)),
+                                                                        width_(150), height_(100) {
 
-    resize(150, 100);
+
     gridLayout_->addWidget(ipLabel_.get(), 0, 0);
     gridLayout_->addWidget(ipLine_.get(), 0, 1);
 
@@ -101,9 +103,17 @@ void ConnectWindow::showUnStatus() {
     showErrWindow("Server sent message with unknown status");
 }
 
-void ConnectWindow::showErrWindow(const std::string& errMsg) {
+void ConnectWindow::showErrWindow(const std::string &errMsg) {
     QMessageBox msgBox;
     msgBox.setWindowTitle("Error");
     msgBox.setText(QString::fromStdString(errMsg));
     msgBox.exec();
+}
+
+size_t ConnectWindow::getWidth() const {
+    return width_;
+}
+
+size_t ConnectWindow::getHeight() const {
+    return height_;
 }

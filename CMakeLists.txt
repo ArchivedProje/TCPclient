@@ -41,6 +41,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
 add_library(GUI STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/MainWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ConnectWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ServerWindow.cpp
         )
 
 target_include_directories(GUI PUBLIC

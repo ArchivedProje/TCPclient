@@ -6,12 +6,18 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           thread_(std::make_unique<QThread>()),
+                                          serverWindow_(std::make_unique<ServerWindow>(this)),
                                           stackedWidgets_(std::make_unique<QStackedWidget>(this)),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
                                           guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
                                           networkSettings_(std::make_unique<NetworkSettingsWindow>(parent,
                                                                                                    guiSettings_->getMode())),
                                           menuSettings_(menuBar()->addMenu("Settings")),
+                                          helpSettings_(menuBar()->addMenu("Help")),
+                                          help_(std::make_unique<QAction>(QPixmap("img/questionIcon.png"), "Help",
+                                                                          this)),
+                                          aboutUs_(std::make_unique<QAction>("About us",
+                                                                             this)),
                                           actionGUI_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsGUIIcon.jpg"), "GUI",
                                                   this)),
@@ -25,16 +31,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
         StyleSettings::setLightMode(this);
     }
 
+    resize(connectWindow_->getWidth(), connectWindow_->getHeight());
+
     connectWindow_->setIp(networkSettings_->getIp());
     connectWindow_->setPort(networkSettings_->getPort());
 
+    helpSettings_->addAction(help_.get());
+    helpSettings_->addSeparator();
+    helpSettings_->addAction(aboutUs_.get());
+
     menuSettings_->addAction(actionGUI_.get());
+    menuSettings_->addSeparator();
     menuSettings_->addAction(actionNetwork_.get());
 
     stackedWidgets_->addWidget(connectWindow_.get());
+    stackedWidgets_->addWidget(serverWindow_.get());
+
     setCentralWidget(stackedWidgets_.get());
 
     stackedWidgets_->setCurrentIndex(0);
+
+    connect(help_.get(), &QAction::triggered, this, &MainWindow::openDocUrl);
 
     connect(actionNetwork_.get(), &QAction::triggered, this, &MainWindow::showNetworkSettings);
     connect(actionGUI_.get(), &QAction::triggered, this, &MainWindow::showGUISettings);
@@ -76,4 +93,8 @@ void MainWindow::showNetworkSettings() {
 void MainWindow::exitBtnClicked() {
     emit closeAllWindows();
     close();
+}
+
+void MainWindow::openDocUrl() {
+    // open url
 }

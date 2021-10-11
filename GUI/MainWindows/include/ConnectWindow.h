@@ -35,9 +35,16 @@ private:
     std::unique_ptr<QGridLayout> gridLayout_;
     Connection& connection_;
 
+    size_t width_;
+    size_t height_;
+
     void setIp(const std::string &ip);
 
     void setPort(size_t port);
+
+    size_t getWidth() const;
+
+    size_t getHeight() const;
 
 private slots:
 
