@@ -47,6 +47,10 @@ private slots:
 
     void openDocUrl();
 
+    void openServerWindow();
+
+    void openAboutUsUrl();
+
     void exitBtnClicked();
 
 public:

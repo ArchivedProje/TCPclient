@@ -33,6 +33,8 @@ set(PROJECT_SOURCES
         Network/sources/Connection.cpp
         RequestHandling/include/RequestHandler.h
         RequestHandling/sources/RequestHandler.cpp
+        GUI/MainWindows/include/ServerWindow.h
+        GUI/MainWindows/sources/ServerWindow.cpp
         )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)

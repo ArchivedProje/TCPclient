@@ -13,11 +13,13 @@
 using boost::asio::ip::tcp;
 
 class ConnectWindow;
+class MainWindow;
 
 class Connection : public QObject {
     Q_OBJECT
 private:
     friend class ConnectWindow;
+    friend class MainWindow;
     boost::asio::io_service ioService_;
     tcp::socket socket_;
     boost::asio::deadline_timer deadline_;

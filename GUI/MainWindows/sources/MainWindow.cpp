@@ -3,6 +3,7 @@
 #include <MainWindow.h>
 #include <QPixmap>
 #include <StyleSettings.h>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           thread_(std::make_unique<QThread>()),
@@ -31,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
         StyleSettings::setLightMode(this);
     }
 
-    resize(connectWindow_->getWidth(), connectWindow_->getHeight());
 
     connectWindow_->setIp(networkSettings_->getIp());
     connectWindow_->setPort(networkSettings_->getPort());
@@ -49,9 +49,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     setCentralWidget(stackedWidgets_.get());
 
-    stackedWidgets_->setCurrentIndex(0);
+    setMaximumSize(connectWindow_->getWidth(), connectWindow_->getHeight());
+
+    stackedWidgets_->setCurrentIndex(0); // connectWindow
 
     connect(help_.get(), &QAction::triggered, this, &MainWindow::openDocUrl);
+    connect(aboutUs_.get(), &QAction::triggered, this, &MainWindow::openAboutUsUrl);
 
     connect(actionNetwork_.get(), &QAction::triggered, this, &MainWindow::showNetworkSettings);
     connect(actionGUI_.get(), &QAction::triggered, this, &MainWindow::showGUISettings);
@@ -72,6 +75,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(connectWindow_.get(), &ConnectWindow::startListening, &connection_, &Connection::listen);
     connection_.moveToThread(thread_.get());
     thread_->start();
+
+    connect(connection_.handler_.get(), &RequestHandler::authorizeSucceed, this, &MainWindow::openServerWindow);
+
+    connect(serverWindow_.get(), &ServerWindow::closeWindow, this, &MainWindow::exitBtnClicked);
+    show();
 }
 
 void MainWindow::setDarkMode() {
@@ -96,5 +104,15 @@ void MainWindow::exitBtnClicked() {
 }
 
 void MainWindow::openDocUrl() {
-    // open url
+    QDesktopServices::openUrl(QUrl("https://gist.github.com/byteihq/0ee5299bc54a874a3c468e32a47b082d", QUrl::TolerantMode));
+}
+
+void MainWindow::openAboutUsUrl() {
+    QDesktopServices::openUrl(QUrl("https://gist.github.com/byteihq/1626637568a334dc7cfbe60bf4f4aa93", QUrl::TolerantMode));
+}
+
+void MainWindow::openServerWindow() {
+    stackedWidgets_->setCurrentIndex(1); //serverWindow
+    setMaximumSize(serverWindow_->getWidth(), serverWindow_->getHeight());
+    resize(serverWindow_->getWidth(), serverWindow_->getHeight());
 }
