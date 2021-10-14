@@ -8,11 +8,11 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           thread_(std::make_unique<QThread>()),
                                           serverWindow_(std::make_unique<ServerWindow>(this)),
-                                          stackedWidgets_(std::make_unique<QStackedWidget>(this)),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
                                           guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
                                           networkSettings_(std::make_unique<NetworkSettingsWindow>(parent,
                                                                                                    guiSettings_->getMode())),
+                                          stackedWidgets_(std::make_unique<QStackedWidget>()),
                                           menuSettings_(menuBar()->addMenu("Settings")),
                                           helpSettings_(menuBar()->addMenu("Help")),
                                           help_(std::make_unique<QAction>(QPixmap("img/questionIcon.png"), "Help",
@@ -25,13 +25,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           actionNetwork_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsNetworkIcon.jpg"),
                                                   "Network",
-                                                  this)) {
+                                                  this)), currentIndex_(0) {
     if (guiSettings_->getMode() == Mode::Dark) {
         StyleSettings::setDarkMode(this);
     } else {
         StyleSettings::setLightMode(this);
     }
 
+    if (guiSettings_->getResizable() == ResizeStatus::False) {
+        setUnResizable();
+    }
 
     connectWindow_->setIp(networkSettings_->getIp());
     connectWindow_->setPort(networkSettings_->getPort());
@@ -47,11 +50,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     stackedWidgets_->addWidget(connectWindow_.get());
     stackedWidgets_->addWidget(serverWindow_.get());
 
-    setCentralWidget(stackedWidgets_.get());
+    stackedWidgets_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    setMaximumSize(connectWindow_->getWidth(), connectWindow_->getHeight());
-
-    stackedWidgets_->setCurrentIndex(0); // connectWindow
+    resize(connectWindow_->getWidth(), connectWindow_->getHeight());
+    stackedWidgets_->setCurrentIndex(currentIndex_); // connectWindow
 
     connect(help_.get(), &QAction::triggered, this, &MainWindow::openDocUrl);
     connect(aboutUs_.get(), &QAction::triggered, this, &MainWindow::openAboutUsUrl);
@@ -66,9 +68,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
             &NetworkSettingsWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, networkSettings_.get(),
             &NetworkSettingsWindow::setLightMode);
-
-    connect(this, &MainWindow::closeAllWindows, guiSettings_.get(), &GUISettingsWindow::close);
-    connect(this, &MainWindow::closeAllWindows, networkSettings_.get(), &NetworkSettingsWindow::close);
+    connect(guiSettings_.get(), &GUISettingsWindow::resizable, this, &MainWindow::setResizable);
+    connect(guiSettings_.get(), &GUISettingsWindow::unresizable, this, &MainWindow::setUnResizable);
 
     connect(connectWindow_.get(), &ConnectWindow::closeWindow, this, &MainWindow::exitBtnClicked);
 
@@ -79,6 +80,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(connection_.handler_.get(), &RequestHandler::authorizeSucceed, this, &MainWindow::openServerWindow);
 
     connect(serverWindow_.get(), &ServerWindow::closeWindow, this, &MainWindow::exitBtnClicked);
+
+    setCentralWidget(stackedWidgets_.get());
+
     show();
 }
 
@@ -99,8 +103,9 @@ void MainWindow::showNetworkSettings() {
 }
 
 void MainWindow::exitBtnClicked() {
-    emit closeAllWindows();
     close();
+    guiSettings_->close();
+    networkSettings_->close();
 }
 
 void MainWindow::openDocUrl() {
@@ -112,7 +117,26 @@ void MainWindow::openAboutUsUrl() {
 }
 
 void MainWindow::openServerWindow() {
-    stackedWidgets_->setCurrentIndex(1); //serverWindow
-    setMaximumSize(serverWindow_->getWidth(), serverWindow_->getHeight());
-    resize(serverWindow_->getWidth(), serverWindow_->getHeight());
+    currentIndex_ = 1;
+    stackedWidgets_->setCurrentIndex(currentIndex_); //serverWindow
+}
+
+void MainWindow::setResizable() {
+    connectWindow_->setResizable();
+    serverWindow_->setResizable();
+    guiSettings_->setResizable();
+    networkSettings_->setResizable();
+    setMaximumSize(1920, 1080);
+}
+
+void MainWindow::setUnResizable() {
+    connectWindow_->setUnResizable();
+    serverWindow_->setUnResizable();
+    guiSettings_->setUnResizable();
+    networkSettings_->setUnResizable();
+    if (currentIndex_ == 0) {
+        setFixedSize(connectWindow_->getWidth(), connectWindow_->getHeight() + 10);
+    } else {
+        setFixedSize(serverWindow_->getWidth(), serverWindow_->getHeight());
+    }
 }

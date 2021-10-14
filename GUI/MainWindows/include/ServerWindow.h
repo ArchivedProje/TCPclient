@@ -10,11 +10,12 @@
 #include <QLineEdit>
 #include <memory>
 #include <Connection.h>
+#include <Resizable.h>
 
 class MainWindow;
 
-class ServerWindow : public QWidget {
-    Q_OBJECT
+class ServerWindow : public Resizable {
+Q_OBJECT
 private:
     friend class MainWindow;
 
@@ -27,20 +28,16 @@ private:
     upPB usersBtn_;
     upPB statBtn_;
     upPB exitBtn_;
-
-    size_t height_;
-    size_t width_;
 private slots:
+
     void exitBtnClicked();
 
 signals:
+
     void closeWindow();
+
 public:
     explicit ServerWindow(QWidget *parent);
-
-    size_t getHeight() const;
-
-    size_t getWidth() const;
 };
 
 #endif //TCPCLIENT_SERVERWINDOW_H

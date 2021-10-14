@@ -35,6 +35,8 @@ set(PROJECT_SOURCES
         RequestHandling/sources/RequestHandler.cpp
         GUI/MainWindows/include/ServerWindow.h
         GUI/MainWindows/sources/ServerWindow.cpp
+        GUI/MainWindows/include/Resizable.h
+        GUI/MainWindows/sources/Resizable.cpp
         )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
@@ -57,6 +59,7 @@ add_library(Settings STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/GUISettingsWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/StyleSettings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/NetworkSettings.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/Resizable.cpp
         )
 
 file(COPY GUI/Settings/Config DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

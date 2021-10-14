@@ -13,10 +13,11 @@
 #include <memory>
 #include <QGridLayout>
 #include <StyleSettings.h>
+#include <Resizable.h>
 
 class MainWindow;
 
-class NetworkSettingsWindow : public QWidget {
+class NetworkSettingsWindow : public Resizable {
 Q_OBJECT
 private:
     friend class MainWindow;
@@ -37,9 +38,9 @@ private:
 
     void parseValues();
 
-    std::string getIp() const;
+    [[nodiscard]] std::string getIp() const;
 
-    size_t getPort() const;
+    [[nodiscard]] size_t getPort() const;
 public slots:
 
     void setDarkMode();

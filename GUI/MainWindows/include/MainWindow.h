@@ -21,20 +21,17 @@ private:
     Connection connection_;
     std::unique_ptr<QThread> thread_;
     std::unique_ptr<ServerWindow> serverWindow_;
-    std::unique_ptr<QStackedWidget> stackedWidgets_;
     std::unique_ptr<ConnectWindow> connectWindow_;
     std::unique_ptr<GUISettingsWindow> guiSettings_;
     std::unique_ptr<NetworkSettingsWindow> networkSettings_;
+    std::unique_ptr<QStackedWidget> stackedWidgets_;
     std::unique_ptr<QMenu> menuSettings_;
     std::unique_ptr<QMenu> helpSettings_;
     std::unique_ptr<QAction> help_;
     std::unique_ptr<QAction> aboutUs_;
     std::unique_ptr<QAction> actionGUI_;
     std::unique_ptr<QAction> actionNetwork_;
-signals:
-
-    void closeAllWindows();
-
+    size_t currentIndex_;
 private slots:
 
     void setDarkMode();
@@ -46,6 +43,10 @@ private slots:
     void showNetworkSettings();
 
     void openDocUrl();
+
+    void setResizable();
+
+    void setUnResizable();
 
     void openServerWindow();
 

@@ -7,7 +7,7 @@
 #include <ios>
 #include <boost/asio.hpp>
 
-NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, Mode mode) : QWidget(parent),
+NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, Mode mode) : Resizable(parent, 277, 110),
                                                                 defIpLabel_(
                                                                         std::make_unique<QLabel>("Default IP", this)),
                                                                 defIpLineEdit_(std::make_unique<QLineEdit>()),
@@ -18,7 +18,7 @@ NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, Mode mode) : QWidg
                                                                 defPortSpinBox_(std::make_unique<QSpinBox>(this)),
                                                                 applyBtn_(std::make_unique<QPushButton>("Apply", this)),
                                                                 cancelBtn_(
-                                                                        std::make_unique<QPushButton>("Cancel", this)),
+                                                                        std::make_unique<QPushButton>("Close", this)),
                                                                 gridLayout_(std::make_unique<QGridLayout>(this)) {
     setWindowTitle("Network settings");
 

@@ -10,9 +10,15 @@ enum Mode {
     Light,
 };
 
+enum ResizeStatus {
+    True,
+    False,
+};
+
 class StyleSettings {
 public:
     static void setDarkMode(QWidget *window);
+
     static void setLightMode(QWidget *window);
 };
 

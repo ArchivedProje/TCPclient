@@ -2,13 +2,13 @@
 
 #include <ServerWindow.h>
 
-ServerWindow::ServerWindow(QWidget *parent) : QWidget(parent), gridLayout_(std::make_unique<QGridLayout>(this)),
+ServerWindow::ServerWindow(QWidget *parent) : Resizable(parent, 380, 200), gridLayout_(std::make_unique<QGridLayout>(this)),
                                               infoWidget_(std::make_unique<QListWidget>()),
                                               lineEdit_(std::make_unique<QLineEdit>()),
                                               sendBtn_(std::make_unique<QPushButton>("Send", this)),
                                               usersBtn_(std::make_unique<QPushButton>("Users", this)),
                                               statBtn_(std::make_unique<QPushButton>("Stats", this)),
-                                              exitBtn_(std::make_unique<QPushButton>("Exit", this)), height_(250), width_(400) {
+                                              exitBtn_(std::make_unique<QPushButton>("Exit", this)) {
 
     gridLayout_->addWidget(infoWidget_.get(), 0, 0, 3, 2);
     gridLayout_->addWidget(usersBtn_.get(),0, 2);
@@ -18,14 +18,6 @@ ServerWindow::ServerWindow(QWidget *parent) : QWidget(parent), gridLayout_(std::
     gridLayout_->addWidget(sendBtn_.get(),3, 1);
 
     connect(exitBtn_.get(), &QPushButton::clicked, this, &ServerWindow::exitBtnClicked);
-}
-
-size_t ServerWindow::getHeight() const {
-    return height_;
-}
-
-size_t ServerWindow::getWidth() const {
-    return width_;
 }
 
 void ServerWindow::exitBtnClicked() {
