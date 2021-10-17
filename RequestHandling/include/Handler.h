@@ -4,8 +4,9 @@
 #define TCPCLIENT_HANDLER_H
 
 #include <string>
-#include <nlohmann/json.hpp>
 #include <QObject>
+#include <nlohmann/json.hpp>
+#include <NetworkCommunication.h>
 
 class Handler : public QObject {
 Q_OBJECT
@@ -22,7 +23,7 @@ public:
 
     nlohmann::json request(const std::string &request);
 
-    nlohmann::json reply(const std::string& sender, const std::string &reply);
+    nlohmann::json reply(const std::string& sender, const std::string &reply, Requests requestType);
 };
 
 #endif //TCPCLIENT_HANDLER_H

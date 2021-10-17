@@ -1,8 +1,6 @@
 // Copyright 2021 byteihq <kotov038@gmail.com>
 
 #include <Handler.h>
-#include <NetworkCommunication.h>
-
 
 nlohmann::json Handler::request(const std::string &request) {
     nlohmann::json jsonRequest = nlohmann::json::parse(request);
@@ -19,10 +17,10 @@ nlohmann::json Handler::request(const std::string &request) {
     return reply;
 }
 
-nlohmann::json Handler::reply(const std::string& sender, const std::string &reply) {
+nlohmann::json Handler::reply(const std::string& sender, const std::string &reply, Requests requestType) {
     nlohmann::json request = {
             {"sender", sender},
-            {"type", Requests::Msg},
+            {"type", requestType},
             {"data", reply}
     };
     return request;

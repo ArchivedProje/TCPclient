@@ -90,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     connect(connection_->handler_.get(), &Handler::authorizeSucceed, this, &MainWindow::openServerWindow);
 
+    connect(actionDisconnect_.get(), &QAction::triggered, serverWindow_.get(), &ServerWindow::actionDisconnect);
     connect(serverWindow_.get(), &ServerWindow::closeWindow, this, &MainWindow::exitBtnClicked);
 
     setCentralWidget(stackedWidgets_.get());

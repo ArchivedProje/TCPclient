@@ -1,6 +1,8 @@
 // Copyright 2021 byteihq <kotov038@gmail.com>
 
 #include <ServerWindow.h>
+#include <NetworkCommunication.h>
+#include <QMenu>
 
 ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *parent) : Resizable(parent, 640, 480),
                                                                                       connection_(
@@ -20,8 +22,10 @@ ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *pare
     gridLayout_->addWidget(lineEdit_.get(), 10, 0);
     gridLayout_->addWidget(sendBtn_.get(), 10, 1);
 
+    infoWidget_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(infoWidget_.get(), SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
+
     connect(sendBtn_.get(), &QPushButton::clicked, this, &ServerWindow::sendBtnClicked);
-    //connect(exitBtn_.get(), &QPushButton::clicked, this, &ServerWindow::exitBtnClicked);
 }
 
 void ServerWindow::setSender(const std::string &sender) {
@@ -29,7 +33,30 @@ void ServerWindow::setSender(const std::string &sender) {
 }
 
 void ServerWindow::sendBtnClicked() {
-    connection_->sendMessage(connection_->handler_->reply(sender_, lineEdit_->text().toStdString()));
+    connection_->sendMessage(connection_->handler_->reply(sender_, lineEdit_->text().toStdString(),  Requests::Msg));
     infoWidget_->addItem(lineEdit_->text());
     lineEdit_->clear();
+}
+
+void ServerWindow::ShowContextMenu(const QPoint &point) {
+    if (infoWidget_->selectedItems().size() == 1) {
+        QPoint globalPos = mapToGlobal(point);
+        QMenu myMenu;
+        myMenu.addAction("Reply", this, &ServerWindow::actionReply);
+        myMenu.addAction("Copy", this, &ServerWindow::actionCopy);
+        myMenu.exec(globalPos);
+    }
+}
+
+void ServerWindow::actionReply() {
+    //
+}
+
+void ServerWindow::actionCopy() {
+    //
+}
+
+void ServerWindow::actionDisconnect() {
+    connection_->sendMessage(connection_->handler_->reply(sender_, "", Requests::Disconnect));
+    emit closeWindow();
 }

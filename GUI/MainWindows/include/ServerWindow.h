@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QListWidget>
 #include <QLineEdit>
+#include <QPoint>
 #include <memory>
 #include <string>
 #include <Connection.h>
@@ -34,6 +35,14 @@ private:
 private slots:
 
     void sendBtnClicked();
+
+    void ShowContextMenu(const QPoint& point);
+
+    void actionReply();
+
+    void actionCopy();
+
+    void actionDisconnect();
 
 signals:
 
