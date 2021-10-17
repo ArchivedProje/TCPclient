@@ -31,8 +31,8 @@ set(PROJECT_SOURCES
         GUI/Submodules/sources/switch.cpp
         Network/include/Connection.h
         Network/sources/Connection.cpp
-        RequestHandling/include/RequestHandler.h
-        RequestHandling/sources/RequestHandler.cpp
+        RequestHandling/include/Handler.h
+        RequestHandling/sources/Handler.cpp
         GUI/MainWindows/include/ServerWindow.h
         GUI/MainWindows/sources/ServerWindow.cpp
         GUI/MainWindows/include/Resizable.h
@@ -88,7 +88,7 @@ target_include_directories(Network PUBLIC
         )
 
 add_library(RequestHandling STATIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/RequestHandling/sources/RequestHandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/RequestHandling/sources/Handler.cpp
         )
 
 target_include_directories(RequestHandling PUBLIC

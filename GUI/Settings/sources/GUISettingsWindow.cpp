@@ -31,7 +31,7 @@ GUISettingsWindow::GUISettingsWindow(QWidget *parent) : Resizable(parent, 268, 1
         enableDarkModeSwitch_->setChecked(false);
     }
 
-    if (resizable_ == ResizeStatus::False) {
+    if (resizable_ == ResizeStatus::UnResizable) {
         resizableSwitch_->setChecked(false);
         setUnResizable();
     } else {
@@ -80,7 +80,7 @@ void GUISettingsWindow::getCurrentResizableState(Qt::CheckState state) {
     if (state == Qt::Checked) {
         setResizable();
         emit resizable();
-        if (resizable_ == ResizeStatus::False) {
+        if (resizable_ == ResizeStatus::UnResizable) {
             applyBtn_->setEnabled(true);
         } else {
             applyBtn_->setDisabled(true);
@@ -88,7 +88,7 @@ void GUISettingsWindow::getCurrentResizableState(Qt::CheckState state) {
     } else {
         setUnResizable();
         emit unresizable();
-        if (resizable_ == ResizeStatus::True) {
+        if (resizable_ == ResizeStatus::Resizable) {
             applyBtn_->setEnabled(true);
         } else {
             applyBtn_->setDisabled(true);
@@ -102,7 +102,7 @@ void GUISettingsWindow::parseValues() {
     std::string resizable;
     cfgFile >> mode >> resizable;
     mode_ = mode == "dark" ? Mode::Dark : Mode::Light;
-    resizable_ = resizable == "true" ? ResizeStatus::True : ResizeStatus::False;
+    resizable_ = resizable == "true" ? ResizeStatus::Resizable : ResizeStatus::UnResizable;
     cfgFile.close();
 }
 

@@ -11,8 +11,8 @@ enum Mode {
 };
 
 enum ResizeStatus {
-    True,
-    False,
+    Resizable,
+    UnResizable,
 };
 
 class StyleSettings {

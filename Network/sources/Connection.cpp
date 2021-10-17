@@ -6,9 +6,9 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
-#include <RequestHandler.h>
+#include <Handler.h>
 
-Connection::Connection() : socket_(ioService_), deadline_(ioService_), handler_(std::make_unique<RequestHandler>()) {
+Connection::Connection() : socket_(ioService_), deadline_(ioService_), handler_(std::make_unique<Handler>()) {
     deadline_.expires_at(boost::posix_time::pos_infin);
     checkDeadline();
 }
@@ -41,8 +41,7 @@ int Connection::authorize(const std::string &login, const std::string &password)
             {"type",   Requests::Auth},
             {"data",   {{"login", login}, {"password", password}}}
     };
-
-    boost::asio::write(socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1), ec);
+    sendMessage(msg);
 
     /*
      * -1 - error
@@ -53,9 +52,6 @@ int Connection::authorize(const std::string &login, const std::string &password)
 
 void Connection::checkDeadline() {
     if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
-        boost::system::error_code ignored_ec;
-        socket_.close(ignored_ec);
-
         deadline_.expires_at(boost::posix_time::pos_infin);
     }
     deadline_.async_wait(boost::bind(&Connection::checkDeadline, this));
@@ -76,14 +72,14 @@ void Connection::getMessage() {
         std::istream ss(&data_);
         std::string sData;
         std::getline(ss, sData);
-        sendMessage(handler_->handle(sData).dump());
+        sendMessage(handler_->request(sData).dump());
     }
 }
 
-void Connection::sendMessage(const std::string& msg) {
+void Connection::sendMessage(const nlohmann::json& msg) {
     boost::system::error_code ec;
     if (!msg.empty()) {
-        boost::asio::write(socket_, boost::asio::buffer(msg + '\n', msg.size() + 1),
+        boost::asio::write(socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
                            ec);
         if (!ec) {
             // log

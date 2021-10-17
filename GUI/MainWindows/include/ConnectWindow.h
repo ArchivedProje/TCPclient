@@ -34,7 +34,7 @@ private:
     upPB exitBtn_;
 
     std::unique_ptr<QGridLayout> gridLayout_;
-    Connection& connection_;
+    std::shared_ptr<Connection> connection_;
 
     void setIp(const std::string &ip);
 
@@ -58,7 +58,7 @@ signals:
     void startListening();
 
 public:
-    explicit ConnectWindow(Connection& connection, QWidget *parent);
+    explicit ConnectWindow(std::shared_ptr<Connection> connection, QWidget *parent);
 };
 
 #endif //TCPCLIENT_CONNECTWINDOW_H

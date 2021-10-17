@@ -2,9 +2,9 @@
 
 #include <ConnectWindow.h>
 #include <QMessageBox>
-#include <RequestHandler.h>
+#include <Handler.h>
 
-ConnectWindow::ConnectWindow(Connection &connection, QWidget *parent) : Resizable(parent, 245, 189), connection_(connection),
+ConnectWindow::ConnectWindow(std::shared_ptr<Connection> connection, QWidget *parent) : Resizable(parent, 245, 189), connection_(std::move(connection)),
                                                                         ipLabel_(std::make_unique<QLabel>("Ip:", this)),
                                                                         portLabel_(std::make_unique<QLabel>("Port:",
                                                                                                             this)),
@@ -47,8 +47,8 @@ ConnectWindow::ConnectWindow(Connection &connection, QWidget *parent) : Resizabl
     connect(connectBtn_.get(), &QPushButton::clicked, this, &ConnectWindow::connectBtnClicked);
     connect(exitBtn_.get(), &QPushButton::clicked, this, &ConnectWindow::exitBtnClicked);
 
-    connect(connection_.handler_.get(), &RequestHandler::authorizeFailed, this, &ConnectWindow::showAuthFailed);
-    connect(connection_.handler_.get(), &RequestHandler::unknownStatus, this, &ConnectWindow::showUnStatus);
+    connect(connection_->handler_.get(), &Handler::authorizeFailed, this, &ConnectWindow::showAuthFailed);
+    connect(connection_->handler_.get(), &Handler::unknownStatus, this, &ConnectWindow::showUnStatus);
 }
 
 void ConnectWindow::exitBtnClicked() {
@@ -68,7 +68,7 @@ void ConnectWindow::connectBtnClicked() {
         showErrWindow("Port number is wrong");
         return;
     }
-    int status = connection_.connect(ipLine_->text().toStdString(), port);
+    int status = connection_->connect(ipLine_->text().toStdString(), port);
     if (status == -2) {
         showErrWindow("Server not responding");
         return;
@@ -77,7 +77,7 @@ void ConnectWindow::connectBtnClicked() {
         showErrWindow("Ip is wrong");
         return;
     }
-    status = connection_.authorize(loginLine_->text().toStdString(), passLine_->text().toStdString());
+    status = connection_->authorize(loginLine_->text().toStdString(), passLine_->text().toStdString());
     if (status == -1) {
         showErrWindow("Error sending message");
         return;

@@ -7,24 +7,27 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <string>
 #include <QObject>
-#include <RequestHandler.h>
 #include <memory>
+#include <nlohmann/json.hpp>
+#include <Handler.h>
 
 using boost::asio::ip::tcp;
 
 class ConnectWindow;
+class ServerWindow;
 class MainWindow;
 
 class Connection : public QObject {
     Q_OBJECT
 private:
     friend class ConnectWindow;
+    friend class ServerWindow;
     friend class MainWindow;
     boost::asio::io_service ioService_;
     tcp::socket socket_;
     boost::asio::deadline_timer deadline_;
     boost::asio::streambuf data_;
-    std::unique_ptr<RequestHandler> handler_;
+    std::unique_ptr<Handler> handler_;
 
     void checkDeadline();
 
@@ -36,7 +39,7 @@ public:
 
     int authorize(const std::string &login, const std::string &password);
 
-    void sendMessage(const std::string& msg);
+    void sendMessage(const nlohmann::json& msg);
 
 public slots:
     void listen();

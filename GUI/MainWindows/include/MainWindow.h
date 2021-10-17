@@ -18,20 +18,29 @@
 class MainWindow : public QMainWindow {
 Q_OBJECT
 private:
-    Connection connection_;
+    using upQM = std::unique_ptr<QMenu>;
+    using upQA = std::unique_ptr<QAction>;
+
+    std::shared_ptr<Connection> connection_;
     std::unique_ptr<QThread> thread_;
-    std::unique_ptr<ServerWindow> serverWindow_;
+    std::unique_ptr<QStackedWidget> stackedWidgets_;
     std::unique_ptr<ConnectWindow> connectWindow_;
     std::unique_ptr<GUISettingsWindow> guiSettings_;
     std::unique_ptr<NetworkSettingsWindow> networkSettings_;
-    std::unique_ptr<QStackedWidget> stackedWidgets_;
-    std::unique_ptr<QMenu> menuSettings_;
-    std::unique_ptr<QMenu> helpSettings_;
-    std::unique_ptr<QAction> help_;
-    std::unique_ptr<QAction> aboutUs_;
-    std::unique_ptr<QAction> actionGUI_;
-    std::unique_ptr<QAction> actionNetwork_;
-    size_t currentIndex_;
+    std::unique_ptr<ServerWindow> serverWindow_;
+    upQM menuSettings_;
+    upQA actionNetwork_;
+    upQA actionGUI_;
+    upQM helpSettings_;
+    upQA actionHelp_;
+    upQA actionAboutUs_;
+    upQM serverSettings_;
+    upQA actionUsers_;
+    upQA actionDisconnect_;
+    int currentIndex_;
+
+    void updateWindow();
+
 private slots:
 
     void setDarkMode();

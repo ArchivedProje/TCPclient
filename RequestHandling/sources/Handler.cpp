@@ -1,10 +1,10 @@
 // Copyright 2021 byteihq <kotov038@gmail.com>
 
-#include <RequestHandler.h>
+#include <Handler.h>
 #include <NetworkCommunication.h>
 
 
-nlohmann::json RequestHandler::handle(const std::string &request) {
+nlohmann::json Handler::request(const std::string &request) {
     nlohmann::json jsonRequest = nlohmann::json::parse(request);
     nlohmann::json reply;
     if (jsonRequest["type"] == Requests::Auth) {
@@ -17,4 +17,13 @@ nlohmann::json RequestHandler::handle(const std::string &request) {
         }
     }
     return reply;
+}
+
+nlohmann::json Handler::reply(const std::string& sender, const std::string &reply) {
+    nlohmann::json request = {
+            {"sender", sender},
+            {"type", Requests::Msg},
+            {"data", reply}
+    };
+    return request;
 }
