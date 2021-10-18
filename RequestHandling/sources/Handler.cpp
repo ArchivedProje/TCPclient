@@ -13,6 +13,8 @@ nlohmann::json Handler::request(const std::string &request) {
         } else {
             emit unknownStatus();
         }
+    } else if (jsonRequest["type"] == Requests::Msg) {
+        emit newMsg(QString::fromStdString(jsonRequest["sender"].get<std::string>()), QString::fromStdString(jsonRequest["data"].get<std::string>()));
     }
     return reply;
 }

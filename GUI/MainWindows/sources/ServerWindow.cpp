@@ -16,7 +16,7 @@ ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *pare
                                                                                               std::make_unique<QLineEdit>()),
                                                                                       sendBtn_(
                                                                                               std::make_unique<QPushButton>(
-                                                                                                      "Send", this)) {
+                                                                                                      "Send", this)), msgNumber_(0) {
 
     gridLayout_->addWidget(infoWidget_.get(), 0, 0, 10, 2);
     gridLayout_->addWidget(lineEdit_.get(), 10, 0);
@@ -24,7 +24,7 @@ ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *pare
 
     infoWidget_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(infoWidget_.get(), SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
-
+    connect(connection_->handler_.get(), SIGNAL(newMsg(const QString&, const QString&)), this, SLOT(showNewMsg(const QString&, const QString&)));
     connect(sendBtn_.get(), &QPushButton::clicked, this, &ServerWindow::sendBtnClicked);
 }
 
@@ -33,8 +33,10 @@ void ServerWindow::setSender(const std::string &sender) {
 }
 
 void ServerWindow::sendBtnClicked() {
+    ++msgNumber_;
     connection_->sendMessage(connection_->handler_->reply(sender_, lineEdit_->text().toStdString(),  Requests::Msg));
-    infoWidget_->addItem(lineEdit_->text());
+    infoWidget_->addItem(QString::fromStdString(sender_) + ": " + lineEdit_->text());
+    infoWidget_->item(msgNumber_ - 1)->setBackgroundColor(QColor(60, 100, 100));
     lineEdit_->clear();
 }
 
@@ -49,7 +51,8 @@ void ServerWindow::ShowContextMenu(const QPoint &point) {
 }
 
 void ServerWindow::actionReply() {
-    //
+    lineEdit_->setText("<Reply> " + infoWidget_->selectedItems().first()->text() + " </Reply>");
+    lineEdit_->setFocus();
 }
 
 void ServerWindow::actionCopy() {
@@ -59,4 +62,9 @@ void ServerWindow::actionCopy() {
 void ServerWindow::actionDisconnect() {
     connection_->sendMessage(connection_->handler_->reply(sender_, "", Requests::Disconnect));
     emit closeWindow();
+}
+
+void ServerWindow::showNewMsg(const QString& sender, const QString& msg) {
+    ++msgNumber_;
+    infoWidget_->addItem(sender + ": " + msg);
 }

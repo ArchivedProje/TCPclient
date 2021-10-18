@@ -114,7 +114,6 @@ target_link_libraries(Settings Submodules Network)
 
 target_link_libraries(GUI Settings)
 
-
 add_executable(demo
         ${PROJECT_SOURCES}
         )

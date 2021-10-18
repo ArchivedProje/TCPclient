@@ -6,7 +6,6 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
-#include <Handler.h>
 
 Connection::Connection() : socket_(ioService_), deadline_(ioService_), handler_(std::make_unique<Handler>()) {
     deadline_.expires_at(boost::posix_time::pos_infin);

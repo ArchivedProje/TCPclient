@@ -29,6 +29,7 @@ private:
     upPB sendBtn_;
 
     std::string sender_;
+    size_t msgNumber_;
 
     void setSender(const std::string& sender);
 
@@ -43,6 +44,8 @@ private slots:
     void actionCopy();
 
     void actionDisconnect();
+
+    void showNewMsg(const QString& sender, const QString& msg);
 
 signals:
 

@@ -18,6 +18,8 @@ signals:
 
     void unknownStatus();
 
+    void newMsg(const QString& sender, const QString& msg);
+
 public:
     Handler() = default;
 

@@ -34,6 +34,9 @@ ConnectWindow::ConnectWindow(std::shared_ptr<Connection> connection, QWidget *pa
     gridLayout_->addWidget(portLabel_.get(), 2, 0);
     gridLayout_->addWidget(portLine_.get(), 2, 1);
 
+    loginLine_->setText("user1");
+    passLine_->setText("1u23456");
+
     gridLayout_->addWidget(loginLabel_.get(), 3, 0);
     gridLayout_->addWidget(loginLine_.get(), 3, 1);
 
