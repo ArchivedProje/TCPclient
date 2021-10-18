@@ -3,6 +3,8 @@
 #include <ServerWindow.h>
 #include <NetworkCommunication.h>
 #include <QMenu>
+#include <QApplication>
+#include <QClipboard>
 
 ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *parent) : Resizable(parent, 640, 480),
                                                                                       connection_(
@@ -26,6 +28,7 @@ ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *pare
     connect(infoWidget_.get(), SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
     connect(connection_->handler_.get(), SIGNAL(newMsg(const QString&, const QString&)), this, SLOT(showNewMsg(const QString&, const QString&)));
     connect(sendBtn_.get(), &QPushButton::clicked, this, &ServerWindow::sendBtnClicked);
+    connect(lineEdit_.get(), &QLineEdit::returnPressed, this, &ServerWindow::sendBtnClicked);
 }
 
 void ServerWindow::setSender(const std::string &sender) {
@@ -33,11 +36,13 @@ void ServerWindow::setSender(const std::string &sender) {
 }
 
 void ServerWindow::sendBtnClicked() {
-    ++msgNumber_;
-    connection_->sendMessage(connection_->handler_->reply(sender_, lineEdit_->text().toStdString(),  Requests::Msg));
-    infoWidget_->addItem(QString::fromStdString(sender_) + ": " + lineEdit_->text());
-    infoWidget_->item(msgNumber_ - 1)->setBackgroundColor(QColor(60, 100, 100));
-    lineEdit_->clear();
+    if (!lineEdit_->text().isEmpty()) {
+        ++msgNumber_;
+        connection_->sendMessage(connection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::Msg));
+        infoWidget_->addItem(QString::fromStdString(sender_) + ": " + lineEdit_->text());
+        infoWidget_->item(msgNumber_ - 1)->setBackgroundColor(QColor(60, 100, 100));
+        lineEdit_->clear();
+    }
 }
 
 void ServerWindow::ShowContextMenu(const QPoint &point) {
@@ -56,7 +61,20 @@ void ServerWindow::actionReply() {
 }
 
 void ServerWindow::actionCopy() {
-    //
+    auto clipboard = QApplication::clipboard();
+
+    std::string text = infoWidget_->selectedItems().first()->text().toStdString();
+    text = text.substr(sender_.size() + 1, text.size() - sender_.size() - 1);
+
+    clipboard->setText(QString::fromStdString(text), QClipboard::Clipboard);
+
+    if (clipboard->supportsSelection()) {
+        clipboard->setText(QString::fromStdString(text), QClipboard::Selection);
+    }
+
+#if defined(Q_OS_LINUX)
+    std::this_thread::sleep_for(std::chrono::nanoseconds(1)); //workaround for copied text not being available...
+#endif
 }
 
 void ServerWindow::actionDisconnect() {
