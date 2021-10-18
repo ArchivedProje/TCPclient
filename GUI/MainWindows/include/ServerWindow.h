@@ -13,6 +13,7 @@
 #include <string>
 #include <Connection.h>
 #include <Resizable.h>
+#include <NetworkCommunication.h>
 
 class MainWindow;
 
@@ -45,7 +46,7 @@ private slots:
 
     void actionDisconnect();
 
-    void showNewMsg(const QString& sender, const QString& msg);
+    void showNewMsg(const QString& sender, const QString& msg, const QString& status);
 
 signals:
 

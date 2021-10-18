@@ -26,7 +26,7 @@ ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *pare
 
     infoWidget_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(infoWidget_.get(), SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
-    connect(connection_->handler_.get(), SIGNAL(newMsg(const QString&, const QString&)), this, SLOT(showNewMsg(const QString&, const QString&)));
+    connect(connection_->handler_.get(), SIGNAL(newMsg(const QString&, const QString&, const QString&)), this, SLOT(showNewMsg(const QString&, const QString&, const QString&)));
     connect(sendBtn_.get(), &QPushButton::clicked, this, &ServerWindow::sendBtnClicked);
     connect(lineEdit_.get(), &QLineEdit::returnPressed, this, &ServerWindow::sendBtnClicked);
 }
@@ -82,7 +82,10 @@ void ServerWindow::actionDisconnect() {
     emit closeWindow();
 }
 
-void ServerWindow::showNewMsg(const QString& sender, const QString& msg) {
+void ServerWindow::showNewMsg(const QString& sender, const QString& msg, const QString& status) {
     ++msgNumber_;
     infoWidget_->addItem(sender + ": " + msg);
+    if (status == "Important") {
+        infoWidget_->item(msgNumber_ - 1)->setBackgroundColor(QColor(255, 0, 0));
+    }
 }

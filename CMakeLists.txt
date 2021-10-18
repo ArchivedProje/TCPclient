@@ -35,8 +35,8 @@ set(PROJECT_SOURCES
         RequestHandling/sources/Handler.cpp
         GUI/MainWindows/include/ServerWindow.h
         GUI/MainWindows/sources/ServerWindow.cpp
-        GUI/MainWindows/include/Resizable.h
-        GUI/MainWindows/sources/Resizable.cpp
+        GUI/Settings/include/Resizable.h
+        GUI/Settings/sources/Resizable.cpp
         )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
