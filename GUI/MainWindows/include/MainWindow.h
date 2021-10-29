@@ -14,6 +14,7 @@
 #include <NetworkSettings.h>
 #include <Connection.h>
 #include <ServerWindow.h>
+#include <UsersWindow.h>
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -26,6 +27,7 @@ private:
     std::unique_ptr<QStackedWidget> stackedWidgets_;
     std::unique_ptr<ConnectWindow> connectWindow_;
     std::unique_ptr<GUISettingsWindow> guiSettings_;
+    std::unique_ptr<UsersWindow> usersWindow_;
     std::unique_ptr<NetworkSettingsWindow> networkSettings_;
     std::unique_ptr<ServerWindow> serverWindow_;
     upQM menuSettings_;
@@ -60,6 +62,8 @@ private slots:
     void openServerWindow();
 
     void openAboutUsUrl();
+
+    void showUsers(const Handler::StringMap& users);
 
     void exitBtnClicked();
 

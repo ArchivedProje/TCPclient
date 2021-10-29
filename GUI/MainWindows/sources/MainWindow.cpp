@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           stackedWidgets_(std::make_unique<QStackedWidget>()),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
                                           guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
+                                          usersWindow_(std::make_unique<UsersWindow>(parent, guiSettings_->getMode())),
                                           networkSettings_(std::make_unique<NetworkSettingsWindow>(parent,
                                                                                                    guiSettings_->getMode())),
                                           serverWindow_(std::make_unique<ServerWindow>(connection_, this)),
@@ -75,6 +76,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
 
+    connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, usersWindow_.get(), &UsersWindow::setDarkMode);
+    connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, usersWindow_.get(), &UsersWindow::setLightMode);
+
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, networkSettings_.get(),
             &NetworkSettingsWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, networkSettings_.get(),
@@ -91,7 +95,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(connection_->handler_.get(), &Handler::authorizeSucceed, this, &MainWindow::openServerWindow);
 
     connect(actionDisconnect_.get(), &QAction::triggered, serverWindow_.get(), &ServerWindow::actionDisconnect);
+    connect(actionUsers_.get(), &QAction::triggered, serverWindow_.get(), &ServerWindow::actionGetUsers);
+
     connect(serverWindow_.get(), &ServerWindow::closeWindow, this, &MainWindow::exitBtnClicked);
+
+    qRegisterMetaType<Handler::StringMap>("Handler::StringMap");
+    connect(connection_->handler_.get(), SIGNAL(users(const Handler::StringMap &)), this,
+            SLOT(showUsers(const Handler::StringMap &)), Qt::QueuedConnection);
 
     setCentralWidget(stackedWidgets_.get());
 
@@ -143,6 +153,7 @@ void MainWindow::setResizable() {
     serverWindow_->setResizable();
     guiSettings_->setResizable();
     networkSettings_->setResizable();
+    usersWindow_->setResizable();
     setMaximumSize(1920, 1080);
 }
 
@@ -151,6 +162,7 @@ void MainWindow::setUnResizable() {
     serverWindow_->setUnResizable();
     guiSettings_->setUnResizable();
     networkSettings_->setUnResizable();
+    usersWindow_->setUnResizable();
     if (currentIndex_ == 0) {
         setFixedSize(connectWindow_->getWidth(), connectWindow_->getHeight() + 10);
     } else {
@@ -164,4 +176,9 @@ void MainWindow::updateWindow() {
     } else {
         setUnResizable();
     }
+}
+
+void MainWindow::showUsers(const Handler::StringMap &users) {
+    usersWindow_->Load(users);
+    usersWindow_->show();
 }

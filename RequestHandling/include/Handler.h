@@ -5,11 +5,14 @@
 
 #include <string>
 #include <QObject>
+#include <map>
 #include <nlohmann/json.hpp>
 #include <NetworkCommunication.h>
 
 class Handler : public QObject {
 Q_OBJECT
+public:
+    typedef std::map<std::string, std::string> StringMap;
 signals:
 
     void authorizeFailed();
@@ -19,6 +22,8 @@ signals:
     void unknownStatus();
 
     void newMsg(const QString& sender, const QString& msg, const QString& status);
+
+    void users(const Handler::StringMap& );
 
 public:
     Handler() = default;

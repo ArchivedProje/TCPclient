@@ -9,11 +9,14 @@
 #include <QListWidget>
 #include <QLineEdit>
 #include <QPoint>
+#include <QMap>
+#include <QString>
 #include <memory>
 #include <string>
 #include <Connection.h>
 #include <Resizable.h>
 #include <NetworkCommunication.h>
+#include <UsersWindow.h>
 
 class MainWindow;
 
@@ -23,6 +26,7 @@ private:
     friend class MainWindow;
 
     using upPB = std::unique_ptr<QPushButton>;
+    std::unique_ptr<UsersWindow> usersWindow_;
     std::shared_ptr<Connection> connection_;
     std::unique_ptr<QGridLayout> gridLayout_;
     std::unique_ptr<QListWidget> infoWidget_;
@@ -47,6 +51,8 @@ private slots:
     void actionDisconnect();
 
     void showNewMsg(const QString& sender, const QString& msg, const QString& status);
+
+    void actionGetUsers();
 
 signals:
 

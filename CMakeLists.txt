@@ -46,6 +46,7 @@ add_library(GUI STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/MainWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ConnectWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ServerWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/UsersWindow.cpp
         )
 
 target_include_directories(GUI PUBLIC
@@ -112,7 +113,7 @@ target_link_libraries(Submodules Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_M
 
 target_link_libraries(Settings Submodules Network)
 
-target_link_libraries(GUI Settings)
+target_link_libraries(GUI Settings Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui)
 
 add_executable(demo
         ${PROJECT_SOURCES}
