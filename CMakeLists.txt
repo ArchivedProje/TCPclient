@@ -37,6 +37,10 @@ set(PROJECT_SOURCES
         GUI/MainWindows/sources/ServerWindow.cpp
         GUI/Settings/include/Resizable.h
         GUI/Settings/sources/Resizable.cpp
+        GUI/MainWindows/sources/UsersWindow.cpp
+        GUI/MainWindows/include/UsersWindow.h
+        GUI/Settings/include/FileSettings.h
+        GUI/Settings/sources/FileSettings.cpp
         )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
@@ -61,6 +65,7 @@ add_library(Settings STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/StyleSettings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/NetworkSettings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/Resizable.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/FileSettings.cpp
         )
 
 file(COPY GUI/Settings/Config DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -102,8 +107,8 @@ add_subdirectory(third-party/NetworkCommunication)
 hunter_add_package(nlohmann_json)
 find_package(nlohmann_json REQUIRED)
 
-hunter_add_package(Boost COMPONENTS system)
-find_package(Boost CONFIG REQUIRED system)
+hunter_add_package(Boost COMPONENTS system filesystem)
+find_package(Boost CONFIG REQUIRED system filesystem)
 
 target_link_libraries(RequestHandling nlohmann_json::nlohmann_json NetworkCommunication Qt${QT_VERSION_MAJOR}::Widgets)
 
@@ -111,7 +116,7 @@ target_link_libraries(Network Boost::system nlohmann_json::nlohmann_json Network
 
 target_link_libraries(Submodules Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui)
 
-target_link_libraries(Settings Submodules Network)
+target_link_libraries(Settings Submodules Network Boost::filesystem)
 
 target_link_libraries(GUI Settings Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui)
 

@@ -15,6 +15,7 @@
 #include <Connection.h>
 #include <ServerWindow.h>
 #include <UsersWindow.h>
+#include <FileSettings.h>
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -30,9 +31,11 @@ private:
     std::unique_ptr<UsersWindow> usersWindow_;
     std::unique_ptr<NetworkSettingsWindow> networkSettings_;
     std::unique_ptr<ServerWindow> serverWindow_;
+    std::unique_ptr<FileSettings> fileSettings_;
     upQM menuSettings_;
     upQA actionNetwork_;
     upQA actionGUI_;
+    upQA actionFile_;
     upQM helpSettings_;
     upQA actionHelp_;
     upQA actionAboutUs_;

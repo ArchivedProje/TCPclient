@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           networkSettings_(std::make_unique<NetworkSettingsWindow>(parent,
                                                                                                    guiSettings_->getMode())),
                                           serverWindow_(std::make_unique<ServerWindow>(connection_, this)),
+                                          fileSettings_(std::make_unique<FileSettings>(parent, guiSettings_->getMode())),
                                           menuSettings_(menuBar()->addMenu("Settings")),
                                           actionNetwork_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsNetworkIcon.jpg"),
@@ -23,8 +24,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           actionGUI_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsGUIIcon.jpg"), "GUI",
                                                   this)),
+                                          actionFile_(std::make_unique<QAction>("Files", this)),
                                           helpSettings_(menuBar()->addMenu("Help")),
-                                          actionHelp_(std::make_unique<QAction>(QPixmap("img/questionIcon.png"), "Help",
+                                          actionHelp_(std::make_unique<QAction>(QPixmap("img/questionIcon.jpg"), "Help",
                                                                                 this)),
                                           actionAboutUs_(std::make_unique<QAction>("About us",
                                                                                    this)),
@@ -49,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     menuSettings_->addAction(actionGUI_.get());
     menuSettings_->addSeparator();
     menuSettings_->addAction(actionNetwork_.get());
+    menuSettings_->addSeparator();
+    menuSettings_->addAction(actionFile_.get());
 
     helpSettings_->addAction(actionHelp_.get());
     helpSettings_->addSeparator();
@@ -73,16 +77,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(actionNetwork_.get(), &QAction::triggered, this, &MainWindow::showNetworkSettings);
     connect(actionGUI_.get(), &QAction::triggered, this, &MainWindow::showGUISettings);
 
+    connect(actionFile_.get(), &QAction::triggered, fileSettings_.get(), &FileSettings::show);
+
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
 
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, usersWindow_.get(), &UsersWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, usersWindow_.get(), &UsersWindow::setLightMode);
 
+    connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, fileSettings_.get(), &FileSettings::setDarkMode);
+    connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, fileSettings_.get(), &FileSettings::setLightMode);
+
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, networkSettings_.get(),
             &NetworkSettingsWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, networkSettings_.get(),
             &NetworkSettingsWindow::setLightMode);
+
     connect(guiSettings_.get(), &GUISettingsWindow::resizable, this, &MainWindow::setResizable);
     connect(guiSettings_.get(), &GUISettingsWindow::unresizable, this, &MainWindow::setUnResizable);
 
@@ -154,6 +164,7 @@ void MainWindow::setResizable() {
     guiSettings_->setResizable();
     networkSettings_->setResizable();
     usersWindow_->setResizable();
+    fileSettings_->setResizable();
     setMaximumSize(1920, 1080);
 }
 
@@ -163,6 +174,7 @@ void MainWindow::setUnResizable() {
     guiSettings_->setUnResizable();
     networkSettings_->setUnResizable();
     usersWindow_->setUnResizable();
+    fileSettings_->setUnResizable();
     if (currentIndex_ == 0) {
         setFixedSize(connectWindow_->getWidth(), connectWindow_->getHeight() + 10);
     } else {

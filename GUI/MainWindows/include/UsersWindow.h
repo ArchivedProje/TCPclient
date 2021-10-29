@@ -16,6 +16,7 @@
 class MainWindow;
 
 class UsersWindow : public Resizable {
+    Q_OBJECT
 private:
     friend class MainWindow;
     std::unique_ptr<QGridLayout> qgrid_;
