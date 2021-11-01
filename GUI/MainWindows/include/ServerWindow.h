@@ -26,7 +26,6 @@ private:
     friend class MainWindow;
 
     using upPB = std::unique_ptr<QPushButton>;
-    std::unique_ptr<UsersWindow> usersWindow_;
     std::shared_ptr<Connection> connection_;
     std::unique_ptr<QGridLayout> gridLayout_;
     std::unique_ptr<QListWidget> infoWidget_;

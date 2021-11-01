@@ -25,7 +25,7 @@ signals:
 
     void users(const Handler::StringMap& );
 
-    void newInvite(const std::string& userName);
+    void newInvite(const QString& userName);
 
 public:
     Handler() = default;

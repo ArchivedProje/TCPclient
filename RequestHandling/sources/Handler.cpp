@@ -1,6 +1,7 @@
 // Copyright 2021 byteihq <kotov038@gmail.com>
 
 #include <Handler.h>
+#include <QMessageBox>
 
 nlohmann::json Handler::request(const std::string &request) {
     nlohmann::json jsonRequest = nlohmann::json::parse(request);
@@ -24,7 +25,31 @@ nlohmann::json Handler::request(const std::string &request) {
     } else if (jsonRequest["type"] == Requests::GetUsers) {
         emit users(jsonRequest["data"].get<std::map<std::string, std::string>>());
     } else if (jsonRequest["type"] == Requests::ConnectToUser) {
-        emit newInvite(jsonRequest["data"].get<std::string>());
+        if (jsonRequest["data"] == Replies::ConnectToUser::Invite) {
+            emit newInvite(QString::fromStdString(jsonRequest["sender"].get<std::string>()));
+        } else if (jsonRequest["data"] == Replies::ConnectToUser::Accept) {
+            //accept
+        } else if (jsonRequest["data"] == Replies::ConnectToUser::Disconnected) {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Error");
+            msgBox.setText("This user disconnected");
+            msgBox.exec();
+        } else if (jsonRequest["data"] == Replies::ConnectToUser::Decline) {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Error");
+            msgBox.setText("This user declined the connection");
+            msgBox.exec();
+        } else {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Error");
+            msgBox.setText("Unknown answer");
+            msgBox.exec();
+        }
+    } else {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Got unknown request");
+        msgBox.exec();
     }
     return reply;
 }

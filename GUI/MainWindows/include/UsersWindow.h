@@ -32,7 +32,7 @@ private slots:
 
     void setLightMode();
 
-    void btnClicked(const std::string& user);
+    void btnClicked(const QString& user);
 public:
     explicit UsersWindow(QWidget *parent, std::shared_ptr<Connection> connection, Mode mode);
 

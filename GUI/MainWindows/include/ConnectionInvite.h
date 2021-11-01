@@ -5,6 +5,7 @@
 
 #include <Resizable.h>
 #include <StyleSettings.h>
+#include <Connection.h>
 #include <QLabel>
 #include <QGridLayout>
 #include <QPushButton>
@@ -22,6 +23,9 @@ private:
     using upPB = std::unique_ptr<QPushButton>;
     upPB acceptBtn_;
     upPB declineBtn_;
+    std::string sender_;
+    std::shared_ptr<Connection> connection_;
+    void setSender(const std::string& sender);
 
 private slots:
 
@@ -29,10 +33,13 @@ private slots:
 
     void setLightMode();
 
-    void newInvite(const std::string &userName);
+    void newInvite(const QString &userName);
 
+    void acceptBtnClicked();
+
+    void declineBtnClicked();
 public:
-    explicit ConnectionInvite(QWidget *parent, Mode mode);
+    explicit ConnectionInvite(QWidget *parent, std::shared_ptr<Connection> connection, Mode mode);
 };
 
 #endif //TCPCLIENT_CONNECTIONINVITE_H

@@ -6,7 +6,6 @@
 #include <QMenu>
 #include <QApplication>
 #include <QClipboard>
-#include <UsersWindow.h>
 
 ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *parent) : Resizable(parent, 640, 480),
                                                                                       connection_(

@@ -30,7 +30,7 @@ void UsersWindow::Load(const std::map<std::string, std::string> &users) {
 
     for (const auto& button : buttons_) {
         connect(button.second.get(), &QPushButton::clicked, this, [this, &button]() {
-            btnClicked(button.first);
+            btnClicked(QString::fromStdString(button.first));
         });
     }
 
@@ -54,6 +54,12 @@ void UsersWindow::setSender(const std::string &sender) {
     sender_ = sender;
 }
 
-void UsersWindow::btnClicked(const std::string& user) {
-    connection_->sendMessage(connection_->handler_->reply(sender_, user, Requests::ConnectToUser));
+void UsersWindow::btnClicked(const QString& user) {
+    nlohmann::json msg = {
+            {"sender", sender_},
+            {"type", Requests::ConnectToUser},
+            {"data", Replies::ConnectToUser::Invite},
+            {"name", user.toStdString()}
+    };
+    connection_->sendMessage(msg.dump());
 }
