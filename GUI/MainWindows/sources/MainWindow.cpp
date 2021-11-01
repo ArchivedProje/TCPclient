@@ -11,11 +11,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           stackedWidgets_(std::make_unique<QStackedWidget>()),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
                                           guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
-                                          usersWindow_(std::make_unique<UsersWindow>(parent, guiSettings_->getMode())),
+                                          usersWindow_(std::make_unique<UsersWindow>(parent, connection_, guiSettings_->getMode())),
+                                          connectionInvite_(std::make_unique<ConnectionInvite>(parent, guiSettings_->getMode())),
                                           networkSettings_(std::make_unique<NetworkSettingsWindow>(parent,
                                                                                                    guiSettings_->getMode())),
                                           serverWindow_(std::make_unique<ServerWindow>(connection_, this)),
-                                          fileSettings_(std::make_unique<FileSettings>(parent, guiSettings_->getMode())),
+                                          fileSettings_(
+                                                  std::make_unique<FileSettings>(parent, guiSettings_->getMode())),
                                           menuSettings_(menuBar()->addMenu("Settings")),
                                           actionNetwork_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsNetworkIcon.jpg"),
@@ -24,7 +26,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           actionGUI_(std::make_unique<QAction>(
                                                   QPixmap("img/settingsGUIIcon.jpg"), "GUI",
                                                   this)),
-                                          actionFile_(std::make_unique<QAction>("Files", this)),
+                                          actionFile_(std::make_unique<QAction>(QPixmap("img/settingsFilesIcon.jpg"),
+                                                                                "Files", this)),
                                           helpSettings_(menuBar()->addMenu("Help")),
                                           actionHelp_(std::make_unique<QAction>(QPixmap("img/questionIcon.jpg"), "Help",
                                                                                 this)),
@@ -43,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     if (guiSettings_->getResizable() == ResizeStatus::UnResizable) {
         setUnResizable();
+    } else {
+        setResizable();
     }
 
     connectWindow_->setIp(networkSettings_->getIp());
@@ -84,6 +89,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, usersWindow_.get(), &UsersWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, usersWindow_.get(), &UsersWindow::setLightMode);
+
+    connect(connection_->handler_.get(), &Handler::newInvite, connectionInvite_.get(), &ConnectionInvite::newInvite);
+    connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, connectionInvite_.get(), &ConnectionInvite::setDarkMode);
+    connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, connectionInvite_.get(), &ConnectionInvite::setLightMode);
 
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, fileSettings_.get(), &FileSettings::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, fileSettings_.get(), &FileSettings::setLightMode);
@@ -151,7 +160,9 @@ void MainWindow::openAboutUsUrl() {
 }
 
 void MainWindow::openServerWindow() {
-    serverWindow_->setSender(connectWindow_->loginLine_->text().toStdString());
+    auto sender = connectWindow_->loginLine_->text().toStdString();
+    serverWindow_->setSender(sender);
+    usersWindow_->setSender(sender);
     serverSettings_->menuAction()->setVisible(true);
     currentIndex_ = 1;
     stackedWidgets_->setCurrentIndex(currentIndex_); //serverWindow

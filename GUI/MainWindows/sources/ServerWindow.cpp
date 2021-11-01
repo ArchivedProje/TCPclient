@@ -22,7 +22,7 @@ ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *pare
                                                                                               std::make_unique<QPushButton>(
                                                                                                       "Send", this)),
                                                                                       msgNumber_(0) {
-
+    setWindowModality(Qt::WindowModal);
     gridLayout_->addWidget(infoWidget_.get(), 0, 0, 10, 2);
     gridLayout_->addWidget(lineEdit_.get(), 10, 0);
     gridLayout_->addWidget(sendBtn_.get(), 10, 1);

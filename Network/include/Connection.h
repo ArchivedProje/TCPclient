@@ -15,6 +15,7 @@ using boost::asio::ip::tcp;
 
 class ConnectWindow;
 class ServerWindow;
+class UsersWindow;
 class MainWindow;
 
 class Connection : public QObject {
@@ -22,6 +23,7 @@ class Connection : public QObject {
 private:
     friend class ConnectWindow;
     friend class ServerWindow;
+    friend class UsersWindow;
     friend class MainWindow;
     boost::asio::io_service ioService_;
     tcp::socket socket_;

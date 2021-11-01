@@ -41,6 +41,8 @@ set(PROJECT_SOURCES
         GUI/MainWindows/include/UsersWindow.h
         GUI/Settings/include/FileSettings.h
         GUI/Settings/sources/FileSettings.cpp
+        GUI/MainWindows/include/ConnectionInvite.h
+        GUI/MainWindows/sources/ConnectionInvite.cpp
         )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
@@ -51,6 +53,7 @@ add_library(GUI STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ConnectWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ServerWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/UsersWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ConnectionInvite.cpp
         )
 
 target_include_directories(GUI PUBLIC

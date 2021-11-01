@@ -12,6 +12,7 @@
 #include <memory>
 #include <Resizable.h>
 #include <StyleSettings.h>
+#include <Connection.h>
 
 class MainWindow;
 
@@ -19,9 +20,13 @@ class UsersWindow : public Resizable {
     Q_OBJECT
 private:
     friend class MainWindow;
+    std::shared_ptr<Connection> connection_;
     std::unique_ptr<QGridLayout> qgrid_;
     std::unique_ptr<QTableWidget> table_;
     std::map<std::string, std::unique_ptr<QPushButton>> buttons_;
+    std::string sender_;
+
+    void setSender(const std::string& sender);
 private slots:
     void setDarkMode();
 
@@ -29,7 +34,7 @@ private slots:
 
     void btnClicked(const std::string& user);
 public:
-    explicit UsersWindow(QWidget *parent, Mode mode);
+    explicit UsersWindow(QWidget *parent, std::shared_ptr<Connection> connection, Mode mode);
 
     void Load(const std::map<std::string, std::string>& users);
 };

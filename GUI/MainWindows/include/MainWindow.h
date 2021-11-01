@@ -16,6 +16,7 @@
 #include <ServerWindow.h>
 #include <UsersWindow.h>
 #include <FileSettings.h>
+#include <ConnectionInvite.h>
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -29,6 +30,7 @@ private:
     std::unique_ptr<ConnectWindow> connectWindow_;
     std::unique_ptr<GUISettingsWindow> guiSettings_;
     std::unique_ptr<UsersWindow> usersWindow_;
+    std::unique_ptr<ConnectionInvite> connectionInvite_;
     std::unique_ptr<NetworkSettingsWindow> networkSettings_;
     std::unique_ptr<ServerWindow> serverWindow_;
     std::unique_ptr<FileSettings> fileSettings_;

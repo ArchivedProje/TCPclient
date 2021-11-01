@@ -2,7 +2,7 @@
 
 #include <UsersWindow.h>
 
-UsersWindow::UsersWindow(QWidget *parent, Mode mode) : Resizable(parent, 100, 100), qgrid_(std::make_unique<QGridLayout>(this)) {
+UsersWindow::UsersWindow(QWidget *parent, std::shared_ptr<Connection> connection, Mode mode) : Resizable(parent, 100, 100), connection_(std::move(connection)) {
     if (mode == Mode::Dark) {
         StyleSettings::setDarkMode(this);
     } else {
@@ -11,6 +11,9 @@ UsersWindow::UsersWindow(QWidget *parent, Mode mode) : Resizable(parent, 100, 10
 }
 
 void UsersWindow::Load(const std::map<std::string, std::string> &users) {
+    qgrid_.reset();
+    qgrid_ = std::make_unique<QGridLayout>(this);
+    table_.reset();
     table_ = std::make_unique<QTableWidget>(users.size(), 3, this);
     size_t row = 0u;
     size_t maxWidth = 0u;
@@ -47,6 +50,10 @@ void UsersWindow::setDarkMode() {
     StyleSettings::setDarkMode(this);
 }
 
-void UsersWindow::btnClicked(const std::string& user) {
+void UsersWindow::setSender(const std::string &sender) {
+    sender_ = sender;
+}
 
+void UsersWindow::btnClicked(const std::string& user) {
+    connection_->sendMessage(connection_->handler_->reply(sender_, user, Requests::ConnectToUser));
 }

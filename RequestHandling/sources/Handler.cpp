@@ -2,7 +2,6 @@
 
 #include <Handler.h>
 
-
 nlohmann::json Handler::request(const std::string &request) {
     nlohmann::json jsonRequest = nlohmann::json::parse(request);
     nlohmann::json reply;
@@ -24,6 +23,8 @@ nlohmann::json Handler::request(const std::string &request) {
         }
     } else if (jsonRequest["type"] == Requests::GetUsers) {
         emit users(jsonRequest["data"].get<std::map<std::string, std::string>>());
+    } else if (jsonRequest["type"] == Requests::ConnectToUser) {
+        emit newInvite(jsonRequest["data"].get<std::string>());
     }
     return reply;
 }
