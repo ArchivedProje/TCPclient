@@ -4,6 +4,7 @@
 #include <QPixmap>
 #include <StyleSettings.h>
 #include <QDesktopServices>
+#include <UsersWindow.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           connection_(std::make_shared<Connection>()),
@@ -11,11 +12,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           stackedWidgets_(std::make_unique<QStackedWidget>()),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
                                           guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
-                                          usersWindow_(std::make_unique<UsersWindow>(parent, connection_, guiSettings_->getMode())),
                                           connectionInvite_(std::make_unique<ConnectionInvite>(parent, connection_, guiSettings_->getMode())),
                                           networkSettings_(std::make_unique<NetworkSettingsWindow>(parent,
                                                                                                    guiSettings_->getMode())),
                                           serverWindow_(std::make_unique<ServerWindow>(connection_, this)),
+                                          usersWindow_(std::make_unique<UsersWindow>(parent, connection_, guiSettings_->getMode())),
                                           fileSettings_(
                                                   std::make_unique<FileSettings>(parent, guiSettings_->getMode())),
                                           menuSettings_(menuBar()->addMenu("Settings")),
@@ -91,6 +92,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, usersWindow_.get(), &UsersWindow::setLightMode);
 
     connect(connection_->handler_.get(), &Handler::newInvite, connectionInvite_.get(), &ConnectionInvite::newInvite);
+
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, connectionInvite_.get(), &ConnectionInvite::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, connectionInvite_.get(), &ConnectionInvite::setLightMode);
 
@@ -162,7 +164,6 @@ void MainWindow::openAboutUsUrl() {
 void MainWindow::openServerWindow() {
     auto sender = connectWindow_->loginLine_->text().toStdString();
     serverWindow_->setSender(sender);
-    usersWindow_->setSender(sender);
     serverSettings_->menuAction()->setVisible(true);
     currentIndex_ = 1;
     stackedWidgets_->setCurrentIndex(currentIndex_); //serverWindow

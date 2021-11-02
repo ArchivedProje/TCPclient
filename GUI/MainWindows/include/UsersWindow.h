@@ -4,9 +4,10 @@
 #define TCPCLIENT_USERSWINDOW_H
 
 #include <QWidget>
-#include <QTableWidget>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QLabel>
+#include <vector>
 #include <map>
 #include <string>
 #include <memory>
@@ -22,10 +23,12 @@ private:
     friend class MainWindow;
     std::shared_ptr<Connection> connection_;
     std::unique_ptr<QGridLayout> qgrid_;
-    std::unique_ptr<QTableWidget> table_;
     std::map<std::string, std::unique_ptr<QPushButton>> buttons_;
     std::string sender_;
-
+    using upQL = std::unique_ptr<QLabel>;
+    upQL nameLabel_;
+    upQL statusLabel_;
+    std::vector<std::pair<upQL, upQL>> namesStatuses_;
     void setSender(const std::string& sender);
 private slots:
     void setDarkMode();

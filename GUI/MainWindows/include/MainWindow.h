@@ -14,9 +14,9 @@
 #include <NetworkSettings.h>
 #include <Connection.h>
 #include <ServerWindow.h>
-#include <UsersWindow.h>
 #include <FileSettings.h>
 #include <ConnectionInvite.h>
+#include <UsersWindow.h>
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -29,10 +29,10 @@ private:
     std::unique_ptr<QStackedWidget> stackedWidgets_;
     std::unique_ptr<ConnectWindow> connectWindow_;
     std::unique_ptr<GUISettingsWindow> guiSettings_;
-    std::unique_ptr<UsersWindow> usersWindow_;
     std::unique_ptr<ConnectionInvite> connectionInvite_;
     std::unique_ptr<NetworkSettingsWindow> networkSettings_;
     std::unique_ptr<ServerWindow> serverWindow_;
+    std::unique_ptr<UsersWindow> usersWindow_;
     std::unique_ptr<FileSettings> fileSettings_;
     upQM menuSettings_;
     upQA actionNetwork_;
@@ -45,7 +45,6 @@ private:
     upQA actionUsers_;
     upQA actionDisconnect_;
     int currentIndex_;
-
     void updateWindow();
 
 private slots:

@@ -28,6 +28,9 @@ ConnectionInvite::ConnectionInvite(QWidget *parent, std::shared_ptr<Connection> 
     qgrid_->addWidget(qlabel_.get(), 0, 0, 1, 2);
     qgrid_->addWidget(acceptBtn_.get(), 1, 0);
     qgrid_->addWidget(declineBtn_.get(), 1, 1);
+
+    connect(acceptBtn_.get(), &QPushButton::clicked, this, &ConnectionInvite::acceptBtnClicked);
+    connect(declineBtn_.get(), &QPushButton::clicked, this, &ConnectionInvite::declineBtnClicked);
 }
 
 void ConnectionInvite::setDarkMode() {
@@ -54,5 +57,16 @@ void ConnectionInvite::acceptBtnClicked() {
             {"data",   Replies::ConnectToUser::Accept}
     };
     connection_->sendMessage(msg);
+    close();
+}
+
+void ConnectionInvite::declineBtnClicked() {
+    nlohmann::json msg = {
+            {"sender", sender_},
+            {"type",   Requests::ConnectToUser},
+            {"data",   Replies::ConnectToUser::Decline}
+    };
+    connection_->sendMessage(msg);
+    close();
 }
 

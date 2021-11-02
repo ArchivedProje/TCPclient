@@ -45,11 +45,6 @@ nlohmann::json Handler::request(const std::string &request) {
             msgBox.setText("Unknown answer");
             msgBox.exec();
         }
-    } else {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Error");
-        msgBox.setText("Got unknown request");
-        msgBox.exec();
     }
     return reply;
 }
