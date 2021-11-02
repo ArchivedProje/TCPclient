@@ -13,7 +13,7 @@
 #include <QString>
 #include <memory>
 #include <string>
-#include <Connection.h>
+#include <ServerConnection.h>
 #include <Resizable.h>
 #include <NetworkCommunication.h>
 #include <UsersWindow.h>
@@ -26,7 +26,7 @@ private:
     friend class MainWindow;
 
     using upPB = std::unique_ptr<QPushButton>;
-    std::shared_ptr<Connection> connection_;
+    std::shared_ptr<ServerConnection> connection_;
     std::unique_ptr<QGridLayout> gridLayout_;
     std::unique_ptr<QListWidget> infoWidget_;
     std::unique_ptr<QLineEdit> lineEdit_;
@@ -58,7 +58,7 @@ signals:
     void closeWindow();
 
 public:
-    explicit ServerWindow(std::shared_ptr<Connection> connection, QWidget *parent);
+    explicit ServerWindow(std::shared_ptr<ServerConnection> connection, QWidget *parent);
 };
 
 #endif //TCPCLIENT_SERVERWINDOW_H

@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include <Handler.h>
 
-ConnectWindow::ConnectWindow(std::shared_ptr<Connection> connection, QWidget *parent) : Resizable(parent, 245, 189), connection_(std::move(connection)),
+ConnectWindow::ConnectWindow(std::shared_ptr<ServerConnection> connection, QWidget *parent) : Resizable(parent, 245, 189), connection_(std::move(connection)),
                                                                         ipLabel_(std::make_unique<QLabel>("Ip:", this)),
                                                                         portLabel_(std::make_unique<QLabel>("Port:",
                                                                                                             this)),
@@ -71,7 +71,7 @@ void ConnectWindow::connectBtnClicked() {
         showErrWindow("Port number is wrong");
         return;
     }
-    int status = connection_->connect(ipLine_->text().toStdString(), port);
+    int status = connection_->Connect(ipLine_->text().toStdString(), port);
     if (status == -2) {
         showErrWindow("Server not responding");
         return;

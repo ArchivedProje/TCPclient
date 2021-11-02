@@ -13,7 +13,7 @@
 #include <memory>
 #include <Resizable.h>
 #include <StyleSettings.h>
-#include <Connection.h>
+#include <ServerConnection.h>
 
 class MainWindow;
 
@@ -21,7 +21,7 @@ class UsersWindow : public Resizable {
     Q_OBJECT
 private:
     friend class MainWindow;
-    std::shared_ptr<Connection> connection_;
+    std::shared_ptr<ServerConnection> connection_;
     std::unique_ptr<QGridLayout> qgrid_;
     std::map<std::string, std::unique_ptr<QPushButton>> buttons_;
     std::string sender_;
@@ -37,7 +37,7 @@ private slots:
 
     void btnClicked(const QString& user);
 public:
-    explicit UsersWindow(QWidget *parent, std::shared_ptr<Connection> connection, Mode mode);
+    explicit UsersWindow(QWidget *parent, std::shared_ptr<ServerConnection> connection, Mode mode);
 
     void Load(const std::map<std::string, std::string>& users);
 };

@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <NetworkCommunication.h>
 
-ConnectionInvite::ConnectionInvite(QWidget *parent, std::shared_ptr<Connection> connection, Mode mode) : Resizable(parent, 100, 100),
+ConnectionInvite::ConnectionInvite(QWidget *parent, std::shared_ptr<ServerConnection> connection, Mode mode) : Resizable(parent, 100, 100),
                                                                                                          connection_(
                                                                                                                  std::move(
                                                                                                                          connection)),

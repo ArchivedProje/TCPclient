@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QClipboard>
 
-ServerWindow::ServerWindow(std::shared_ptr<Connection> connection, QWidget *parent) : Resizable(parent, 640, 480),
+ServerWindow::ServerWindow(std::shared_ptr<ServerConnection> connection, QWidget *parent) : Resizable(parent, 640, 480),
                                                                                       connection_(
                                                                                               std::move(connection)),
                                                                                       gridLayout_(

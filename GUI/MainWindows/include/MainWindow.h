@@ -9,10 +9,11 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QThread>
+#include <ServerConnection.h>
 #include <ConnectWindow.h>
 #include <GUISettingsWindow.h>
 #include <NetworkSettings.h>
-#include <Connection.h>
+#include <ServerConnection.h>
 #include <ServerWindow.h>
 #include <FileSettings.h>
 #include <ConnectionInvite.h>
@@ -24,7 +25,7 @@ private:
     using upQM = std::unique_ptr<QMenu>;
     using upQA = std::unique_ptr<QAction>;
 
-    std::shared_ptr<Connection> connection_;
+    std::shared_ptr<ServerConnection> connection_;
     std::unique_ptr<QThread> thread_;
     std::unique_ptr<QStackedWidget> stackedWidgets_;
     std::unique_ptr<ConnectWindow> connectWindow_;

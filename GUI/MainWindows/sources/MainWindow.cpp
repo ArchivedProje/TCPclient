@@ -7,7 +7,7 @@
 #include <UsersWindow.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-                                          connection_(std::make_shared<Connection>()),
+                                          connection_(std::make_shared<ServerConnection>()),
                                           thread_(std::make_unique<QThread>()),
                                           stackedWidgets_(std::make_unique<QStackedWidget>()),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
@@ -109,7 +109,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     connect(connectWindow_.get(), &ConnectWindow::closeWindow, this, &MainWindow::exitBtnClicked);
 
-    connect(connectWindow_.get(), &ConnectWindow::startListening, connection_.get(), &Connection::listen);
+    connect(connectWindow_.get(), &ConnectWindow::startListening, connection_.get(), &ServerConnection::listen);
     connection_->moveToThread(thread_.get());
     thread_->start();
 

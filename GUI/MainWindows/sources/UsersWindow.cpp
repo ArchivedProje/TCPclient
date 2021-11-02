@@ -2,7 +2,7 @@
 
 #include <UsersWindow.h>
 
-UsersWindow::UsersWindow(QWidget *parent, std::shared_ptr<Connection> connection, Mode mode) : Resizable(parent, 100,
+UsersWindow::UsersWindow(QWidget *parent, std::shared_ptr<ServerConnection> connection, Mode mode) : Resizable(parent, 100,
                                                                                                          100),
                                                                                                connection_(std::move(
                                                                                                        connection)),

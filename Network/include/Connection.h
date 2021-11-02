@@ -1,4 +1,6 @@
-// Copyright 2021 byteihq <kotov038@gmail.com>
+//
+// Created by byteihq on 02.11.2021.
+//
 
 #ifndef TCPCLIENT_CONNECTION_H
 #define TCPCLIENT_CONNECTION_H
@@ -6,45 +8,28 @@
 #include <boost/asio.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <string>
-#include <QObject>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <Handler.h>
 
 using boost::asio::ip::tcp;
 
-class ConnectWindow;
-class ServerWindow;
-class UsersWindow;
-class MainWindow;
-
-class Connection : public QObject {
-    Q_OBJECT
-private:
-    friend class ConnectWindow;
-    friend class ServerWindow;
-    friend class UsersWindow;
-    friend class MainWindow;
+class Connection {
+protected:
     boost::asio::io_service ioService_;
     tcp::socket socket_;
     boost::asio::deadline_timer deadline_;
     boost::asio::streambuf data_;
-    std::unique_ptr<Handler> handler_;
 
     void checkDeadline();
 
-    void getMessage();
 public:
     Connection();
 
-    int connect(const std::string &ip_, int port_);
+    int Connect(const std::string &ip_, int port_);
 
-    int authorize(const std::string &login, const std::string &password);
+    void sendMessage(const nlohmann::json &msg);
 
-    void sendMessage(const nlohmann::json& msg);
-
-public slots:
-    void listen();
 };
 
 #endif //TCPCLIENT_CONNECTION_H

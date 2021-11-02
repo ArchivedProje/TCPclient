@@ -29,8 +29,8 @@ set(PROJECT_SOURCES
         GUI/Submodules/include/style.h
         GUI/Submodules/include/switch.h
         GUI/Submodules/sources/switch.cpp
-        Network/include/Connection.h
-        Network/sources/Connection.cpp
+        Network/include/ServerConnection.h
+        Network/sources/ServerConnection.cpp
         RequestHandling/include/Handler.h
         RequestHandling/sources/Handler.cpp
         GUI/MainWindows/include/ServerWindow.h
@@ -88,6 +88,7 @@ target_include_directories(Submodules PUBLIC
         )
 
 add_library(Network STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Network/sources/ServerConnection.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Network/sources/Connection.cpp
         )
 

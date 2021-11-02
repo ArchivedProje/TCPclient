@@ -5,7 +5,7 @@
 
 #include <Resizable.h>
 #include <StyleSettings.h>
-#include <Connection.h>
+#include <ServerConnection.h>
 #include <QLabel>
 #include <QGridLayout>
 #include <QPushButton>
@@ -25,7 +25,7 @@ private:
     upPB declineBtn_;
     std::string sender_;
     QString userName_;
-    std::shared_ptr<Connection> connection_;
+    std::shared_ptr<ServerConnection> connection_;
     void setSender(const std::string& sender);
 
 private slots:
@@ -40,7 +40,7 @@ private slots:
 
     void declineBtnClicked();
 public:
-    explicit ConnectionInvite(QWidget *parent, std::shared_ptr<Connection> connection, Mode mode);
+    explicit ConnectionInvite(QWidget *parent, std::shared_ptr<ServerConnection> connection, Mode mode);
 };
 
 #endif //TCPCLIENT_CONNECTIONINVITE_H

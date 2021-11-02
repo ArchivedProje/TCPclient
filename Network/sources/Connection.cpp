@@ -7,12 +7,12 @@
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
 
-Connection::Connection() : socket_(ioService_), deadline_(ioService_), handler_(std::make_unique<Handler>()) {
+Connection::Connection() : socket_(ioService_), deadline_(ioService_) {
     deadline_.expires_at(boost::posix_time::pos_infin);
     checkDeadline();
 }
 
-int Connection::connect(const std::string &ip_, int port_) {
+int Connection::Connect(const std::string &ip_, int port_) {
     /*
      * -2 - server not responding / the computer isn't connected to the Internet
      * -1 - wrong ip
@@ -33,22 +33,6 @@ int Connection::connect(const std::string &ip_, int port_) {
     return 0;
 }
 
-int Connection::authorize(const std::string &login, const std::string &password) {
-    boost::system::error_code ec;
-    nlohmann::json msg = {
-            {"sender", login},
-            {"type",   Requests::Auth},
-            {"data",   {{"login", login}, {"password", password}}}
-    };
-    sendMessage(msg);
-
-    /*
-     * -1 - error
-     * 0 - message sent
-     */
-    return ec ? -1 : 0;
-}
-
 void Connection::checkDeadline() {
     if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
         deadline_.expires_at(boost::posix_time::pos_infin);
@@ -56,26 +40,7 @@ void Connection::checkDeadline() {
     deadline_.async_wait(boost::bind(&Connection::checkDeadline, this));
 }
 
-void Connection::listen() {
-    while (true) {
-        // other logic
-
-        getMessage();
-    }
-}
-
-void Connection::getMessage() {
-    boost::system::error_code ec;
-    boost::asio::read_until(socket_, data_, '\n', ec);
-    if (!ec) {
-        std::istream ss(&data_);
-        std::string sData;
-        std::getline(ss, sData);
-        sendMessage(handler_->request(sData).dump());
-    }
-}
-
-void Connection::sendMessage(const nlohmann::json& msg) {
+void Connection::sendMessage(const nlohmann::json &msg) {
     boost::system::error_code ec;
     if (!msg.empty()) {
         boost::asio::write(socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
