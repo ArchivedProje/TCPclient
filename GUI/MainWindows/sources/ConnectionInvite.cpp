@@ -42,6 +42,7 @@ void ConnectionInvite::setLightMode() {
 }
 
 void ConnectionInvite::newInvite(const QString &userName) {
+    userName_ = userName;
     qlabel_->setText(userName + " wants to connect to you");
     show();
 }
@@ -54,7 +55,8 @@ void ConnectionInvite::acceptBtnClicked() {
     nlohmann::json msg = {
             {"sender", sender_},
             {"type",   Requests::ConnectToUser},
-            {"data",   Replies::ConnectToUser::Accept}
+            {"data",   Replies::ConnectToUser::Accept},
+            {"name", userName_.toStdString()}
     };
     connection_->sendMessage(msg);
     close();
@@ -64,7 +66,8 @@ void ConnectionInvite::declineBtnClicked() {
     nlohmann::json msg = {
             {"sender", sender_},
             {"type",   Requests::ConnectToUser},
-            {"data",   Replies::ConnectToUser::Decline}
+            {"data",   Replies::ConnectToUser::Decline},
+            {"name", userName_.toStdString()}
     };
     connection_->sendMessage(msg);
     close();

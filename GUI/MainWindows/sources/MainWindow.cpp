@@ -164,6 +164,8 @@ void MainWindow::openAboutUsUrl() {
 void MainWindow::openServerWindow() {
     auto sender = connectWindow_->loginLine_->text().toStdString();
     serverWindow_->setSender(sender);
+    usersWindow_->setSender(sender);
+    connectionInvite_->setSender(sender);
     serverSettings_->menuAction()->setVisible(true);
     currentIndex_ = 1;
     stackedWidgets_->setCurrentIndex(currentIndex_); //serverWindow

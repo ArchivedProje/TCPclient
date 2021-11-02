@@ -24,6 +24,7 @@ private:
     upPB acceptBtn_;
     upPB declineBtn_;
     std::string sender_;
+    QString userName_;
     std::shared_ptr<Connection> connection_;
     void setSender(const std::string& sender);
 
