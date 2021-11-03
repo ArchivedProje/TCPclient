@@ -6,6 +6,7 @@
 #include <string>
 #include <QObject>
 #include <map>
+#include <QString>
 #include <nlohmann/json.hpp>
 #include <NetworkCommunication.h>
 
@@ -26,6 +27,10 @@ signals:
     void users(const Handler::StringMap& );
 
     void newInvite(const QString& userName);
+
+    void startServer();
+
+    void startClient(const QString& ip);
 
 public:
     Handler() = default;

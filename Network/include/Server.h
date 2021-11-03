@@ -1,0 +1,23 @@
+//
+
+#ifndef TCPCLIENT_SERVER_H
+#define TCPCLIENT_SERVER_H
+
+#include <boost/asio.hpp>
+#include <memory>
+#include <QObject>
+
+using boost::asio::ip::tcp;
+
+class Server : public QObject {
+private:
+    tcp::acceptor acceptor_;
+    tcp::socket socket_;
+    boost::asio::streambuf data_;
+
+    void getMessage();
+public:
+    explicit Server(const std::shared_ptr<boost::asio::io_service>& ioService_);
+};
+
+#endif //TCPCLIENT_SERVER_H

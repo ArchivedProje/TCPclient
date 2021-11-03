@@ -6,17 +6,24 @@
 #include <QDesktopServices>
 #include <UsersWindow.h>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+MainWindow::MainWindow(const std::shared_ptr<boost::asio::io_service>& ioService_, QWidget *parent) : QMainWindow(parent),
                                           connection_(std::make_shared<ServerConnection>()),
                                           thread_(std::make_unique<QThread>()),
+                                          clientThread_(std::make_shared<QThread>()),
+                                          serverThread_(std::make_shared<QThread>()),
                                           stackedWidgets_(std::make_unique<QStackedWidget>()),
                                           connectWindow_(std::make_unique<ConnectWindow>(connection_, parent)),
                                           guiSettings_(std::make_unique<GUISettingsWindow>(parent)),
-                                          connectionInvite_(std::make_unique<ConnectionInvite>(parent, connection_, guiSettings_->getMode())),
+                                          userConversation_(std::make_unique<UserConversation>(parent, clientThread_,
+                                                                                               serverThread_, ioService_,
+                                                                                               guiSettings_->getMode())),
+                                          connectionInvite_(std::make_unique<ConnectionInvite>(parent, connection_,
+                                                                                               guiSettings_->getMode())),
                                           networkSettings_(std::make_unique<NetworkSettingsWindow>(parent,
                                                                                                    guiSettings_->getMode())),
                                           serverWindow_(std::make_unique<ServerWindow>(connection_, this)),
-                                          usersWindow_(std::make_unique<UsersWindow>(parent, connection_, guiSettings_->getMode())),
+                                          usersWindow_(std::make_unique<UsersWindow>(parent, connection_,
+                                                                                     guiSettings_->getMode())),
                                           fileSettings_(
                                                   std::make_unique<FileSettings>(parent, guiSettings_->getMode())),
                                           menuSettings_(menuBar()->addMenu("Settings")),
@@ -88,13 +95,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
 
+    connect(connection_->handler_.get(), &Handler::startClient, userConversation_.get(), &UserConversation::startClient);
+    connect(connection_->handler_.get(), &Handler::startServer, userConversation_.get(), &UserConversation::startServer);
+
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, usersWindow_.get(), &UsersWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, usersWindow_.get(), &UsersWindow::setLightMode);
 
     connect(connection_->handler_.get(), &Handler::newInvite, connectionInvite_.get(), &ConnectionInvite::newInvite);
 
-    connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, connectionInvite_.get(), &ConnectionInvite::setDarkMode);
-    connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, connectionInvite_.get(), &ConnectionInvite::setLightMode);
+    connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, connectionInvite_.get(),
+            &ConnectionInvite::setDarkMode);
+    connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, connectionInvite_.get(),
+            &ConnectionInvite::setLightMode);
 
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, fileSettings_.get(), &FileSettings::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, fileSettings_.get(), &FileSettings::setLightMode);

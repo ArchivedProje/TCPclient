@@ -30,7 +30,7 @@ private:
     upQP deleteBtn_;
     upQP applyBtn_;
     upQP closeBtn_;
-
+    size_t maxWidth_;
     std::vector<boost::filesystem::path> files_;
 
     void parseFiles();

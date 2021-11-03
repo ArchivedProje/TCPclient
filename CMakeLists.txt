@@ -29,8 +29,12 @@ set(PROJECT_SOURCES
         GUI/Submodules/include/style.h
         GUI/Submodules/include/switch.h
         GUI/Submodules/sources/switch.cpp
+        Network/include/Connection.h
+        Network/sources/Connection.cpp
         Network/include/ServerConnection.h
         Network/sources/ServerConnection.cpp
+        Network/include/ClientConnection.h
+        Network/sources/ClientConnection.cpp
         RequestHandling/include/Handler.h
         RequestHandling/sources/Handler.cpp
         GUI/MainWindows/include/ServerWindow.h
@@ -43,6 +47,10 @@ set(PROJECT_SOURCES
         GUI/Settings/sources/FileSettings.cpp
         GUI/MainWindows/include/ConnectionInvite.h
         GUI/MainWindows/sources/ConnectionInvite.cpp
+        GUI/MainWindows/include/UserConversation.h
+        GUI/MainWindows/sources/UserConversation.cpp
+        Network/include/Server.h
+        Network/sources/Server.cpp
         )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
@@ -54,6 +62,7 @@ add_library(GUI STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ServerWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/UsersWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/ConnectionInvite.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/MainWindows/sources/UserConversation.cpp
         )
 
 target_include_directories(GUI PUBLIC
@@ -88,8 +97,10 @@ target_include_directories(Submodules PUBLIC
         )
 
 add_library(Network STATIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/Network/sources/ServerConnection.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Network/sources/Connection.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Network/sources/ServerConnection.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Network/sources/ClientConnection.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Network/sources/Server.cpp
         )
 
 target_include_directories(Network PUBLIC

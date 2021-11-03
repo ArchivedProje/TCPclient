@@ -14,6 +14,10 @@ public:
 
     explicit Resizable(QWidget *parent, int width, int height);
 
+    explicit Resizable(QWidget *parent);
+
+    void setSize(int width, int height);
+
     void setWidth(int width);
 
     void setHeight(int height);

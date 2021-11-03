@@ -28,7 +28,9 @@ nlohmann::json Handler::request(const std::string &request) {
         if (jsonRequest["data"] == Replies::ConnectToUser::Invite) {
             emit newInvite(QString::fromStdString(jsonRequest["sender"].get<std::string>()));
         } else if (jsonRequest["data"] == Replies::ConnectToUser::Accept) {
-            //accept
+            emit startServer();
+        } else if (jsonRequest["data"] == Replies::ConnectToUser::GetIp) {
+            emit startClient(QString::fromStdString(jsonRequest["ip"].get<std::string>()));
         } else if (jsonRequest["data"] == Replies::ConnectToUser::Disconnected) {
             QMessageBox msgBox;
             msgBox.setWindowTitle("Error");

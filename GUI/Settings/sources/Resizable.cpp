@@ -6,6 +6,8 @@ Resizable::Resizable(QWidget *parent, int width, int height) : QWidget(parent), 
     resize(width, height);
 }
 
+Resizable::Resizable(QWidget *parent): QWidget(parent) {}
+
 void Resizable::setWidth(int width) {
     width_ = width;
     setUnResizable();
@@ -30,4 +32,10 @@ void Resizable::setResizable() {
 
 void Resizable::setUnResizable() {
     setFixedSize(width_, height_);
+}
+
+void Resizable::setSize(int width, int height) {
+    width_ = width;
+    height_ = height;
+    setUnResizable();
 }

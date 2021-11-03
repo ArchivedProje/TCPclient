@@ -14,7 +14,8 @@ FileSettings::FileSettings(QWidget *parent, Mode mode) : Resizable(parent, 600, 
                                                          appendBtn_(std::make_unique<QPushButton>("Append ->", this)),
                                                          deleteBtn_(std::make_unique<QPushButton>("<- Delete", this)),
                                                          applyBtn_(std::make_unique<QPushButton>("Apply", this)),
-                                                         closeBtn_(std::make_unique<QPushButton>("Close", this)) {
+                                                         closeBtn_(std::make_unique<QPushButton>("Close", this)),
+                                                         maxWidth_(600) {
 
     parseFiles();
     setData();
@@ -39,7 +40,6 @@ FileSettings::FileSettings(QWidget *parent, Mode mode) : Resizable(parent, 600, 
     applyBtn_->setStyleSheet("background-color: blue");
     qgrid_->addWidget(applyBtn_.get(), 4, 1);
     qgrid_->addWidget(closeBtn_.get(), 5, 1);
-
     connect(leftView_.get(), &QListView::doubleClicked, this, &FileSettings::doubleClick);
     connect(appendBtn_.get(), &QPushButton::clicked, this, &FileSettings::appendBtnClicked);
     connect(deleteBtn_.get(), &QPushButton::clicked, this, &FileSettings::deleteBtnClicked);
@@ -64,10 +64,16 @@ void FileSettings::appendBtnClicked() {
     auto selectedItems = leftView_->selectionModel()->selectedIndexes();
     for (const auto &item: selectedItems) {
         if (model_->fileInfo(item).isFile()) {
-            QString Qpath = model_->fileName(item) + " (" + model_->fileInfo(item).absolutePath() + ")";
+            QString Qpath = model_->fileName(item) + " (" + model_->fileInfo(item).absolutePath() + '/' +
+                            model_->fileName(item) + ")";
             rightView_->addItem(Qpath);
             std::string path = Qpath.toStdString();
             path = std::string(path.begin() + path.find(' ') + 2, path.end() - 1);
+            auto currentWidth = path.size() * 20 + 500;
+            if (maxWidth_ < currentWidth) {
+                maxWidth_ = currentWidth;
+                setWidth(maxWidth_);
+            }
             files_.emplace_back(std::move(path));
         }
     }
@@ -76,7 +82,7 @@ void FileSettings::appendBtnClicked() {
 
 void FileSettings::deleteBtnClicked() {
     auto items = rightView_->selectedItems();
-    for (const auto& item : items) {
+    for (const auto &item: items) {
         std::string path = item->text().toStdString();
         path = std::string(path.begin() + path.find(' ') + 2, path.end() - 1);
         files_.erase(std::find(files_.begin(), files_.end(), path));
@@ -95,6 +101,8 @@ void FileSettings::setLightMode() {
 
 void FileSettings::parseFiles() {
     std::ifstream in("Config/fileSettings.cfg", std::ios::in);
+    in >> maxWidth_;
+    setSize(maxWidth_, 300);
     std::string path;
     while (std::getline(in, path)) {
         if (!path.empty()) {
@@ -104,19 +112,17 @@ void FileSettings::parseFiles() {
 }
 
 void FileSettings::setData() {
-    size_t maxSize = 0u;
-    for (const auto& path : files_) {
+    for (const auto &path: files_) {
         std::string fullPath = path.filename().string() + " (" + path.string() + ")";
-        maxSize = std::max(maxSize, fullPath.size());
         rightView_->addItem(QString::fromStdString(fullPath));
     }
-    setWidth(maxSize * 11 + 300);
 }
 
 void FileSettings::applyBtnClicked() {
     std::ofstream out("Config/fileSettings.cfg", std::ios::out);
+    out << maxWidth_ << std::endl;
     bool first = true;
-    for (const auto& path : files_) {
+    for (const auto &path: files_) {
         if (!first) {
             out << std::endl;
         }

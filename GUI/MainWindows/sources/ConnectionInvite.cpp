@@ -1,4 +1,4 @@
-//
+// Copyright 2021 byteihq <kotov038@gmail.com>
 
 #include <ConnectionInvite.h>
 #include <nlohmann/json.hpp>

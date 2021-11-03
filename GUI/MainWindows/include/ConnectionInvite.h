@@ -1,4 +1,4 @@
-//
+// Copyright 2021 byteihq <kotov038@gmail.com>
 
 #ifndef TCPCLIENT_CONNECTIONINVITE_H
 #define TCPCLIENT_CONNECTIONINVITE_H
@@ -15,6 +15,7 @@
 class MainWindow;
 
 class ConnectionInvite : public Resizable {
+Q_OBJECT
 private:
     friend class MainWindow;
 
@@ -26,7 +27,8 @@ private:
     std::string sender_;
     QString userName_;
     std::shared_ptr<ServerConnection> connection_;
-    void setSender(const std::string& sender);
+
+    void setSender(const std::string &sender);
 
 private slots:
 
@@ -39,6 +41,7 @@ private slots:
     void acceptBtnClicked();
 
     void declineBtnClicked();
+
 public:
     explicit ConnectionInvite(QWidget *parent, std::shared_ptr<ServerConnection> connection, Mode mode);
 };

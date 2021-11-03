@@ -18,6 +18,7 @@
 #include <FileSettings.h>
 #include <ConnectionInvite.h>
 #include <UsersWindow.h>
+#include <UserConversation.h>
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -27,9 +28,12 @@ private:
 
     std::shared_ptr<ServerConnection> connection_;
     std::unique_ptr<QThread> thread_;
+    std::shared_ptr<QThread> clientThread_;
+    std::shared_ptr<QThread> serverThread_;
     std::unique_ptr<QStackedWidget> stackedWidgets_;
     std::unique_ptr<ConnectWindow> connectWindow_;
     std::unique_ptr<GUISettingsWindow> guiSettings_;
+    std::unique_ptr<UserConversation> userConversation_;
     std::unique_ptr<ConnectionInvite> connectionInvite_;
     std::unique_ptr<NetworkSettingsWindow> networkSettings_;
     std::unique_ptr<ServerWindow> serverWindow_;
@@ -73,7 +77,7 @@ private slots:
     void exitBtnClicked();
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(const std::shared_ptr<boost::asio::io_service>& ioService_, QWidget *parent = nullptr);
 };
 
 #endif //TCPCLIENT_MAINWINDOW_H

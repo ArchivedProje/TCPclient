@@ -7,7 +7,7 @@
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
 
-Connection::Connection() : socket_(ioService_), deadline_(ioService_) {
+Connection::Connection() : socket_(ioService_), deadline_(ioService_), handler_(std::make_unique<Handler>()) {
     deadline_.expires_at(boost::posix_time::pos_infin);
     checkDeadline();
 }
@@ -50,5 +50,24 @@ void Connection::sendMessage(const nlohmann::json &msg) {
         } else {
             // log
         }
+    }
+}
+
+void Connection::getMessage() {
+    boost::system::error_code ec;
+    boost::asio::read_until(socket_, data_, '\n', ec);
+    if (!ec) {
+        std::istream ss(&data_);
+        std::string sData;
+        std::getline(ss, sData);
+        sendMessage(handler_->request(sData).dump());
+    }
+}
+
+void Connection::listen() {
+    while (true) {
+        // other logic
+
+        getMessage();
     }
 }

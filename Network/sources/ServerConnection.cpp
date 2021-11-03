@@ -3,10 +3,8 @@
 #include <istream>
 #include <ServerConnection.h>
 #include <NetworkCommunication.h>
-#include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
 
-ServerConnection::ServerConnection() : handler_(std::make_unique<Handler>()) {}
 
 int ServerConnection::authorize(const std::string &login, const std::string &password) {
     boost::system::error_code ec;
@@ -22,23 +20,4 @@ int ServerConnection::authorize(const std::string &login, const std::string &pas
      * 0 - message sent
      */
     return ec ? -1 : 0;
-}
-
-void ServerConnection::listen() {
-    while (true) {
-        // other logic
-
-        getMessage();
-    }
-}
-
-void ServerConnection::getMessage() {
-    boost::system::error_code ec;
-    boost::asio::read_until(socket_, data_, '\n', ec);
-    if (!ec) {
-        std::istream ss(&data_);
-        std::string sData;
-        std::getline(ss, sData);
-        sendMessage(handler_->request(sData).dump());
-    }
 }
