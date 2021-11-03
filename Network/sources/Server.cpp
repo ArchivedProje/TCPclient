@@ -22,3 +22,9 @@ void Server::accept() {
     acceptor_.accept(socket_);
     std::cerr << "Accepted";
 }
+
+void Server::listen() {
+    while (true) {
+        getMessage();
+    }
+}

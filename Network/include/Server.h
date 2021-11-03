@@ -15,10 +15,11 @@ private:
     tcp::acceptor acceptor_;
     tcp::socket socket_;
     boost::asio::streambuf data_;
+    void getMessage();
 public:
     explicit Server(const std::shared_ptr<boost::asio::io_service>& ioService);
     void accept();
-    void getMessage();
+    void listen();
 };
 
 #endif //TCPCLIENT_SERVER_H
