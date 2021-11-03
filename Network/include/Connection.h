@@ -29,6 +29,8 @@ protected:
 public:
     Connection();
 
+    int AsyncConnect(const std::string &ip_, int port_);
+
     int Connect(const std::string &ip_, int port_);
 
     void sendMessage(const nlohmann::json &msg);

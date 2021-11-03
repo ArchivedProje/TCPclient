@@ -30,6 +30,7 @@ UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> cli
 void UserConversation::startClient(const QString &ip) {
     clientConnection_->moveToThread(clientThread_.get());
     clientThread_->start();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     auto status = clientConnection_->Connect(ip.toStdString(), 2002);
     if (status == -2) {
         QMessageBox msgBox;
@@ -45,6 +46,10 @@ void UserConversation::startClient(const QString &ip) {
         msgBox.exec();
         return;
     }
+    nlohmann::json msg = {
+            {"sender", "user1"}
+    };
+    clientConnection_->sendMessage(msg.dump());
     clientConnection_->listen();
 }
 

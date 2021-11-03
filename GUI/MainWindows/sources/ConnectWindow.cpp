@@ -71,7 +71,7 @@ void ConnectWindow::connectBtnClicked() {
         showErrWindow("Port number is wrong");
         return;
     }
-    int status = connection_->Connect(ipLine_->text().toStdString(), port);
+    int status = connection_->AsyncConnect(ipLine_->text().toStdString(), port);
     if (status == -2) {
         showErrWindow("Server not responding");
         return;

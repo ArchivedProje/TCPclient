@@ -18,5 +18,7 @@ void Server::getMessage() {
 }
 
 void Server::accept() {
+    std::cerr << "Accepting";
     acceptor_.accept(socket_);
+    std::cerr << "Accepted";
 }
