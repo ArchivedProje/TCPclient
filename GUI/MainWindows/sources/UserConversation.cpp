@@ -50,4 +50,7 @@ void UserConversation::startClient(const QString &ip) {
 
 void UserConversation::startServer() {
     serverConnection_->moveToThread(serverThread_.get());
+    serverThread_->start();
+    serverConnection_->accept();
+    serverConnection_->getMessage();
 }

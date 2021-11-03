@@ -4,9 +4,7 @@
 #include <iostream>
 
 Server::Server(const std::shared_ptr<boost::asio::io_service> &ioService_) : acceptor_(*ioService_, tcp::endpoint(tcp::v4(), 2002)),
-                                                            socket_(*ioService_) {
-    acceptor_.accept(socket_);
-}
+                                                            socket_(*ioService_) {}
 
 void Server::getMessage() {
     boost::system::error_code ec;
@@ -17,4 +15,8 @@ void Server::getMessage() {
         std::getline(ss, sData);
         std::cerr << sData;
     }
+}
+
+void Server::accept() {
+    acceptor_.accept(socket_);
 }
