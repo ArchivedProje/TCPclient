@@ -38,3 +38,8 @@ void Server::sendMessage(const nlohmann::json &msg) {
         }
     }
 }
+
+void Server::closeConnection() {
+    acceptor_.close();
+    socket_.close();
+}

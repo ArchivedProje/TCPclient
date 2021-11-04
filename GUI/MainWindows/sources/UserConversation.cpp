@@ -156,10 +156,12 @@ void UserConversation::disconnectBtnClicked() {
     switch (connectionMode_) {
         case ServerMode:
             serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, "", Requests::Disconnect));
+            serverConnection_->closeConnection();
             serverThread_->terminate();
             break;
         case ClientMode:
             clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, "", Requests::Disconnect));
+            clientConnection_->closeConnection();
             clientThread_->terminate();
             break;
     }

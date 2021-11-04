@@ -26,6 +26,8 @@ public:
     void accept();
 
     void sendMessage(const nlohmann::json &msg);
+
+    void closeConnection();
 public slots:
 
     void listen();
