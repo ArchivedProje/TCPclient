@@ -14,6 +14,7 @@ void Server::getMessage() {
         std::string sData;
         std::getline(ss, sData);
         std::cerr << sData << std::endl;
+        sendMessage(handler_->request(sData));
     }
 }
 
