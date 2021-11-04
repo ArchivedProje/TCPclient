@@ -12,6 +12,7 @@
 using boost::asio::ip::tcp;
 
 class Server : public QObject {
+    Q_OBJECT
 private:
     tcp::acceptor acceptor_;
     tcp::socket socket_;
@@ -24,9 +25,10 @@ public:
 
     void accept();
 
-    void listen();
-
     void sendMessage(const nlohmann::json &msg);
+public slots:
+
+    void listen();
 };
 
 #endif //TCPCLIENT_SERVER_H

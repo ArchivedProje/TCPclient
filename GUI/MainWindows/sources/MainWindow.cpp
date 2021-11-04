@@ -98,6 +98,7 @@ MainWindow::MainWindow(const std::shared_ptr<boost::asio::io_service>& ioService
 
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, userConversation_.get(), &UserConversation::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, userConversation_.get(), &UserConversation::setLightMode);
+
     connect(connection_->handler_.get(), &Handler::startClient, userConversation_.get(), &UserConversation::startClient);
     connect(connection_->handler_.get(), &Handler::startServer, userConversation_.get(), &UserConversation::startServer);
 

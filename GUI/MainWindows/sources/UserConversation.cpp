@@ -3,10 +3,8 @@
 #include <UserConversation.h>
 #include <QMessageBox>
 
-UserConversation::UserConversation(QWidget * parent, std::shared_ptr < QThread > clientThread,
-                                   std::shared_ptr < QThread > serverThread,
-const std::shared_ptr <boost::asio::io_service> &ioService_, Mode
-mode) :
+UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
+                                   std::shared_ptr <QThread> serverThread, const std::shared_ptr <boost::asio::io_service> &ioService_, Mode mode) :
 Resizable(parent,
 640, 480),
 clientConnection_ (std::make_unique<ClientConnection>()),
@@ -48,6 +46,11 @@ disconnectBtn_(
     qgrid_->addWidget(sendBtn_.get(), 3, 7);
     qgrid_->addWidget(disconnectBtn_.get(), 4, 0, 1, 8);
 
+    clientConnection_->moveToThread(clientThread_.get());
+    connect(clientThread_.get(), &QThread::started, clientConnection_.get(), &ClientConnection::listen);
+    serverConnection_->moveToThread(serverThread_.get());
+    connect(serverThread_.get(), &QThread::started, serverConnection_.get(), &Server::listen);
+
     connect(sendBtn_.get(), &QPushButton::clicked, this, &UserConversation::sendBtnClicked);
 
 }
@@ -84,8 +87,8 @@ void UserConversation::setLightMode() {
 }
 
 void UserConversation::startClient(const QString &ip) {
+    show();
     connectionMode_ = ConnectionMode::ClientMode;
-    clientConnection_->moveToThread(clientThread_.get());
     clientThread_->start();
     auto status = clientConnection_->Connect(ip.toStdString(), 2002);
     if (status == -2) {
@@ -102,13 +105,11 @@ void UserConversation::startClient(const QString &ip) {
         msgBox.exec();
         return;
     }
-    clientConnection_->listen();
 }
 
 void UserConversation::startServer() {
+    show();
     connectionMode_ = ConnectionMode::ServerMode;
-    serverConnection_->moveToThread(serverThread_.get());
     serverThread_->start();
     serverConnection_->accept();
-    serverConnection_->listen();
 }
