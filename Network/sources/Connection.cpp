@@ -2,7 +2,6 @@
 
 #include <istream>
 #include <Connection.h>
-#include <iostream>
 #include <boost/lambda/lambda.hpp>
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
@@ -60,7 +59,6 @@ void Connection::getMessage() {
         std::istream ss(&data_);
         std::string sData;
         std::getline(ss, sData);
-        std::cerr << sData << std::endl;
         sendMessage(handler_->request(sData));
     }
 }

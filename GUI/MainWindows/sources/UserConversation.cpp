@@ -2,7 +2,6 @@
 
 #include <UserConversation.h>
 #include <QMessageBox>
-#include <iostream>
 
 UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
                                    std::shared_ptr <QThread> serverThread, const std::shared_ptr <boost::asio::io_service> &ioService_, Mode mode) :
@@ -51,7 +50,6 @@ void UserConversation::sendBtnClicked() {
     switch (connectionMode_) {
         case ServerMode:
             serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::UserMsg));
-            std::cerr << "Sent";
             break;
         case ClientMode:
             clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::UserMsg));
@@ -99,10 +97,10 @@ void UserConversation::startClient(const QString &ip) {
 
 void UserConversation::startServer() {
     show();
-    connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connectionMode_ = ConnectionMode::ServerMode;
-    serverThread_->start();
+    connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     serverConnection_->accept();
+    serverThread_->start();
 }
 
 void UserConversation::showNewMsg(const QString &sender, const QString &msg) {
