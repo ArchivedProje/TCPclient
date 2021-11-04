@@ -17,6 +17,7 @@
 #include <QListWidget>
 #include <QLineEdit>
 #include <QProgressBar>
+#include <QPoint>
 
 class MainWindow;
 
@@ -47,6 +48,7 @@ private:
     ConnectionMode connectionMode_;
 
     void setSender(const std::string& sender);
+
 private slots:
 
     void startServer();
@@ -60,6 +62,12 @@ private slots:
     void sendBtnClicked();
 
     void showNewMsg(const QString& sender, const QString& msg);
+
+    void ShowContextMenu(const QPoint& point);
+
+    void actionReply();
+
+    void actionCopy();
 
     void disconnectBtnClicked();
 

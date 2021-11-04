@@ -2,6 +2,9 @@
 
 #include <UserConversation.h>
 #include <QMessageBox>
+#include <QMenu>
+#include <QApplication>
+#include <QClipboard>
 
 UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
                                    std::shared_ptr <QThread> serverThread, const std::shared_ptr <boost::asio::io_service> &ioService_, Mode mode) :
@@ -33,12 +36,17 @@ msgNumber_(0) {
     qgrid_->addWidget(sendBtn_.get(), 3, 7);
     qgrid_->addWidget(disconnectBtn_.get(), 4, 0, 1, 8);
 
+    rightList_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(rightList_.get(), &QWidget::customContextMenuRequested, this,
+            &UserConversation::ShowContextMenu);
+
     clientConnection_->moveToThread(clientThread_.get());
     connect(clientThread_.get(), &QThread::started, clientConnection_.get(), &ClientConnection::listen);
     serverConnection_->moveToThread(serverThread_.get());
     connect(serverThread_.get(), &QThread::started, serverConnection_.get(), &Server::listen);
 
     connect(sendBtn_.get(), &QPushButton::clicked, this, &UserConversation::sendBtnClicked);
+    connect(lineEdit_.get(), &QLineEdit::returnPressed, this, &UserConversation::sendBtnClicked);
 
 }
 
@@ -106,4 +114,37 @@ void UserConversation::startServer() {
 void UserConversation::showNewMsg(const QString &sender, const QString &msg) {
     ++msgNumber_;
     rightList_->addItem(sender + ": " + msg);
+}
+
+void UserConversation::ShowContextMenu(const QPoint &point) {
+    if (rightList_->selectedItems().size() == 1) {
+        QPoint globalPos = mapToGlobal(point);
+        globalPos.setX(globalPos.x() + 100);
+        QMenu myMenu;
+        myMenu.addAction("Reply", this, &UserConversation::actionReply);
+        myMenu.addAction("Copy", this, &UserConversation::actionCopy);
+        myMenu.exec(globalPos);
+    }
+}
+
+void UserConversation::actionReply() {
+    lineEdit_->setText(" <Reply> " + rightList_->selectedItems().first()->text() + " </Reply> ");
+    lineEdit_->setFocus();
+}
+
+void UserConversation::actionCopy() {
+    auto clipboard = QApplication::clipboard();
+
+    std::string text = rightList_->selectedItems().first()->text().toStdString();
+    text = text.substr(sender_.size() + 1, text.size() - sender_.size() - 1);
+
+    clipboard->setText(QString::fromStdString(text), QClipboard::Clipboard);
+
+    if (clipboard->supportsSelection()) {
+        clipboard->setText(QString::fromStdString(text), QClipboard::Selection);
+    }
+
+#if defined(Q_OS_LINUX)
+    std::this_thread::sleep_for(std::chrono::nanoseconds(1)); //workaround for copied text not being available...
+#endif
 }
