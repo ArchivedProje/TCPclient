@@ -38,6 +38,8 @@ nlohmann::json Handler::request(const std::string &request) {
         } else if (jsonRequest["data"] == Replies::ConnectToUser::Decline) {
             showErrMsg("This user declined your offer");
         }
+    } else if (jsonRequest["type"] == Requests::Disconnect) {
+        emit connectionAbort();
     }
     return reply;
 }

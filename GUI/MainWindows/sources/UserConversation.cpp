@@ -48,6 +48,7 @@ msgNumber_(0) {
     connect(sendBtn_.get(), &QPushButton::clicked, this, &UserConversation::sendBtnClicked);
     connect(lineEdit_.get(), &QLineEdit::returnPressed, this, &UserConversation::sendBtnClicked);
 
+    connect(disconnectBtn_.get(), &QPushButton::clicked, this, &UserConversation::disconnectBtnClicked);
 }
 
 void UserConversation::sendBtnClicked() {
@@ -100,6 +101,7 @@ void UserConversation::startClient(const QString &ip) {
         return;
     }
     connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
+    connect(clientConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
     clientThread_->start();
 }
 
@@ -107,6 +109,7 @@ void UserConversation::startServer() {
     show();
     connectionMode_ = ConnectionMode::ServerMode;
     connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
+    connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
     serverConnection_->accept();
     serverThread_->start();
 }
@@ -147,4 +150,18 @@ void UserConversation::actionCopy() {
 #if defined(Q_OS_LINUX)
     std::this_thread::sleep_for(std::chrono::nanoseconds(1)); //workaround for copied text not being available...
 #endif
+}
+
+void UserConversation::disconnectBtnClicked() {
+    switch (connectionMode_) {
+        case ServerMode:
+            serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, "", Requests::Disconnect));
+            serverThread_->terminate();
+            break;
+        case ClientMode:
+            clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, "", Requests::Disconnect));
+            clientThread_->terminate();
+            break;
+    }
+    close();
 }

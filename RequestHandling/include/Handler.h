@@ -36,6 +36,8 @@ signals:
 
     void startClient(const QString& ip);
 
+    void connectionAbort();
+
 public:
     Handler() = default;
 
