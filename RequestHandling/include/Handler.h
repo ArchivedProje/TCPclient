@@ -26,6 +26,8 @@ signals:
 
     void newMsg(const QString& sender, const QString& msg, const QString& status);
 
+    void newUserMsg(const QString& sender, const QString& msg);
+
     void users(const Handler::StringMap& );
 
     void newInvite(const QString& userName);

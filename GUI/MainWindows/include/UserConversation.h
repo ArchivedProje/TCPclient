@@ -59,6 +59,8 @@ private slots:
 
     void sendBtnClicked();
 
+    void showNewMsg(const QString& sender, const QString& msg);
+
     void disconnectBtnClicked();
 
 public:

@@ -22,6 +22,8 @@ nlohmann::json Handler::request(const std::string &request) {
             emit newMsg(QString::fromStdString(jsonRequest["sender"].get<std::string>()),
                         QString::fromStdString(jsonRequest["data"].get<std::string>()), "UnImportant");
         }
+    } else if (jsonRequest["type"] == Requests::UserMsg) {
+        emit newUserMsg(QString::fromStdString(jsonRequest["sender"].get<std::string>()), QString::fromStdString(jsonRequest["data"].get<std::string>()));
     } else if (jsonRequest["type"] == Requests::GetUsers) {
         emit users(jsonRequest["data"].get<std::map<std::string, std::string>>());
     } else if (jsonRequest["type"] == Requests::ConnectToUser) {

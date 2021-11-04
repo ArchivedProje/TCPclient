@@ -49,10 +49,10 @@ void UserConversation::sendBtnClicked() {
     ++msgNumber_;
     switch (connectionMode_) {
         case ServerMode:
-            serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::Msg));
+            serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::UserMsg));
             break;
         case ClientMode:
-            clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::Msg));
+            clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::UserMsg));
             break;
     }
     rightList_->addItem(QString::fromStdString(sender_) + ": " + lineEdit_->text());
@@ -91,12 +91,19 @@ void UserConversation::startClient(const QString &ip) {
         msgBox.exec();
         return;
     }
+    connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     clientThread_->start();
 }
 
 void UserConversation::startServer() {
     show();
+    connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connectionMode_ = ConnectionMode::ServerMode;
     serverThread_->start();
     serverConnection_->accept();
+}
+
+void UserConversation::showNewMsg(const QString &sender, const QString &msg) {
+    ++msgNumber_;
+    rightList_->addItem(sender + ": " + msg);
 }
