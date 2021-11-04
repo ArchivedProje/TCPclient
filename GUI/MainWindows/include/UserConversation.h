@@ -5,12 +5,18 @@
 
 #include <QWidget>
 #include <memory>
+#include <string>
 #include <QThread>
 #include <QString>
 #include <Resizable.h>
 #include <StyleSettings.h>
 #include <ClientConnection.h>
 #include <Server.h>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QListWidget>
+#include <QLineEdit>
+#include <QProgressBar>
 
 class MainWindow;
 
@@ -21,11 +27,39 @@ private:
     std::unique_ptr<Server> serverConnection_;
     std::shared_ptr<QThread> clientThread_;
     std::shared_ptr<QThread> serverThread_;
+    using upPB = std::unique_ptr<QPushButton>;
+    using upQL = std::unique_ptr<QListWidget>;
+    std::unique_ptr<QGridLayout> qgrid_;
+    upQL leftList_;
+    upQL rightList_;
+    std::unique_ptr<QProgressBar> progress_;
+    std::unique_ptr<QLineEdit> lineEdit_;
+    upPB sendBtn_;
+    upPB disconnectBtn_;
+    std::string sender_;
+    size_t msgNumber_;
+
+    enum ConnectionMode {
+        ServerMode,
+        ClientMode,
+    };
+
+    ConnectionMode connectionMode_;
+
+    void setSender(const std::string& sender);
 private slots:
 
     void startServer();
 
     void startClient(const QString& ip);
+
+    void setDarkMode();
+
+    void setLightMode();
+
+    void sendBtnClicked();
+
+    void disconnectBtnClicked();
 
 public:
     explicit UserConversation(QWidget *parent, std::shared_ptr<QThread> clientThread,

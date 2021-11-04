@@ -4,6 +4,7 @@
 #include <ServerConnection.h>
 #include <NetworkCommunication.h>
 #include <nlohmann/json.hpp>
+#include <utility>
 
 
 int ServerConnection::authorize(const std::string &login, const std::string &password) {

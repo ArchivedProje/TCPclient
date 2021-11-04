@@ -13,7 +13,7 @@ void Server::getMessage() {
         std::istream ss(&data_);
         std::string sData;
         std::getline(ss, sData);
-        std::cerr << sData;
+        std::cerr << sData << std::endl;
     }
 }
 
@@ -26,5 +26,18 @@ void Server::accept() {
 void Server::listen() {
     while (true) {
         getMessage();
+    }
+}
+
+void Server::sendMessage(const nlohmann::json &msg) {
+    boost::system::error_code ec;
+    if (!msg.empty()) {
+        boost::asio::write(socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
+                           ec);
+        if (!ec) {
+            // log
+        } else {
+            // log
+        }
     }
 }

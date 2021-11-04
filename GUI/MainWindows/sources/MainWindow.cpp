@@ -95,6 +95,9 @@ MainWindow::MainWindow(const std::shared_ptr<boost::asio::io_service>& ioService
     connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, this, &MainWindow::setDarkMode);
     connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, this, &MainWindow::setLightMode);
 
+
+    connect(guiSettings_.get(), &GUISettingsWindow::darkModeEnabled, userConversation_.get(), &UserConversation::setDarkMode);
+    connect(guiSettings_.get(), &GUISettingsWindow::lightModeEnabled, userConversation_.get(), &UserConversation::setLightMode);
     connect(connection_->handler_.get(), &Handler::startClient, userConversation_.get(), &UserConversation::startClient);
     connect(connection_->handler_.get(), &Handler::startServer, userConversation_.get(), &UserConversation::startServer);
 
@@ -161,6 +164,9 @@ void MainWindow::exitBtnClicked() {
     close();
     guiSettings_->close();
     networkSettings_->close();
+    connectionInvite_->close();
+    usersWindow_->close();
+    userConversation_->close();
 }
 
 void MainWindow::openDocUrl() {
@@ -177,6 +183,7 @@ void MainWindow::openServerWindow() {
     auto sender = connectWindow_->loginLine_->text().toStdString();
     serverWindow_->setSender(sender);
     usersWindow_->setSender(sender);
+    userConversation_->setSender(sender);
     connectionInvite_->setSender(sender);
     serverSettings_->menuAction()->setVisible(true);
     currentIndex_ = 1;
@@ -191,6 +198,7 @@ void MainWindow::setResizable() {
     networkSettings_->setResizable();
     usersWindow_->setResizable();
     fileSettings_->setResizable();
+    userConversation_->setResizable();
     setMaximumSize(1920, 1080);
 }
 
@@ -201,6 +209,7 @@ void MainWindow::setUnResizable() {
     networkSettings_->setUnResizable();
     usersWindow_->setUnResizable();
     fileSettings_->setUnResizable();
+    userConversation_->setUnResizable();
     if (currentIndex_ == 0) {
         setFixedSize(connectWindow_->getWidth(), connectWindow_->getHeight() + 10);
     } else {

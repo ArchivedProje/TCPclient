@@ -1,28 +1,48 @@
 // Copyright 2021 byteihq <kotov038@gmail.com>
 
 #include <ConnectWindow.h>
-#include <QMessageBox>
 #include <Handler.h>
+#include <QMessageBox>
 
-ConnectWindow::ConnectWindow(std::shared_ptr<ServerConnection> connection, QWidget *parent) : Resizable(parent, 245, 189), connection_(std::move(connection)),
-                                                                        ipLabel_(std::make_unique<QLabel>("Ip:", this)),
-                                                                        portLabel_(std::make_unique<QLabel>("Port:",
-                                                                                                            this)),
-                                                                        loginLabel_(std::make_unique<QLabel>("Login:",
-                                                                                                             this)),
-                                                                        passLabel_(std::make_unique<QLabel>("Password:",
-                                                                                                            this)),
-                                                                        ipLine_(std::make_unique<QLineEdit>()),
-                                                                        portLine_(std::make_unique<QLineEdit>()),
-                                                                        loginLine_(std::make_unique<QLineEdit>()),
-                                                                        passLine_(std::make_unique<QLineEdit>()),
-                                                                        connectBtn_(
-                                                                                std::make_unique<QPushButton>("Connect",
-                                                                                                              this)),
-                                                                        exitBtn_(std::make_unique<QPushButton>("Exit",
-                                                                                                               this)),
-                                                                        gridLayout_(
-                                                                                std::make_unique<QGridLayout>(this)) {
+ConnectWindow::ConnectWindow(std::shared_ptr<ServerConnection> connection,
+                             QWidget *parent) : Resizable(parent, 245,
+                                                          189),
+                                                connection_(std::move(
+                                                        connection)),
+                                                ipLabel_(
+                                                        std::make_unique<QLabel>(
+                                                                "Ip:",
+                                                                this)),
+                                                portLabel_(
+                                                        std::make_unique<QLabel>(
+                                                                "Port:",
+                                                                this)),
+                                                loginLabel_(
+                                                        std::make_unique<QLabel>(
+                                                                "Login:",
+                                                                this)),
+                                                passLabel_(
+                                                        std::make_unique<QLabel>(
+                                                                "Password:",
+                                                                this)),
+                                                ipLine_(std::make_unique<QLineEdit>()),
+                                                portLine_(
+                                                        std::make_unique<QLineEdit>()),
+                                                loginLine_(
+                                                        std::make_unique<QLineEdit>()),
+                                                passLine_(
+                                                        std::make_unique<QLineEdit>()),
+                                                connectBtn_(
+                                                        std::make_unique<QPushButton>(
+                                                                "Connect",
+                                                                this)),
+                                                exitBtn_(
+                                                        std::make_unique<QPushButton>(
+                                                                "Exit",
+                                                                this)),
+                                                gridLayout_(
+                                                        std::make_unique<QGridLayout>(
+                                                                this)) {
 
 
     gridLayout_->addWidget(ipLabel_.get(), 0, 0);
@@ -63,26 +83,26 @@ void ConnectWindow::connectBtnClicked() {
     bool fieldsEmpty = ipLine_->text().isEmpty() || portLine_->text().isEmpty() || loginLine_->text().isEmpty() ||
                        passLine_->text().isEmpty();
     if (fieldsEmpty) {
-        showErrWindow("Fill in all the fields!");
+        showErrMsg("Fill in all the fields!");
         return;
     }
     int port = portLine_->text().toInt();
     if (port <= 0 || port > 65'536) {
-        showErrWindow("Port number is wrong");
+        showErrMsg("Port number is wrong");
         return;
     }
     int status = connection_->AsyncConnect(ipLine_->text().toStdString(), port);
     if (status == -2) {
-        showErrWindow("Server not responding");
+        showErrMsg("Server not responding");
         return;
     }
     if (status == -1) {
-        showErrWindow("Ip is wrong");
+        showErrMsg("Ip is wrong");
         return;
     }
     status = connection_->authorize(loginLine_->text().toStdString(), passLine_->text().toStdString());
     if (status == -1) {
-        showErrWindow("Error sending message");
+        showErrMsg("Error sending message");
         return;
     }
 
@@ -98,16 +118,16 @@ void ConnectWindow::setPort(size_t port) {
 }
 
 void ConnectWindow::showAuthFailed() {
-    showErrWindow("Authorised failed. Wrong login or password");
+    showErrMsg("Authorised failed. Wrong login or password");
 }
 
 void ConnectWindow::showUnStatus() {
-    showErrWindow("Server sent message with unknown status");
+    showErrMsg("Server sent message with unknown status");
 }
 
-void ConnectWindow::showErrWindow(const std::string &errMsg) {
+void ConnectWindow::showErrMsg(const std::string &msg) {
     QMessageBox msgBox;
     msgBox.setWindowTitle("Error");
-    msgBox.setText(QString::fromStdString(errMsg));
+    msgBox.setText(QString::fromStdString(msg));
     msgBox.exec();
 }

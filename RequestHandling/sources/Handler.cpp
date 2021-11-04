@@ -32,20 +32,9 @@ nlohmann::json Handler::request(const std::string &request) {
         } else if (jsonRequest["data"] == Replies::ConnectToUser::GetIp) {
             emit startClient(QString::fromStdString(jsonRequest["ip"].get<std::string>()));
         } else if (jsonRequest["data"] == Replies::ConnectToUser::Disconnected) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Error");
-            msgBox.setText("This user disconnected");
-            msgBox.exec();
+            showErrMsg("This user disconnected");
         } else if (jsonRequest["data"] == Replies::ConnectToUser::Decline) {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Error");
-            msgBox.setText("This user declined the connection");
-            msgBox.exec();
-        } else {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Error");
-            msgBox.setText("Unknown answer");
-            msgBox.exec();
+            showErrMsg("This user declined your offer");
         }
     }
     return reply;
@@ -58,4 +47,11 @@ nlohmann::json Handler::reply(const std::string& sender, const std::string &repl
             {"data", reply}
     };
     return request;
+}
+
+void Handler::showErrMsg(const std::string &msg) {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Error");
+    msgBox.setText(QString::fromStdString(msg));
+    msgBox.exec();
 }

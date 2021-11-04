@@ -12,6 +12,8 @@
 
 class Handler : public QObject {
 Q_OBJECT
+private:
+    void showErrMsg(const std::string& msg);
 public:
     typedef std::map<std::string, std::string> StringMap;
 signals:

@@ -40,13 +40,13 @@ private:
 
     void setPort(size_t port);
 
+    void showErrMsg(const std::string& msg);
+
 private slots:
 
     void exitBtnClicked();
 
     void connectBtnClicked();
-
-    void showErrWindow(const std::string& errMsg);
 
     void showAuthFailed();
 

@@ -125,7 +125,7 @@ find_package(nlohmann_json REQUIRED)
 hunter_add_package(Boost COMPONENTS system filesystem)
 find_package(Boost CONFIG REQUIRED system filesystem)
 
-target_link_libraries(RequestHandling nlohmann_json::nlohmann_json NetworkCommunication Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(RequestHandling nlohmann_json::nlohmann_json NetworkCommunication Qt${QT_VERSION_MAJOR}::Widgets GUI)
 
 target_link_libraries(Network Boost::system nlohmann_json::nlohmann_json NetworkCommunication Qt${QT_VERSION_MAJOR}::Widgets RequestHandling)
 

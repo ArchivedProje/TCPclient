@@ -20,13 +20,14 @@ protected:
     tcp::socket socket_;
     boost::asio::deadline_timer deadline_;
     boost::asio::streambuf data_;
-    std::unique_ptr<Handler> handler_;
-
     void checkDeadline();
 
     void getMessage();
 
 public:
+
+    std::unique_ptr<Handler> handler_;
+    
     Connection();
 
     int AsyncConnect(const std::string &ip_, int port_);
