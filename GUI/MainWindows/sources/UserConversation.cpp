@@ -106,12 +106,12 @@ void UserConversation::startClient(const QString &ip) {
 }
 
 void UserConversation::startServer() {
-    show();
     connectionMode_ = ConnectionMode::ServerMode;
     connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
     serverConnection_->accept();
     serverThread_->start();
+    show();
 }
 
 void UserConversation::showNewMsg(const QString &sender, const QString &msg) {
@@ -156,13 +156,13 @@ void UserConversation::disconnectBtnClicked() {
     switch (connectionMode_) {
         case ServerMode:
             serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, "", Requests::Disconnect));
-            serverConnection_->closeConnection();
-            serverThread_->terminate();
+//            serverConnection_->closeConnection();
+//            serverThread_->terminate();
             break;
         case ClientMode:
             clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, "", Requests::Disconnect));
-            clientConnection_->closeConnection();
-            clientThread_->terminate();
+//            clientConnection_->closeConnection();
+//            clientThread_->terminate();
             break;
     }
     close();

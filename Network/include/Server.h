@@ -8,14 +8,17 @@
 #include <QObject>
 #include <nlohmann/json.hpp>
 #include <Handler.h>
+#include <set>
 
 using boost::asio::ip::tcp;
+
+static std::set<std::shared_ptr<tcp::socket>> allSockets_;
 
 class Server : public QObject {
     Q_OBJECT
 private:
     tcp::acceptor acceptor_;
-    tcp::socket socket_;
+    std::shared_ptr<tcp::socket> socket_;
     boost::asio::streambuf data_;
     void getMessage();
 public:
@@ -26,8 +29,6 @@ public:
     void accept();
 
     void sendMessage(const nlohmann::json &msg);
-
-    void closeConnection();
 public slots:
 
     void listen();

@@ -3,11 +3,11 @@
 #include <Server.h>
 
 Server::Server(const std::shared_ptr<boost::asio::io_service> &ioService_) : acceptor_(*ioService_, tcp::endpoint(tcp::v4(), 2002)),
-                                                            socket_(*ioService_), handler_(std::make_unique<Handler>()) {}
+                                                            socket_(std::make_shared<tcp::socket>(*ioService_)), handler_(std::make_unique<Handler>()) {}
 
 void Server::getMessage() {
     boost::system::error_code ec;
-    boost::asio::read_until(socket_, data_, '\n', ec);
+    boost::asio::read_until(*socket_, data_, '\n', ec);
     if (!ec) {
         std::istream ss(&data_);
         std::string sData;
@@ -17,7 +17,10 @@ void Server::getMessage() {
 }
 
 void Server::accept() {
-    acceptor_.accept(socket_);
+    if (allSockets_.count(socket_) == 0) {
+        acceptor_.accept(*socket_);
+        allSockets_.insert(socket_);
+    }
 }
 
 void Server::listen() {
@@ -29,7 +32,7 @@ void Server::listen() {
 void Server::sendMessage(const nlohmann::json &msg) {
     boost::system::error_code ec;
     if (!msg.empty()) {
-        boost::asio::write(socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
+        boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
                            ec);
         if (!ec) {
             // log
@@ -37,9 +40,4 @@ void Server::sendMessage(const nlohmann::json &msg) {
             // log
         }
     }
-}
-
-void Server::closeConnection() {
-    acceptor_.close();
-    socket_.close();
 }

@@ -10,8 +10,10 @@
 #include <nlohmann/json.hpp>
 #include <Handler.h>
 #include <QObject>
-
+#include <set>
 using boost::asio::ip::tcp;
+
+static std::set<boost::asio::ip::address> allIps_;
 
 class Connection : public QObject {
     Q_OBJECT

@@ -77,6 +77,9 @@ int Connection::Connect(const std::string &ip_, int port_) {
     if (ec) {
         return -1;
     }
-    socket_.connect(tcp::endpoint(ip, port_));
+    if (allIps_.count(ip) == 0) {
+        socket_.connect(tcp::endpoint(ip, port_));
+        allIps_.insert(ip);
+    }
     return 0;
 }
