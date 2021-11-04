@@ -9,29 +9,16 @@ Resizable(parent,
 640, 480),
 clientConnection_ (std::make_unique<ClientConnection>()),
 serverConnection_(std::make_unique<Server>(ioService_)),
-clientThread_(
-        std::move(
-        clientThread)),
-serverThread_(
-        std::move(
-        serverThread)),
-qgrid_(std::make_unique<QGridLayout>(
-        this)),
-leftList_(
-        std::make_unique<QListWidget>()),
-rightList_(
-        std::make_unique<QListWidget>()),
+clientThread_(std::move(clientThread)),
+serverThread_(std::move(serverThread)),
+qgrid_(std::make_unique<QGridLayout>(this)),
+leftList_(std::make_unique<QListWidget>()),
+rightList_(std::make_unique<QListWidget>()),
 progress_(std::make_unique<QProgressBar>()),
-lineEdit_(
-        std::make_unique<QLineEdit>()),
-sendBtn_(
-        std::make_unique<QPushButton>(
-                "Send",
-                this)),
-disconnectBtn_(
-        std::make_unique<QPushButton>(
-                "Disconnect",
-                this)), msgNumber_(0) {
+lineEdit_(std::make_unique<QLineEdit>()),
+sendBtn_(std::make_unique<QPushButton>("Send",this)),
+disconnectBtn_(std::make_unique<QPushButton>("Disconnect",this)),
+msgNumber_(0) {
 
     if (mode == Mode::Dark) {
         StyleSettings::setDarkMode(this);
@@ -89,7 +76,6 @@ void UserConversation::setLightMode() {
 void UserConversation::startClient(const QString &ip) {
     show();
     connectionMode_ = ConnectionMode::ClientMode;
-    clientThread_->start();
     auto status = clientConnection_->Connect(ip.toStdString(), 2002);
     if (status == -2) {
         QMessageBox msgBox;
@@ -105,6 +91,7 @@ void UserConversation::startClient(const QString &ip) {
         msgBox.exec();
         return;
     }
+    clientThread_->start();
 }
 
 void UserConversation::startServer() {

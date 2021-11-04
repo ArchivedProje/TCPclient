@@ -72,4 +72,5 @@ void UsersWindow::btnClicked(const QString &user) {
             {"name",   user.toStdString()}
     };
     connection_->sendMessage(msg);
+    close();
 }

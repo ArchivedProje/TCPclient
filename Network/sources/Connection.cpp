@@ -79,12 +79,6 @@ int Connection::Connect(const std::string &ip_, int port_) {
     if (ec) {
         return -1;
     }
-    ec = boost::asio::error::would_block;
-    deadline_.expires_from_now(boost::posix_time::seconds(2));
     socket_.connect(tcp::endpoint(ip, port_));
-    do ioService_.run_one(); while (ec == boost::asio::error::would_block);
-    if (ec || !socket_.is_open()) {
-        return -2;
-    }
     return 0;
 }
