@@ -159,8 +159,6 @@ void UserConversation::disconnectBtnClicked() {
     switch (connectionMode_) {
         case ServerMode:
             serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, "", Requests::Disconnect));
-//            ioService_->stop();
-//            ioService_->run();
             serverConnection_->reload(ioService_);
             break;
         case ClientMode:
