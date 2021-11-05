@@ -208,8 +208,8 @@ void UserConversation::sendAllFiles() {
     }
 }
 
-void UserConversation::setAllFiles(const QList<QString>& paths, const QList<QString>& names) {
+void UserConversation::setAllFiles(const QList<QString>& paths) {
     for (size_t i = 0; i < paths.size(); ++i) {
-        leftList_->addItem(names[i] + " (" + paths[i] + ")");
+        leftList_->addItem(paths[i]);
     }
 }

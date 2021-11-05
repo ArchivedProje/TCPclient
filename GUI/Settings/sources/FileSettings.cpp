@@ -14,8 +14,7 @@ FileSettings::FileSettings(QWidget *parent, Mode mode) : Resizable(parent, 600, 
                                                          appendBtn_(std::make_unique<QPushButton>("Append ->", this)),
                                                          deleteBtn_(std::make_unique<QPushButton>("<- Delete", this)),
                                                          applyBtn_(std::make_unique<QPushButton>("Apply", this)),
-                                                         closeBtn_(std::make_unique<QPushButton>("Close", this)),
-                                                         maxWidth_(600) {
+                                                         closeBtn_(std::make_unique<QPushButton>("Close", this)) {
 
     parseFiles();
     setData();
@@ -69,11 +68,6 @@ void FileSettings::appendBtnClicked() {
             rightView_->addItem(Qpath);
             std::string path = Qpath.toStdString();
             path = std::string(path.begin() + path.find(' ') + 2, path.end() - 1);
-            auto currentWidth = path.size() * 20 + 500;
-            if (maxWidth_ < currentWidth) {
-                maxWidth_ = currentWidth;
-                setWidth(maxWidth_);
-            }
             files_.emplace_back(std::move(path));
         }
     }
@@ -101,8 +95,6 @@ void FileSettings::setLightMode() {
 
 void FileSettings::parseFiles() {
     std::ifstream in("Config/fileSettings.cfg", std::ios::in);
-    in >> maxWidth_;
-    setSize(maxWidth_, 300);
     std::string path;
     while (std::getline(in, path)) {
         if (!path.empty()) {
@@ -120,7 +112,6 @@ void FileSettings::setData() {
 
 void FileSettings::applyBtnClicked() {
     std::ofstream out("Config/fileSettings.cfg", std::ios::out);
-    out << maxWidth_ << std::endl;
     bool first = true;
     for (const auto &path: files_) {
         if (!first) {
@@ -132,11 +123,11 @@ void FileSettings::applyBtnClicked() {
     applyBtn_->setDisabled(true);
 }
 
-std::vector<boost::filesystem::path> FileSettings::getFiles() {
+std::vector<std::string> FileSettings::getFiles() {
     std::ifstream in("Config/fileSettings.cfg", std::ios::in);
     std::string path;
     std::getline(in, path);
-    std::vector<boost::filesystem::path> res;
+    std::vector<std::string> res;
     while (std::getline(in, path)) {
         if (!path.empty()) {
             res.emplace_back(std::next(path.begin()), std::prev(path.end()));

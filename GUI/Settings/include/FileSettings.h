@@ -30,7 +30,6 @@ private:
     upQP deleteBtn_;
     upQP applyBtn_;
     upQP closeBtn_;
-    size_t maxWidth_;
     std::vector<boost::filesystem::path> files_;
 
     void parseFiles();
@@ -52,7 +51,7 @@ private slots:
 public:
     explicit FileSettings(QWidget *parent, Mode mode);
 
-    static std::vector<boost::filesystem::path> getFiles();
+    static std::vector<std::string> getFiles();
 };
 
 #endif //TCPCLIENT_FILESETTINGS_H

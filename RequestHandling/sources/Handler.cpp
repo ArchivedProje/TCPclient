@@ -46,13 +46,11 @@ void Handler::request(const std::string &request) {
             emit sendAllFiles();
         } else if (jsonRequest["data"] == Replies::GetAllFiles::Take) {
             QList<QString> paths;
-            QList<QString> names;
-            auto files = jsonRequest["files"].get<std::vector<boost::filesystem::path>>();
+            auto files = jsonRequest["files"].get<std::vector<std::string>>();
             for (const auto &item: files) {
-                paths.push_back(QString::fromStdString(item.string()));
-                names.push_back(QString::fromStdString(item.filename().string()));
+                paths.push_back(QString::fromStdString(item));
             }
-            emit setAllFiles(paths, names);
+            emit setAllFiles(paths);
         }
     }
 }
