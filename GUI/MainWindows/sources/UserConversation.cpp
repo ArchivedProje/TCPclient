@@ -5,6 +5,7 @@
 #include <QMenu>
 #include <QApplication>
 #include <QClipboard>
+#include <FileSettings.h>
 
 UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
                                    std::shared_ptr <QThread> serverThread, std::shared_ptr <boost::asio::io_service> &ioService, Mode mode) :
@@ -48,9 +49,13 @@ msgNumber_(0) {
 
     connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
+    connect(serverConnection_->handler_.get(), &Handler::sendAllFiles, this, &UserConversation::sendAllFiles);
+    connect(serverConnection_->handler_.get(), &Handler::setAllFiles, this, &UserConversation::setAllFiles);
 
     connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connect(clientConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
+    connect(clientConnection_->handler_.get(), &Handler::sendAllFiles, this, &UserConversation::sendAllFiles);
+    connect(clientConnection_->handler_.get(), &Handler::setAllFiles, this, &UserConversation::setAllFiles);
 
     connect(sendBtn_.get(), &QPushButton::clicked, this, &UserConversation::sendBtnClicked);
     connect(lineEdit_.get(), &QLineEdit::returnPressed, this, &UserConversation::sendBtnClicked);
@@ -89,7 +94,6 @@ void UserConversation::setLightMode() {
 }
 
 void UserConversation::startClient(const QString &ip) {
-    show();
     connectionMode_ = ConnectionMode::ClientMode;
     auto status = clientConnection_->Connect(ip.toStdString(), 2002);
     if (status == -2) {
@@ -107,12 +111,25 @@ void UserConversation::startClient(const QString &ip) {
         return;
     }
     clientThread_->start();
+    nlohmann::json msg = {
+            {"sender", sender_},
+            {"type", Requests::GetAllFiles},
+            {"data", Replies::GetAllFiles::Get}
+    };
+    clientConnection_->sendMessage(msg);
+    show();
 }
 
 void UserConversation::startServer() {
     connectionMode_ = ConnectionMode::ServerMode;
     serverConnection_->accept();
     serverThread_->start();
+    nlohmann::json msg = {
+            {"sender", sender_},
+            {"type", Requests::GetAllFiles},
+            {"data", Replies::GetAllFiles::Get}
+    };
+    serverConnection_->sendMessage(msg);
     show();
 }
 
@@ -171,4 +188,28 @@ void UserConversation::disconnectBtnClicked() {
     msgNumber_ = 0;
     leftList_->clear();
     close();
+}
+
+void UserConversation::sendAllFiles() {
+    auto files = FileSettings::getFiles();
+    nlohmann::json msg = {
+            {"sender", sender_},
+            {"type", Requests::GetAllFiles},
+            {"data", Replies::GetAllFiles::Take},
+            {"files", files}
+    };
+    switch (connectionMode_) {
+        case ServerMode:
+            serverConnection_->sendMessage(msg);
+            break;
+        case ClientMode:
+            clientConnection_->sendMessage(msg);
+            break;
+    }
+}
+
+void UserConversation::setAllFiles(const QList<QString>& paths, const QList<QString>& names) {
+    for (size_t i = 0; i < paths.size(); ++i) {
+        leftList_->addItem(names[i] + " (" + paths[i] + ")");
+    }
 }

@@ -12,7 +12,7 @@ void Server::getMessage() {
         std::istream ss(&data_);
         std::string sData;
         std::getline(ss, sData);
-        sendMessage(handler_->request(sData));
+        handler_->request(sData);
     }
 }
 

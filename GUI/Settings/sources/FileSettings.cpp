@@ -131,3 +131,16 @@ void FileSettings::applyBtnClicked() {
     }
     applyBtn_->setDisabled(true);
 }
+
+std::vector<boost::filesystem::path> FileSettings::getFiles() {
+    std::ifstream in("Config/fileSettings.cfg", std::ios::in);
+    std::string path;
+    std::getline(in, path);
+    std::vector<boost::filesystem::path> res;
+    while (std::getline(in, path)) {
+        if (!path.empty()) {
+            res.emplace_back(std::next(path.begin()), std::prev(path.end()));
+        }
+    }
+    return res;
+}

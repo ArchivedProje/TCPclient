@@ -24,7 +24,9 @@ ConnectionInvite::ConnectionInvite(QWidget *parent, std::shared_ptr<ServerConnec
     } else {
         StyleSettings::setLightMode(this);
     }
-    setWindowModality(Qt::WindowModal);
+
+    setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint );
+
     qgrid_->addWidget(qlabel_.get(), 0, 0, 1, 2);
     qgrid_->addWidget(acceptBtn_.get(), 1, 0);
     qgrid_->addWidget(declineBtn_.get(), 1, 1);

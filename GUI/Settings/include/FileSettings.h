@@ -51,6 +51,8 @@ private slots:
     void setLightMode();
 public:
     explicit FileSettings(QWidget *parent, Mode mode);
+
+    static std::vector<boost::filesystem::path> getFiles();
 };
 
 #endif //TCPCLIENT_FILESETTINGS_H

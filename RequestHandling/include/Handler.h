@@ -38,10 +38,14 @@ signals:
 
     void connectionAbort();
 
+    void sendAllFiles();
+
+    void setAllFiles(const QList<QString>& paths, const QList<QString>& names);
+
 public:
     Handler() = default;
 
-    nlohmann::json request(const std::string &request);
+    void request(const std::string &request);
 
     nlohmann::json reply(const std::string& sender, const std::string &reply, Requests requestType);
 };

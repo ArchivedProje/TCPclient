@@ -70,6 +70,10 @@ private slots:
 
     void actionCopy();
 
+    void sendAllFiles();
+
+    void setAllFiles(const QList<QString>& paths, const QList<QString>& names);
+
     void disconnectBtnClicked();
 
 public:
