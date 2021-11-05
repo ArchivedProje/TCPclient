@@ -7,11 +7,12 @@
 #include <QClipboard>
 
 UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
-                                   std::shared_ptr <QThread> serverThread, const std::shared_ptr <boost::asio::io_service> &ioService_, Mode mode) :
+                                   std::shared_ptr <QThread> serverThread, const std::shared_ptr <boost::asio::io_service> &ioService, Mode mode) :
 Resizable(parent,
 640, 480),
+ioService_(ioService),
 clientConnection_ (std::make_unique<ClientConnection>()),
-serverConnection_(std::make_unique<Server>(ioService_)),
+serverConnection_(std::make_unique<Server>(ioService)),
 clientThread_(std::move(clientThread)),
 serverThread_(std::move(serverThread)),
 qgrid_(std::make_unique<QGridLayout>(this)),
@@ -44,6 +45,12 @@ msgNumber_(0) {
     connect(clientThread_.get(), &QThread::started, clientConnection_.get(), &ClientConnection::listen);
     serverConnection_->moveToThread(serverThread_.get());
     connect(serverThread_.get(), &QThread::started, serverConnection_.get(), &Server::listen);
+
+    connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
+    connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
+
+    connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
+    connect(clientConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
 
     connect(sendBtn_.get(), &QPushButton::clicked, this, &UserConversation::sendBtnClicked);
     connect(lineEdit_.get(), &QLineEdit::returnPressed, this, &UserConversation::sendBtnClicked);
@@ -100,15 +107,11 @@ void UserConversation::startClient(const QString &ip) {
         msgBox.exec();
         return;
     }
-    connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
-    connect(clientConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
     clientThread_->start();
 }
 
 void UserConversation::startServer() {
     connectionMode_ = ConnectionMode::ServerMode;
-    connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
-    connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
     serverConnection_->accept();
     serverThread_->start();
     show();
@@ -156,6 +159,7 @@ void UserConversation::disconnectBtnClicked() {
     switch (connectionMode_) {
         case ServerMode:
             serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, "", Requests::Disconnect));
+            serverConnection_->reload(ioService_);
             break;
         case ClientMode:
             clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, "", Requests::Disconnect));

@@ -12,12 +12,10 @@
 
 using boost::asio::ip::tcp;
 
-static std::set<std::shared_ptr<tcp::socket>> allSockets_;
-
 class Server : public QObject {
     Q_OBJECT
 private:
-    tcp::acceptor acceptor_;
+    std::shared_ptr<tcp::acceptor> acceptor_;
     std::shared_ptr<tcp::socket> socket_;
     boost::asio::streambuf data_;
     void getMessage();
@@ -29,6 +27,8 @@ public:
     void accept();
 
     void sendMessage(const nlohmann::json &msg);
+
+    void reload(const std::shared_ptr<boost::asio::io_service>& ioService);
 public slots:
 
     void listen();

@@ -11,6 +11,8 @@
 class ClientConnection : public Connection {
 public:
     ClientConnection() = default;
+
+    void reload();
 };
 
 #endif //TCPCLIENT_CLIENTCONNECTION_H

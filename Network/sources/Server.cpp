@@ -2,8 +2,8 @@
 
 #include <Server.h>
 
-Server::Server(const std::shared_ptr<boost::asio::io_service> &ioService_) : acceptor_(*ioService_, tcp::endpoint(tcp::v4(), 2002)),
-                                                            socket_(std::make_shared<tcp::socket>(*ioService_)), handler_(std::make_unique<Handler>()) {}
+Server::Server(const std::shared_ptr<boost::asio::io_service> &ioService) : acceptor_(std::make_shared<tcp::acceptor>(*ioService, tcp::endpoint(tcp::v4(), 2002))),
+                                                            socket_(std::make_shared<tcp::socket>(*ioService)), handler_(std::make_unique<Handler>()) {}
 
 void Server::getMessage() {
     boost::system::error_code ec;
@@ -17,10 +17,8 @@ void Server::getMessage() {
 }
 
 void Server::accept() {
-    if (allSockets_.count(socket_) == 0) {
-        acceptor_.accept(*socket_);
-        allSockets_.insert(socket_);
-    }
+    acceptor_->accept(*socket_);
+
 }
 
 void Server::listen() {
@@ -40,4 +38,11 @@ void Server::sendMessage(const nlohmann::json &msg) {
             // log
         }
     }
+}
+
+void Server::reload(const std::shared_ptr<boost::asio::io_service> &ioService) {
+    acceptor_.reset();
+    socket_.reset();
+    acceptor_ = std::make_shared<tcp::acceptor>(*ioService, tcp::endpoint(tcp::v4(), 2002));
+    socket_ = std::make_shared<tcp::socket>(*ioService);
 }

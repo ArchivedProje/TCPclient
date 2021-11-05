@@ -6,7 +6,7 @@
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
 
-Connection::Connection() : socket_(ioService_), deadline_(ioService_), handler_(std::make_unique<Handler>()) {
+Connection::Connection() : socket_(std::make_shared<tcp::socket>(ioService_)), deadline_(ioService_), handler_(std::make_unique<Handler>()) {
     deadline_.expires_at(boost::posix_time::pos_infin);
     checkDeadline();
 }
@@ -24,9 +24,9 @@ int Connection::AsyncConnect(const std::string &ip_, int port_) {
     }
     ec = boost::asio::error::would_block;
     deadline_.expires_from_now(boost::posix_time::seconds(2));
-    socket_.async_connect(tcp::endpoint(ip, port_), boost::lambda::var(ec) = boost::lambda::_1);
+    socket_->async_connect(tcp::endpoint(ip, port_), boost::lambda::var(ec) = boost::lambda::_1);
     do ioService_.run_one(); while (ec == boost::asio::error::would_block);
-    if (ec || !socket_.is_open()) {
+    if (ec || !socket_->is_open()) {
         return -2;
     }
     return 0;
@@ -42,7 +42,7 @@ void Connection::checkDeadline() {
 void Connection::sendMessage(const nlohmann::json &msg) {
     boost::system::error_code ec;
     if (!msg.empty()) {
-        boost::asio::write(socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
+        boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
                            ec);
         if (!ec) {
             // log
@@ -54,7 +54,7 @@ void Connection::sendMessage(const nlohmann::json &msg) {
 
 void Connection::getMessage() {
     boost::system::error_code ec;
-    boost::asio::read_until(socket_, data_, '\n', ec);
+    boost::asio::read_until(*socket_, data_, '\n', ec);
     if (!ec) {
         std::istream ss(&data_);
         std::string sData;
@@ -77,9 +77,6 @@ int Connection::Connect(const std::string &ip_, int port_) {
     if (ec) {
         return -1;
     }
-    if (allIps_.count(ip) == 0) {
-        socket_.connect(tcp::endpoint(ip, port_));
-        allIps_.insert(ip);
-    }
+    socket_->connect(tcp::endpoint(ip, port_));
     return 0;
 }

@@ -10,16 +10,14 @@
 #include <nlohmann/json.hpp>
 #include <Handler.h>
 #include <QObject>
-#include <set>
 using boost::asio::ip::tcp;
 
-static std::set<boost::asio::ip::address> allIps_;
 
 class Connection : public QObject {
     Q_OBJECT
 protected:
     boost::asio::io_service ioService_;
-    tcp::socket socket_;
+    std::shared_ptr<tcp::socket> socket_;
     boost::asio::deadline_timer deadline_;
     boost::asio::streambuf data_;
     void checkDeadline();
