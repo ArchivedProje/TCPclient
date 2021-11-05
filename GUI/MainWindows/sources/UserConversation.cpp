@@ -7,7 +7,7 @@
 #include <QClipboard>
 
 UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
-                                   std::shared_ptr <QThread> serverThread, const std::shared_ptr <boost::asio::io_service> &ioService, Mode mode) :
+                                   std::shared_ptr <QThread> serverThread, std::shared_ptr <boost::asio::io_service> &ioService, Mode mode) :
 Resizable(parent,
 640, 480),
 ioService_(ioService),
@@ -159,10 +159,13 @@ void UserConversation::disconnectBtnClicked() {
     switch (connectionMode_) {
         case ServerMode:
             serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, "", Requests::Disconnect));
+//            ioService_->stop();
+//            ioService_->run();
             serverConnection_->reload(ioService_);
             break;
         case ClientMode:
             clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, "", Requests::Disconnect));
+            clientConnection_->reload();
             break;
     }
     close();

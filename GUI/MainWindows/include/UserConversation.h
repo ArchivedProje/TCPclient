@@ -24,7 +24,7 @@ class MainWindow;
 class UserConversation : public Resizable {
 private:
     friend class MainWindow;
-    const std::shared_ptr<boost::asio::io_service>& ioService_;
+    std::shared_ptr<boost::asio::io_service>& ioService_;
     std::unique_ptr<ClientConnection> clientConnection_;
     std::unique_ptr<Server> serverConnection_;
     std::shared_ptr<QThread> clientThread_;
@@ -74,7 +74,7 @@ private slots:
 
 public:
     explicit UserConversation(QWidget *parent, std::shared_ptr<QThread> clientThread,
-                              std::shared_ptr<QThread> serverThread, const std::shared_ptr<boost::asio::io_service>& ioService, Mode mode);
+                              std::shared_ptr<QThread> serverThread, std::shared_ptr<boost::asio::io_service>& ioService, Mode mode);
 };
 
 #endif //TCPCLIENT_USERCONVERSATION_H

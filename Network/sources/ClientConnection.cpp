@@ -3,6 +3,6 @@
 #include <ClientConnection.h>
 
 void ClientConnection::reload() {
-    socket_.reset();
-    socket_ = std::make_shared<tcp::socket>(ioService_);
+    socket_->close();
+    socket_.reset(new tcp::socket(*ioService_));
 }

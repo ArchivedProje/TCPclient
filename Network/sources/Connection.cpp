@@ -6,7 +6,7 @@
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
 
-Connection::Connection() : socket_(std::make_shared<tcp::socket>(ioService_)), deadline_(ioService_), handler_(std::make_unique<Handler>()) {
+Connection::Connection() : ioService_(std::make_shared<boost::asio::io_service>()), socket_(std::make_shared<tcp::socket>(*ioService_)), deadline_(*ioService_), handler_(std::make_unique<Handler>()) {
     deadline_.expires_at(boost::posix_time::pos_infin);
     checkDeadline();
 }
@@ -25,7 +25,7 @@ int Connection::AsyncConnect(const std::string &ip_, int port_) {
     ec = boost::asio::error::would_block;
     deadline_.expires_from_now(boost::posix_time::seconds(2));
     socket_->async_connect(tcp::endpoint(ip, port_), boost::lambda::var(ec) = boost::lambda::_1);
-    do ioService_.run_one(); while (ec == boost::asio::error::would_block);
+    do ioService_->run_one(); while (ec == boost::asio::error::would_block);
     if (ec || !socket_->is_open()) {
         return -2;
     }

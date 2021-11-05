@@ -22,13 +22,13 @@ private:
 public:
     std::unique_ptr<Handler> handler_;
 
-    explicit Server(const std::shared_ptr<boost::asio::io_service>& ioService);
+    explicit Server(std::shared_ptr<boost::asio::io_service>& ioService);
 
     void accept();
 
     void sendMessage(const nlohmann::json &msg);
 
-    void reload(const std::shared_ptr<boost::asio::io_service>& ioService);
+    void reload(std::shared_ptr<boost::asio::io_service>& ioService);
 public slots:
 
     void listen();

@@ -16,7 +16,7 @@ using boost::asio::ip::tcp;
 class Connection : public QObject {
     Q_OBJECT
 protected:
-    boost::asio::io_service ioService_;
+    std::shared_ptr<boost::asio::io_service> ioService_;
     std::shared_ptr<tcp::socket> socket_;
     boost::asio::deadline_timer deadline_;
     boost::asio::streambuf data_;

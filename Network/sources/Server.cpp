@@ -2,7 +2,7 @@
 
 #include <Server.h>
 
-Server::Server(const std::shared_ptr<boost::asio::io_service> &ioService) : acceptor_(std::make_shared<tcp::acceptor>(*ioService, tcp::endpoint(tcp::v4(), 2002))),
+Server::Server(std::shared_ptr<boost::asio::io_service> &ioService) : acceptor_(std::make_shared<tcp::acceptor>(*ioService, tcp::endpoint(tcp::v4(), 2002))),
                                                             socket_(std::make_shared<tcp::socket>(*ioService)), handler_(std::make_unique<Handler>()) {}
 
 void Server::getMessage() {
@@ -40,9 +40,9 @@ void Server::sendMessage(const nlohmann::json &msg) {
     }
 }
 
-void Server::reload(const std::shared_ptr<boost::asio::io_service> &ioService) {
-    acceptor_.reset();
-    socket_.reset();
-    acceptor_ = std::make_shared<tcp::acceptor>(*ioService, tcp::endpoint(tcp::v4(), 2002));
-    socket_ = std::make_shared<tcp::socket>(*ioService);
+void Server::reload(std::shared_ptr<boost::asio::io_service> &ioService) {
+    acceptor_->close();
+    acceptor_.reset(new tcp::acceptor(*ioService, tcp::endpoint(tcp::v4(), 2002)));
+    socket_->close();
+    socket_.reset(new tcp::socket(*ioService));
 }

@@ -6,7 +6,7 @@
 #include <QDesktopServices>
 #include <UsersWindow.h>
 
-MainWindow::MainWindow(const std::shared_ptr<boost::asio::io_service>& ioService_, QWidget *parent) : QMainWindow(parent),
+MainWindow::MainWindow(std::shared_ptr<boost::asio::io_service>& ioService_, QWidget *parent) : QMainWindow(parent),
                                           connection_(std::make_shared<ServerConnection>()),
                                           thread_(std::make_unique<QThread>()),
                                           clientThread_(std::make_shared<QThread>()),

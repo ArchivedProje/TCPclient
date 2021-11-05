@@ -78,7 +78,7 @@ private slots:
     void exitBtnClicked();
 
 public:
-    explicit MainWindow(const std::shared_ptr<boost::asio::io_service>& ioService_, QWidget *parent = nullptr);
+    explicit MainWindow(std::shared_ptr<boost::asio::io_service>& ioService_, QWidget *parent = nullptr);
 };
 
 #endif //TCPCLIENT_MAINWINDOW_H
