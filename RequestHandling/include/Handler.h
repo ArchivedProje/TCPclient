@@ -16,6 +16,7 @@ private:
     void showErrMsg(const std::string& msg);
 public:
     typedef std::map<std::string, std::string> StringMap;
+    typedef QList<QString> StringList;
 signals:
 
     void authorizeFailed();
@@ -40,7 +41,7 @@ signals:
 
     void sendAllFiles();
 
-    void setAllFiles(const QList<QString>& paths);
+    void setAllFiles(const Handler::StringList& paths);
 
 public:
     Handler() = default;

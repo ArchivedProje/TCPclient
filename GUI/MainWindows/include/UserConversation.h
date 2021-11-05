@@ -72,7 +72,7 @@ private slots:
 
     void sendAllFiles();
 
-    void setAllFiles(const QList<QString>& paths);
+    void setAllFiles(const Handler::StringList& paths);
 
     void disconnectBtnClicked();
 

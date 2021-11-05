@@ -47,6 +47,7 @@ msgNumber_(0) {
     serverConnection_->moveToThread(serverThread_.get());
     connect(serverThread_.get(), &QThread::started, serverConnection_.get(), &Server::listen);
 
+    qRegisterMetaType<Handler::StringList>("Handler::StringList");
     connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
     connect(serverConnection_->handler_.get(), &Handler::sendAllFiles, this, &UserConversation::sendAllFiles);
@@ -208,8 +209,8 @@ void UserConversation::sendAllFiles() {
     }
 }
 
-void UserConversation::setAllFiles(const QList<QString>& paths) {
-    for (size_t i = 0; i < paths.size(); ++i) {
-        leftList_->addItem(paths[i]);
+void UserConversation::setAllFiles(const Handler::StringList& paths) {
+    for (const auto & path : paths) {
+        leftList_->addItem(path);
     }
 }
