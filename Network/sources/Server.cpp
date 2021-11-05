@@ -29,15 +29,17 @@ void Server::listen() {
 
 void Server::sendMessage(const nlohmann::json &msg) {
     boost::system::error_code ec;
-    if (!msg.empty()) {
-        boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
-                           ec);
-        if (!ec) {
-            // log
-        } else {
-            // log
-        }
+    if (msg.empty()) {
+        return;
     }
+    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
+                       ec);
+    if (!ec) {
+        // log
+    } else {
+        // log
+    }
+
 }
 
 void Server::reload(std::shared_ptr<boost::asio::io_service> &ioService) {

@@ -74,7 +74,6 @@ void UserConversation::sendBtnClicked() {
     rightList_->addItem(QString::fromStdString(sender_) + ": " + lineEdit_->text());
     rightList_->item(msgNumber_ - 1)->setBackgroundColor(QColor(60, 100, 100));
     lineEdit_->clear();
-
 }
 
 void UserConversation::setSender(const std::string &sender) {
@@ -160,11 +159,16 @@ void UserConversation::disconnectBtnClicked() {
         case ServerMode:
             serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, "", Requests::Disconnect));
             serverConnection_->reload(ioService_);
+            serverThread_->terminate();
             break;
         case ClientMode:
             clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, "", Requests::Disconnect));
             clientConnection_->reload();
+            clientThread_->terminate();
             break;
     }
+    rightList_->clear();
+    msgNumber_ = 0;
+    leftList_->clear();
     close();
 }
