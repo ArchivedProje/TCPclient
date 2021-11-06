@@ -237,6 +237,7 @@ void UserConversation::sendFile(const QString& path) {
     nlohmann::json msg = {
             {"sender", sender_},
             {"type", Requests::GetFile},
+            {"data", Replies::GetFile::TakeFile},
             {"path", path.toStdString()}
     };
     if (!file.is_open()) {
@@ -252,7 +253,7 @@ void UserConversation::sendFile(const QString& path) {
     char frame[frameSize];
     size_t currentFrame = 1u;
     while (file.get(frame, frameSize)) {
-        msg["data"] = frame;
+        msg["fileData"] = frame;
         msg["currentSize"] = frameSize * currentFrame;
         sendMsg(msg);
     }
