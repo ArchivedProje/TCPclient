@@ -119,7 +119,7 @@ void UserConversation::startClient(const QString &ip) {
     nlohmann::json msg = {
             {"sender", sender_},
             {"type", Requests::GetAllFiles},
-            {"data", Replies::GetAllFiles::Get}
+            {"data", Replies::GetAllFiles::GetAllFiles}
     };
     clientConnection_->sendMessage(msg);
     show();
@@ -132,7 +132,7 @@ void UserConversation::startServer() {
     nlohmann::json msg = {
             {"sender", sender_},
             {"type", Requests::GetAllFiles},
-            {"data", Replies::GetAllFiles::Get}
+            {"data", Replies::GetAllFiles::GetAllFiles}
     };
     serverConnection_->sendMessage(msg);
     show();
@@ -211,11 +211,11 @@ void UserConversation::disconnectBtnClicked() {
 
 void UserConversation::sendAllFiles() {
     auto files = FileSettings::getFiles();
-    auto status = files.empty() ? Replies::GetAllFiles::NoFiles : Replies::GetAllFiles::Take;
+    auto status = files.empty() ? Replies::GetAllFiles::NoFiles : Replies::GetAllFiles::TakeAllFiles;
     nlohmann::json msg = {
             {"sender", sender_},
             {"type", Requests::GetAllFiles},
-            {"data", Replies::GetAllFiles::Take},
+            {"data", Replies::GetAllFiles::TakeAllFiles},
             {"status", status},
             {"files", files}
     };

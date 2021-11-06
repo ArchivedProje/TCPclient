@@ -42,9 +42,9 @@ void Handler::request(const std::string &request) {
     } else if (jsonRequest["type"] == Requests::Disconnect) {
         emit connectionAbort();
     } else if (jsonRequest["type"] == Requests::GetAllFiles) {
-        if (jsonRequest["data"] == Replies::GetAllFiles::Get) {
+        if (jsonRequest["data"] == Replies::GetAllFiles::GetAllFiles) {
             emit sendAllFiles();
-        } else if (jsonRequest["data"] == Replies::GetAllFiles::Take && jsonRequest["status"] == Replies::GetAllFiles::Take) {
+        } else if (jsonRequest["data"] == Replies::GetAllFiles::TakeAllFiles && jsonRequest["status"] != Replies::GetAllFiles::NoFiles) {
             QList<QString> paths;
             auto files = jsonRequest["files"].get<std::vector<std::string>>();
             for (const auto &item: files) {
