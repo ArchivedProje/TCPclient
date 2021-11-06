@@ -18,6 +18,7 @@
 #include <QLineEdit>
 #include <QProgressBar>
 #include <QPoint>
+#include <nlohmann/json.hpp>
 
 class MainWindow;
 
@@ -50,6 +51,8 @@ private:
 
     void setSender(const std::string& sender);
 
+    void sendMsg(const nlohmann::json& msg);
+
 private slots:
 
     void startServer();
@@ -75,6 +78,10 @@ private slots:
     void actionCopy();
 
     void sendAllFiles();
+
+    void sendFile(const QString& path);
+
+    void noFile(const QString& path);
 
     void setAllFiles(const Handler::StringList& paths);
 

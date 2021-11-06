@@ -52,6 +52,16 @@ void Handler::request(const std::string &request) {
             }
             emit setAllFiles(paths);
         }
+    } else if (jsonRequest["data"] == Requests::GetFile) {
+        if (jsonRequest["type"] == Replies::GetFile::GetFile) {
+            emit sendFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
+        } else if (jsonRequest["type"] == Replies::GetFile::TakeFile) {
+            if (jsonRequest["status"] != Replies::GetFile::NoFile) {
+                emit noFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
+            } else {
+                emit setFile(QString::fromStdString(jsonRequest["name"].get<std::string>()), jsonRequest["data"].get<std::string>().c_str());
+            }
+        }
     }
 }
 

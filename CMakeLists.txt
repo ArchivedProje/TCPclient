@@ -133,7 +133,7 @@ target_link_libraries(Submodules Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_M
 
 target_link_libraries(Settings Submodules Network Boost::filesystem)
 
-target_link_libraries(GUI Settings Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui)
+target_link_libraries(GUI Settings nlohmann_json::nlohmann_json Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui)
 
 add_executable(demo
         ${PROJECT_SOURCES}

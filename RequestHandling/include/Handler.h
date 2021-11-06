@@ -43,6 +43,12 @@ signals:
 
     void setAllFiles(const Handler::StringList& paths);
 
+    void sendFile(const QString& path);
+
+    void setFile(const QString& name, const char* data);
+
+    void noFile(const QString& path);
+
 public:
     Handler() = default;
 
