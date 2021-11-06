@@ -172,6 +172,7 @@ void UserConversation::showRightContextMenu(const QPoint &point) {
 
 void UserConversation::actionReply() {
     lineEdit_->setText(" <Reply> " + rightList_->selectedItems().first()->text() + " </Reply> ");
+    rightList_->clearSelection();
     lineEdit_->setFocus();
 }
 
@@ -190,6 +191,7 @@ void UserConversation::actionCopy() {
 #if defined(Q_OS_LINUX)
     std::this_thread::sleep_for(std::chrono::nanoseconds(1)); //workaround for copied text not being available...
 #endif
+    rightList_->clearSelection();
 }
 
 void UserConversation::showLeftContextMenu(const QPoint &point) {
@@ -280,6 +282,7 @@ void UserConversation::setAllFiles(const Handler::StringList& paths) {
 }
 
 void UserConversation::noFile(const QString &path) {
+    leftList_->clearSelection();
     for (int row = 0; row < leftList_->count(); ++row) {
         if (leftList_->item(row)->text() == path) {
             leftList_->item(row)->setBackgroundColor(QColor(160, 0, 0));

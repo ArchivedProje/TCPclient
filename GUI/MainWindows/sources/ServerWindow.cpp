@@ -8,19 +8,21 @@
 #include <QClipboard>
 
 ServerWindow::ServerWindow(std::shared_ptr<ServerConnection> connection, QWidget *parent) : Resizable(parent, 640, 480),
-                                                                                      connection_(
-                                                                                              std::move(connection)),
-                                                                                      gridLayout_(
-                                                                                              std::make_unique<QGridLayout>(
-                                                                                                      this)),
-                                                                                      infoWidget_(
-                                                                                              std::make_unique<QListWidget>()),
-                                                                                      lineEdit_(
-                                                                                              std::make_unique<QLineEdit>()),
-                                                                                      sendBtn_(
-                                                                                              std::make_unique<QPushButton>(
-                                                                                                      "Send", this)),
-                                                                                      msgNumber_(0) {
+                                                                                            connection_(
+                                                                                                    std::move(
+                                                                                                            connection)),
+                                                                                            gridLayout_(
+                                                                                                    std::make_unique<QGridLayout>(
+                                                                                                            this)),
+                                                                                            infoWidget_(
+                                                                                                    std::make_unique<QListWidget>()),
+                                                                                            lineEdit_(
+                                                                                                    std::make_unique<QLineEdit>()),
+                                                                                            sendBtn_(
+                                                                                                    std::make_unique<QPushButton>(
+                                                                                                            "Send",
+                                                                                                            this)),
+                                                                                            msgNumber_(0) {
 
     gridLayout_->addWidget(infoWidget_.get(), 0, 0, 10, 2);
     gridLayout_->addWidget(lineEdit_.get(), 10, 0);
@@ -61,6 +63,7 @@ void ServerWindow::ShowContextMenu(const QPoint &point) {
 
 void ServerWindow::actionReply() {
     lineEdit_->setText(" <Reply> " + infoWidget_->selectedItems().first()->text() + " </Reply> ");
+    infoWidget_->clearSelection();
     lineEdit_->setFocus();
 }
 
@@ -79,6 +82,7 @@ void ServerWindow::actionCopy() {
 #if defined(Q_OS_LINUX)
     std::this_thread::sleep_for(std::chrono::nanoseconds(1)); //workaround for copied text not being available...
 #endif
+    infoWidget_->clearSelection();
 }
 
 void ServerWindow::actionDisconnect() {
