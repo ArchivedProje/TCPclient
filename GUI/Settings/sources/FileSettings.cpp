@@ -126,7 +126,6 @@ void FileSettings::applyBtnClicked() {
 std::vector<std::string> FileSettings::getFiles() {
     std::ifstream in("Config/fileSettings.cfg", std::ios::in);
     std::string path;
-    std::getline(in, path);
     std::vector<std::string> res;
     while (std::getline(in, path)) {
         if (!path.empty()) {

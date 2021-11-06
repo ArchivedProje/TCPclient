@@ -2,7 +2,6 @@
 
 #include <Handler.h>
 #include <QMessageBox>
-#include <boost/filesystem.hpp>
 
 void Handler::request(const std::string &request) {
     nlohmann::json jsonRequest = nlohmann::json::parse(request);
@@ -52,10 +51,10 @@ void Handler::request(const std::string &request) {
             }
             emit setAllFiles(paths);
         }
-    } else if (jsonRequest["data"] == Requests::GetFile) {
-        if (jsonRequest["type"] == Replies::GetFile::GetFile) {
+    } else if (jsonRequest["type"] == Requests::GetFile) {
+        if (jsonRequest["status"] == Replies::GetFile::GetFile) {
             emit sendFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
-        } else if (jsonRequest["type"] == Replies::GetFile::TakeFile) {
+        } else if (jsonRequest["status"] == Replies::GetFile::TakeFile) {
             if (jsonRequest["status"] != Replies::GetFile::NoFile) {
                 emit noFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
             } else {

@@ -206,7 +206,7 @@ void UserConversation::actionGet() {
     nlohmann::json msg = {
             {"sender", sender_},
             {"type", Requests::GetFile},
-            {"data", Replies::GetFile::GetFile},
+            {"status", Replies::GetFile::GetFile},
             {"path", leftList_->selectedItems().first()->text().toStdString()}
     };
     sendMsg(msg);
