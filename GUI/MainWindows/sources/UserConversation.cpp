@@ -206,7 +206,7 @@ void UserConversation::actionGet() {
     nlohmann::json msg = {
             {"sender", sender_},
             {"type", Requests::GetFile},
-            {"status", Replies::GetFile::GetFile},
+            {"data", Replies::GetFile::GetFile},
             {"path", leftList_->selectedItems().first()->text().toStdString()}
     };
     sendMsg(msg);
@@ -238,6 +238,7 @@ void UserConversation::sendFile(const QString& path) {
             {"sender", sender_},
             {"type", Requests::GetFile},
             {"data", Replies::GetFile::TakeFile},
+            {"status", Replies::GetFile::FileExists},
             {"path", path.toStdString()}
     };
     if (!file.is_open()) {

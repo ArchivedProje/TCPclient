@@ -57,7 +57,7 @@ void Handler::request(const std::string &request) {
         } else if (jsonRequest["data"] == Replies::GetFile::TakeFile) {
             if (jsonRequest["status"] != Replies::GetFile::NoFile) {
                 emit noFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
-            } else {
+            } else if (jsonRequest["status"] != Replies::GetFile::FileExists) {
                 emit setFile(QString::fromStdString(jsonRequest["name"].get<std::string>()), jsonRequest["fileData"].get<std::string>().c_str());
             }
         }
