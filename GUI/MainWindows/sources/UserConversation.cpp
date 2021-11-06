@@ -211,10 +211,12 @@ void UserConversation::disconnectBtnClicked() {
 
 void UserConversation::sendAllFiles() {
     auto files = FileSettings::getFiles();
+    auto status = files.empty() ? Replies::GetAllFiles::NoFiles : Replies::GetAllFiles::Take;
     nlohmann::json msg = {
             {"sender", sender_},
             {"type", Requests::GetAllFiles},
             {"data", Replies::GetAllFiles::Take},
+            {"status", status},
             {"files", files}
     };
     switch (connectionMode_) {
