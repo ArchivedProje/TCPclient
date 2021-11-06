@@ -40,7 +40,11 @@ msgNumber_(0) {
 
     rightList_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(rightList_.get(), &QWidget::customContextMenuRequested, this,
-            &UserConversation::ShowContextMenu);
+            &UserConversation::showRightContextMenu);
+
+    leftList_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(leftList_.get(), &QWidget::customContextMenuRequested, this,
+            &UserConversation::showLeftContextMenu);
 
     clientConnection_->moveToThread(clientThread_.get());
     connect(clientThread_.get(), &QThread::started, clientConnection_.get(), &ClientConnection::listen);
@@ -139,10 +143,10 @@ void UserConversation::showNewMsg(const QString &sender, const QString &msg) {
     rightList_->addItem(sender + ": " + msg);
 }
 
-void UserConversation::ShowContextMenu(const QPoint &point) {
+void UserConversation::showRightContextMenu(const QPoint &point) {
     if (rightList_->selectedItems().size() == 1) {
         QPoint globalPos = mapToGlobal(point);
-        globalPos.setX(globalPos.x() + 100);
+        globalPos.setX(globalPos.x() + QWidget::width() / 2);
         QMenu myMenu;
         myMenu.addAction("Reply", this, &UserConversation::actionReply);
         myMenu.addAction("Copy", this, &UserConversation::actionCopy);
@@ -170,6 +174,20 @@ void UserConversation::actionCopy() {
 #if defined(Q_OS_LINUX)
     std::this_thread::sleep_for(std::chrono::nanoseconds(1)); //workaround for copied text not being available...
 #endif
+}
+
+void UserConversation::showLeftContextMenu(const QPoint &point) {
+    if (leftList_->selectedItems().size() == 1) {
+        QPoint globalPos = mapToGlobal(point);
+        globalPos.setX(globalPos.x());
+        QMenu myMenu;
+        myMenu.addAction("Get", this, &UserConversation::actionGet);
+        myMenu.exec(globalPos);
+    }
+}
+
+void UserConversation::actionGet() {
+
 }
 
 void UserConversation::disconnectBtnClicked() {

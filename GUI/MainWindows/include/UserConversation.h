@@ -64,7 +64,11 @@ private slots:
 
     void showNewMsg(const QString& sender, const QString& msg);
 
-    void ShowContextMenu(const QPoint& point);
+    void showRightContextMenu(const QPoint& point);
+
+    void showLeftContextMenu(const QPoint& point);
+
+    void actionGet();
 
     void actionReply();
 
