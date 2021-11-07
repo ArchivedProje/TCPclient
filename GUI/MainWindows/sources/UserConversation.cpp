@@ -262,7 +262,7 @@ void UserConversation::sendFile(const QString &path) {
     boost::filesystem::path bPath = path.toStdString();
     msg["name"] = bPath.filename().string();
     msg["size"] = maxSize;
-    const size_t frameSize = 10u;
+    const size_t frameSize = 100u;
     size_t iter = 0u;
     size_t size = 0u;
     while (size < maxSize) {

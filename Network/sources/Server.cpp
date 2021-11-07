@@ -10,7 +10,7 @@ Server::Server(std::shared_ptr<boost::asio::io_service> &ioService) : acceptor_(
 
 void Server::getMessage() {
     boost::system::error_code ec;
-    boost::asio::read_until(*socket_, data_, "msg_end", ec);
+    boost::asio::read_until(*socket_, data_, '\r', ec);
     if (!ec) {
         std::istream ss(&data_);
         std::string sData;
@@ -43,7 +43,7 @@ void Server::sendMessage(const nlohmann::json &msg) {
     if (msg.empty()) {
         return;
     }
-    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + "msg_end", msg.dump().size() + 7),
+    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + '\r', msg.dump().size() + 1),
                        ec);
     if (!ec) {
         // log
@@ -67,7 +67,7 @@ void Server::sendFileData(const nlohmann::json &msg, char *data, size_t size) {
     }
     std::string strData(data, size);
     boost::asio::write(*socket_,
-                       boost::asio::buffer(msg.dump() + " || " + strData + "msg_end", msg.dump().size() + 11 + size),
+                       boost::asio::buffer(msg.dump() + " || " + strData + '\r', msg.dump().size() + 5 + size),
                        ec);
     if (!ec) {
         // log
