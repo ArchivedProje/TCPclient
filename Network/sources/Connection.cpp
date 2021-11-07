@@ -41,20 +41,21 @@ void Connection::checkDeadline() {
 
 void Connection::sendMessage(const nlohmann::json &msg) {
     boost::system::error_code ec;
-    if (!msg.empty()) {
-        boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + '\n', msg.dump().size() + 1),
-                           ec);
-        if (!ec) {
-            // log
-        } else {
-            // log
-        }
+    if (msg.empty()) {
+        return;
+    }
+    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + "msg_end", msg.dump().size() + 7),
+                       ec);
+    if (!ec) {
+        // log
+    } else {
+        // log
     }
 }
 
 void Connection::getMessage() {
     boost::system::error_code ec;
-    boost::asio::read_until(*socket_, data_, '\n', ec);
+    boost::asio::read_until(*socket_, data_, "msg_end", ec);
     if (!ec) {
         std::istream ss(&data_);
         std::string sData;
@@ -79,4 +80,19 @@ int Connection::Connect(const std::string &ip_, int port_) {
     }
     socket_->connect(tcp::endpoint(ip, port_));
     return 0;
+}
+
+void Connection::sendFileData(const nlohmann::json &msg, const char *data, size_t size) {
+    boost::system::error_code ec;
+    if (msg.empty()) {
+        return;
+    }
+
+    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + " || " + data + "msg_end", msg.dump().size() + 7 + size),
+                       ec);
+    if (!ec) {
+        // log
+    } else {
+        // log
+    }
 }

@@ -4,7 +4,16 @@
 #include <QMessageBox>
 
 void Handler::request(const std::string &request) {
-    nlohmann::json jsonRequest = nlohmann::json::parse(request);
+    std::string sep = " || ";
+    auto delim = request.find(sep);
+    nlohmann::json jsonRequest;
+    std::string data;
+    if (delim == std::string::npos) {
+        jsonRequest = nlohmann::json::parse(request);
+    } else {
+        jsonRequest = nlohmann::json::parse(request.substr(0, delim));
+        data = request.substr(delim + sep.size(), request.size() - delim - sep.size());
+    }
     if (jsonRequest["type"] == Requests::Auth) {
         if (jsonRequest["data"] == Replies::Auth::Successful) {
             emit authorizeSucceed();
@@ -60,7 +69,7 @@ void Handler::request(const std::string &request) {
                 emit noFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
             } else if (jsonRequest["status"] == Replies::GetFile::FileExists) {
                 emit setFile(QString::fromStdString(jsonRequest["name"].get<std::string>()),
-                             QString::fromStdString(jsonRequest["fileData"].get<std::string>()),
+                             QString::fromStdString(data),
                              jsonRequest["size"].get<int>(), jsonRequest["currentSize"].get<int>());
             }
         }

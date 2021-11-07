@@ -7,24 +7,26 @@
 #include <QClipboard>
 #include <FileSettings.h>
 #include <fstream>
+#include <iostream>
 
-UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
-                                   std::shared_ptr <QThread> serverThread, std::shared_ptr <boost::asio::io_service> &ioService, Mode mode) :
-Resizable(parent,
-640, 480),
-ioService_(ioService),
-clientConnection_ (std::make_unique<ClientConnection>()),
-serverConnection_(std::make_unique<Server>(ioService)),
-clientThread_(std::move(clientThread)),
-serverThread_(std::move(serverThread)),
-qgrid_(std::make_unique<QGridLayout>(this)),
-leftList_(std::make_unique<QListWidget>()),
-rightList_(std::make_unique<QListWidget>()),
-progress_(std::make_unique<QProgressBar>()),
-lineEdit_(std::make_unique<QLineEdit>()),
-sendBtn_(std::make_unique<QPushButton>("Send",this)),
-disconnectBtn_(std::make_unique<QPushButton>("Disconnect",this)),
-msgNumber_(0) {
+UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> clientThread,
+                                   std::shared_ptr<QThread> serverThread,
+                                   std::shared_ptr<boost::asio::io_service> &ioService, Mode mode) :
+        Resizable(parent,
+                  640, 480),
+        ioService_(ioService),
+        clientConnection_(std::make_unique<ClientConnection>()),
+        serverConnection_(std::make_unique<Server>(ioService)),
+        clientThread_(std::move(clientThread)),
+        serverThread_(std::move(serverThread)),
+        qgrid_(std::make_unique<QGridLayout>(this)),
+        leftList_(std::make_unique<QListWidget>()),
+        rightList_(std::make_unique<QListWidget>()),
+        progress_(std::make_unique<QProgressBar>()),
+        lineEdit_(std::make_unique<QLineEdit>()),
+        sendBtn_(std::make_unique<QPushButton>("Send", this)),
+        disconnectBtn_(std::make_unique<QPushButton>("Disconnect", this)),
+        msgNumber_(0) {
 
     if (mode == Mode::Dark) {
         StyleSettings::setDarkMode(this);
@@ -56,7 +58,8 @@ msgNumber_(0) {
 
     qRegisterMetaType<Handler::StringList>("Handler::StringList");
     connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
-    connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
+    connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this,
+            &UserConversation::disconnectBtnClicked);
     connect(serverConnection_->handler_.get(), &Handler::sendAllFiles, this, &UserConversation::sendAllFiles);
     connect(serverConnection_->handler_.get(), &Handler::setAllFiles, this, &UserConversation::setAllFiles);
     connect(serverConnection_->handler_.get(), &Handler::sendFile, this, &UserConversation::sendFile);
@@ -64,7 +67,8 @@ msgNumber_(0) {
     connect(serverConnection_->handler_.get(), &Handler::setFile, this, &UserConversation::setFile);
 
     connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
-    connect(clientConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
+    connect(clientConnection_->handler_.get(), &Handler::connectionAbort, this,
+            &UserConversation::disconnectBtnClicked);
     connect(clientConnection_->handler_.get(), &Handler::sendAllFiles, this, &UserConversation::sendAllFiles);
     connect(clientConnection_->handler_.get(), &Handler::setAllFiles, this, &UserConversation::setAllFiles);
     connect(clientConnection_->handler_.get(), &Handler::sendFile, this, &UserConversation::sendFile);
@@ -95,10 +99,12 @@ void UserConversation::sendBtnClicked() {
     ++msgNumber_;
     switch (connectionMode_) {
         case ServerMode:
-            serverConnection_->sendMessage(serverConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::UserMsg));
+            serverConnection_->sendMessage(
+                    serverConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::UserMsg));
             break;
         case ClientMode:
-            clientConnection_->sendMessage(clientConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::UserMsg));
+            clientConnection_->sendMessage(
+                    clientConnection_->handler_->reply(sender_, lineEdit_->text().toStdString(), Requests::UserMsg));
             break;
     }
     rightList_->addItem(QString::fromStdString(sender_) + ": " + lineEdit_->text());
@@ -138,8 +144,8 @@ void UserConversation::startClient(const QString &ip) {
     clientThread_->start();
     nlohmann::json msg = {
             {"sender", sender_},
-            {"type", Requests::GetAllFiles},
-            {"data", Replies::GetAllFiles::GetAllFiles}
+            {"type",   Requests::GetAllFiles},
+            {"data",   Replies::GetAllFiles::GetAllFiles}
     };
     sendMsg(msg);
     show();
@@ -151,8 +157,8 @@ void UserConversation::startServer() {
     serverThread_->start();
     nlohmann::json msg = {
             {"sender", sender_},
-            {"type", Requests::GetAllFiles},
-            {"data", Replies::GetAllFiles::GetAllFiles}
+            {"type",   Requests::GetAllFiles},
+            {"data",   Replies::GetAllFiles::GetAllFiles}
     };
     sendMsg(msg);
     show();
@@ -211,9 +217,9 @@ void UserConversation::showLeftContextMenu(const QPoint &point) {
 void UserConversation::actionGet() {
     nlohmann::json msg = {
             {"sender", sender_},
-            {"type", Requests::GetFile},
-            {"data", Replies::GetFile::GetFile},
-            {"path", leftList_->selectedItems().first()->text().toStdString()}
+            {"type",   Requests::GetFile},
+            {"data",   Replies::GetFile::GetFile},
+            {"path",   leftList_->selectedItems().first()->text().toStdString()}
     };
     leftList_->clearSelection();
     sendMsg(msg);
@@ -238,11 +244,11 @@ void UserConversation::disconnectBtnClicked() {
     close();
 }
 
-void UserConversation::sendFile(const QString& path) {
+void UserConversation::sendFile(const QString &path) {
     nlohmann::json msg = {
             {"sender", sender_},
-            {"type", Requests::GetFile},
-            {"data", Replies::GetFile::TakeFile},
+            {"type",   Requests::GetFile},
+            {"data",   Replies::GetFile::TakeFile},
             {"status", Replies::GetFile::FileExists}
     };
     std::ifstream file;
@@ -252,24 +258,24 @@ void UserConversation::sendFile(const QString& path) {
         sendMsg(msg);
         return;
     }
-    std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
-    file.close();
-    buffer.erase(buffer.end() - 1, buffer.end());
+    size_t maxSize = boost::filesystem::file_size(path.toStdString());
     boost::filesystem::path bPath = path.toStdString();
     msg["name"] = bPath.filename().string();
-    msg["size"] = static_cast<int>(file.tellg());
+    msg["size"] = maxSize;
     const size_t frameSize = 100u;
-    size_t iter = 0;
-    size_t size = 0;
-    for (size_t i = 0; i < buffer.size(); i += frameSize) {
-        if (i > buffer.size()) {
-            break;
-        }
-        size_t step = std::min(frameSize, buffer.size() - frameSize * iter);
+    size_t iter = 0u;
+    size_t size = 0u;
+    while (size < maxSize) {
+        size_t start = iter * frameSize;
+        size_t step = std::min(frameSize, maxSize - start);
         size += step;
-        msg["fileData"] = std::string(buffer.begin() + i, buffer.begin() + i + step);
+        file.seekg(start, file.beg);
+        char *buffer = new char[step];
+        file.read(buffer, step);
+        std::cerr << buffer << std::endl;
         msg["currentSize"] = size;
-        sendMsg(msg);
+        sendFileData(msg, buffer, step);
+        delete[] buffer;
         ++iter;
     }
 }
@@ -279,16 +285,16 @@ void UserConversation::sendAllFiles() {
     auto status = files.empty() ? Replies::GetAllFiles::NoFiles : Replies::GetAllFiles::TakeAllFiles;
     nlohmann::json msg = {
             {"sender", sender_},
-            {"type", Requests::GetAllFiles},
-            {"data", Replies::GetAllFiles::TakeAllFiles},
+            {"type",   Requests::GetAllFiles},
+            {"data",   Replies::GetAllFiles::TakeAllFiles},
             {"status", status},
-            {"files", files}
+            {"files",  files}
     };
     sendMsg(msg);
 }
 
-void UserConversation::setAllFiles(const Handler::StringList& paths) {
-    for (const auto & path : paths) {
+void UserConversation::setAllFiles(const Handler::StringList &paths) {
+    for (const auto &path: paths) {
         leftList_->addItem(path);
     }
 }
@@ -303,7 +309,7 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString& name, const QString& data, int maxSize, int currentSize) {
+void UserConversation::setFile(const QString &name, const QString &data, int maxSize, int currentSize) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
@@ -315,4 +321,15 @@ void UserConversation::setFile(const QString& name, const QString& data, int max
     progress_->setValue(currentSize);
     std::ofstream file(path, std::ios::app | std::ios::binary);
     file.write(data.toStdString().c_str(), data.toStdString().size());
+}
+
+void UserConversation::sendFileData(const nlohmann::json &msg, const char *data, size_t size) {
+    switch (connectionMode_) {
+        case ServerMode:
+            serverConnection_->sendFileData(msg, data, size);
+            break;
+        case ClientMode:
+            clientConnection_->sendFileData(msg, data, size);
+            break;
+    }
 }

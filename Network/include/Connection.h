@@ -10,16 +10,18 @@
 #include <nlohmann/json.hpp>
 #include <Handler.h>
 #include <QObject>
+
 using boost::asio::ip::tcp;
 
 
 class Connection : public QObject {
-    Q_OBJECT
+Q_OBJECT
 protected:
     std::shared_ptr<boost::asio::io_service> ioService_;
     std::shared_ptr<tcp::socket> socket_;
     boost::asio::deadline_timer deadline_;
     boost::asio::streambuf data_;
+
     void checkDeadline();
 
     void getMessage();
@@ -27,7 +29,7 @@ protected:
 public:
 
     std::unique_ptr<Handler> handler_;
-    
+
     Connection();
 
     int AsyncConnect(const std::string &ip_, int port_);
@@ -35,6 +37,8 @@ public:
     int Connect(const std::string &ip_, int port_);
 
     void sendMessage(const nlohmann::json &msg);
+
+    void sendFileData(const nlohmann::json &msg, const char *data, size_t size);
 
 public slots:
 

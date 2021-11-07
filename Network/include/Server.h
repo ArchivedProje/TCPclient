@@ -13,22 +13,27 @@
 using boost::asio::ip::tcp;
 
 class Server : public QObject {
-    Q_OBJECT
+Q_OBJECT
 private:
     std::shared_ptr<tcp::acceptor> acceptor_;
     std::shared_ptr<tcp::socket> socket_;
     boost::asio::streambuf data_;
+
     void getMessage();
+
 public:
     std::unique_ptr<Handler> handler_;
 
-    explicit Server(std::shared_ptr<boost::asio::io_service>& ioService);
+    explicit Server(std::shared_ptr<boost::asio::io_service> &ioService);
 
     void accept();
 
     void sendMessage(const nlohmann::json &msg);
 
-    void reload(std::shared_ptr<boost::asio::io_service>& ioService);
+    void reload(std::shared_ptr<boost::asio::io_service> &ioService);
+
+    void sendFileData(const nlohmann::json &msg, const char *data, size_t size);
+
 public slots:
 
     void listen();
