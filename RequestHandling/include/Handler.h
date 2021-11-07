@@ -52,7 +52,7 @@ signals:
 public:
     Handler() = default;
 
-    void request(const std::string &request);
+    void request(std::string &request);
 
     nlohmann::json reply(const std::string& sender, const std::string &reply, Requests requestType);
 };

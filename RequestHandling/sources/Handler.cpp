@@ -3,7 +3,8 @@
 #include <Handler.h>
 #include <QMessageBox>
 
-void Handler::request(const std::string &request) {
+void Handler::request(std::string &request) {
+    request.erase(request.end() - 7, request.end());
     std::string sep = " || ";
     auto delim = request.find(sep);
     nlohmann::json jsonRequest;
