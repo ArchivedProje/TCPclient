@@ -7,7 +7,6 @@
 #include <QClipboard>
 #include <FileSettings.h>
 #include <fstream>
-#include <iostream>
 
 UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
                                    std::shared_ptr <QThread> serverThread, std::shared_ptr <boost::asio::io_service> &ioService, Mode mode) :
@@ -39,6 +38,8 @@ msgNumber_(0) {
     qgrid_->addWidget(lineEdit_.get(), 3, 4, 1, 3);
     qgrid_->addWidget(sendBtn_.get(), 3, 7);
     qgrid_->addWidget(disconnectBtn_.get(), 4, 0, 1, 8);
+
+    progress_->setStyleSheet("color: green;");
 
     rightList_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(rightList_.get(), &QWidget::customContextMenuRequested, this,
@@ -214,6 +215,7 @@ void UserConversation::actionGet() {
             {"data", Replies::GetFile::GetFile},
             {"path", leftList_->selectedItems().first()->text().toStdString()}
     };
+    leftList_->clearSelection();
     sendMsg(msg);
 }
 
@@ -252,6 +254,7 @@ void UserConversation::sendFile(const QString& path) {
     }
     std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
     file.close();
+    buffer.erase(buffer.end() - 1, buffer.end());
     boost::filesystem::path bPath = path.toStdString();
     msg["name"] = bPath.filename().string();
     msg["size"] = static_cast<int>(file.tellg());
@@ -300,12 +303,16 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString& name, const QString& data) {
-    std::ifstream check("Config/files/" + name.toStdString());
+void UserConversation::setFile(const QString& name, const QString& data, int maxSize, int currentSize) {
+    auto path = "Files/" + name.toStdString();
+    std::ifstream check(path);
     if (!check.is_open()) {
-        std::ofstream create("Config/files/" + name.toStdString());
+        std::ofstream create(path);
+        progress_->setMaximum(maxSize);
+    } else if (static_cast<int>(check.tellg()) == maxSize) {
+        return;
     }
-    std::cerr << data.toStdString() << std::endl;
-    std::ofstream file("Config/files/" + name.toStdString(), std::ios::app | std::ios::binary);
+    progress_->setValue(currentSize);
+    std::ofstream file(path, std::ios::app | std::ios::binary);
     file.write(data.toStdString().c_str(), data.toStdString().size());
 }

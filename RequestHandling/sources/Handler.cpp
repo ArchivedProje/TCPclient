@@ -43,7 +43,8 @@ void Handler::request(const std::string &request) {
     } else if (jsonRequest["type"] == Requests::GetAllFiles) {
         if (jsonRequest["data"] == Replies::GetAllFiles::GetAllFiles) {
             emit sendAllFiles();
-        } else if (jsonRequest["data"] == Replies::GetAllFiles::TakeAllFiles && jsonRequest["status"] != Replies::GetAllFiles::NoFiles) {
+        } else if (jsonRequest["data"] == Replies::GetAllFiles::TakeAllFiles &&
+                   jsonRequest["status"] != Replies::GetAllFiles::NoFiles) {
             QList<QString> paths;
             auto files = jsonRequest["files"].get<std::vector<std::string>>();
             for (const auto &item: files) {
@@ -58,7 +59,9 @@ void Handler::request(const std::string &request) {
             if (jsonRequest["status"] == Replies::GetFile::NoFile) {
                 emit noFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
             } else if (jsonRequest["status"] == Replies::GetFile::FileExists) {
-                emit setFile(QString::fromStdString(jsonRequest["name"].get<std::string>()), QString::fromStdString(jsonRequest["fileData"].get<std::string>()));
+                emit setFile(QString::fromStdString(jsonRequest["name"].get<std::string>()),
+                             QString::fromStdString(jsonRequest["fileData"].get<std::string>()),
+                             jsonRequest["size"].get<int>(), jsonRequest["currentSize"].get<int>());
             }
         }
     }

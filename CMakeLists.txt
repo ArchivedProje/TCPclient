@@ -71,6 +71,7 @@ target_include_directories(GUI PUBLIC
         )
 
 file(COPY GUI/img DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY Files DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(Settings STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/GUI/Settings/sources/GUISettingsWindow.cpp
