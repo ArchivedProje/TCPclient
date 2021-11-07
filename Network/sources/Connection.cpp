@@ -59,15 +59,7 @@ void Connection::getMessage() {
     if (!ec) {
         std::istream ss(&data_);
         std::string sData;
-        std::string line;
-        bool first = true;
-        while (std::getline(ss, line)) {
-            if (!first) {
-                sData += '\n';
-            }
-            first = false;
-            sData += line;
-        }
+        std::getline(ss, sData, '\r');
         handler_->request(sData);
     }
 }
