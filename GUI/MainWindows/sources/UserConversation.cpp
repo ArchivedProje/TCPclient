@@ -59,6 +59,7 @@ msgNumber_(0) {
     connect(serverConnection_->handler_.get(), &Handler::setAllFiles, this, &UserConversation::setAllFiles);
     connect(serverConnection_->handler_.get(), &Handler::sendFile, this, &UserConversation::sendFile);
     connect(serverConnection_->handler_.get(), &Handler::noFile, this, &UserConversation::noFile);
+    connect(serverConnection_->handler_.get(), &Handler::setFile, this, &UserConversation::setFile);
 
     connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connect(clientConnection_->handler_.get(), &Handler::connectionAbort, this, &UserConversation::disconnectBtnClicked);
@@ -66,6 +67,7 @@ msgNumber_(0) {
     connect(clientConnection_->handler_.get(), &Handler::setAllFiles, this, &UserConversation::setAllFiles);
     connect(clientConnection_->handler_.get(), &Handler::sendFile, this, &UserConversation::sendFile);
     connect(clientConnection_->handler_.get(), &Handler::noFile, this, &UserConversation::noFile);
+    connect(clientConnection_->handler_.get(), &Handler::setFile, this, &UserConversation::setFile);
 
     connect(sendBtn_.get(), &QPushButton::clicked, this, &UserConversation::sendBtnClicked);
     connect(lineEdit_.get(), &QLineEdit::returnPressed, this, &UserConversation::sendBtnClicked);
@@ -234,30 +236,28 @@ void UserConversation::disconnectBtnClicked() {
 }
 
 void UserConversation::sendFile(const QString& path) {
-    std::ifstream file;
-    file.open(path.toStdString(), std::ios::in | std::ios::binary);
     nlohmann::json msg = {
             {"sender", sender_},
             {"type", Requests::GetFile},
             {"data", Replies::GetFile::TakeFile},
-            {"status", Replies::GetFile::FileExists},
-            {"path", path.toStdString()}
+            {"status", Replies::GetFile::FileExists}
     };
+    std::ifstream file;
+    file.open(path.toStdString(), std::ios::in | std::ios::binary);
     if (!file.is_open()) {
         msg["status"] = Replies::GetFile::NoFile;
         sendMsg(msg);
         return;
     }
-    msg["status"] = Replies::GetFile::TakeFile;
+    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(file), {});
+    file.close();
     boost::filesystem::path bPath = path.toStdString();
     msg["name"] = bPath.filename().string();
     msg["size"] = static_cast<int>(file.tellg());
-    const size_t frameSize = 100u;
-    char frame[frameSize];
-    size_t currentFrame = 1u;
-    while (file.get(frame, frameSize)) {
-        msg["fileData"] = frame;
-        msg["currentSize"] = frameSize * currentFrame;
+    const int frameSize = 100u;
+    for (int i = 0; i < buffer.size(); i += frameSize) {
+        msg["fileData"] = std::string(buffer.begin() + i, buffer.begin() + i + frameSize);
+        msg["currentSize"] = frameSize * (i + 1) / 100;
         sendMsg(msg);
     }
 }
@@ -289,4 +289,13 @@ void UserConversation::noFile(const QString &path) {
             break;
         }
     }
+}
+
+void UserConversation::setFile(const QString& name, const char* data) {
+    std::ifstream check("Config/files/" + name.toStdString());
+    if (!check.is_open()) {
+        std::ofstream create("Config/files/" + name.toStdString());
+    }
+    std::ofstream file("Config/files/" + name.toStdString(), std::ios::app | std::ios::binary);
+    file.write(data, sizeof(data));
 }

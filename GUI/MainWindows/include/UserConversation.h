@@ -85,6 +85,8 @@ private slots:
 
     void setAllFiles(const Handler::StringList& paths);
 
+    void setFile(const QString& name, const char* data);
+
     void disconnectBtnClicked();
 
 public:
