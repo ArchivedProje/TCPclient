@@ -87,7 +87,7 @@ private slots:
 
     void setFile(const QString& name, const QString& data, int maxSize, int currentSize);
 
-    void sendFileData(const nlohmann::json& msg, const char* data, size_t size);
+    void sendFileData(const nlohmann::json& msg, char* data, size_t size);
 
     void disconnectBtnClicked();
 

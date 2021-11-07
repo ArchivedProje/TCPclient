@@ -5,6 +5,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
+#include <sstream>
 
 Connection::Connection() : ioService_(std::make_shared<boost::asio::io_service>()), socket_(std::make_shared<tcp::socket>(*ioService_)), deadline_(*ioService_), handler_(std::make_unique<Handler>()) {
     deadline_.expires_at(boost::posix_time::pos_infin);
@@ -59,7 +60,15 @@ void Connection::getMessage() {
     if (!ec) {
         std::istream ss(&data_);
         std::string sData;
-        std::getline(ss, sData);
+        std::string line;
+        bool first = true;
+        while (std::getline(ss, line)) {
+            if (!first) {
+                sData += '\n';
+            }
+            first = false;
+            sData += line;
+        }
         handler_->request(sData);
     }
 }
@@ -82,13 +91,13 @@ int Connection::Connect(const std::string &ip_, int port_) {
     return 0;
 }
 
-void Connection::sendFileData(const nlohmann::json &msg, const char *data, size_t size) {
+void Connection::sendFileData(const nlohmann::json &msg, char *data, size_t size) {
     boost::system::error_code ec;
     if (msg.empty()) {
         return;
     }
-
-    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + " || " + data + "msg_end", msg.dump().size() + 7 + size),
+    std::string strData(data, size);
+    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + " || " + strData + "msg_end", msg.dump().size() + 11 + size),
                        ec);
     if (!ec) {
         // log

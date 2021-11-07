@@ -14,7 +14,15 @@ void Server::getMessage() {
     if (!ec) {
         std::istream ss(&data_);
         std::string sData;
-        std::getline(ss, sData);
+        std::string line;
+        bool first = true;
+        while (std::getline(ss, line)) {
+            if (!first) {
+                sData += '\n';
+            }
+            first = false;
+            sData += line;
+        }
         handler_->request(sData);
     }
 }
@@ -52,14 +60,14 @@ void Server::reload(std::shared_ptr<boost::asio::io_service> &ioService) {
     socket_.reset(new tcp::socket(*ioService));
 }
 
-void Server::sendFileData(const nlohmann::json &msg, const char *data, size_t size) {
+void Server::sendFileData(const nlohmann::json &msg, char *data, size_t size) {
     boost::system::error_code ec;
     if (msg.empty()) {
         return;
     }
-
+    std::string strData(data, size);
     boost::asio::write(*socket_,
-                       boost::asio::buffer(msg.dump() + " || " + data + "msg_end", msg.dump().size() + 7 + size),
+                       boost::asio::buffer(msg.dump() + " || " + strData + "msg_end", msg.dump().size() + 11 + size),
                        ec);
     if (!ec) {
         // log
