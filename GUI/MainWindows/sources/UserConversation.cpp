@@ -7,6 +7,7 @@
 #include <QClipboard>
 #include <FileSettings.h>
 #include <fstream>
+#include <iostream>
 
 UserConversation::UserConversation(QWidget * parent, std::shared_ptr <QThread> clientThread,
                                    std::shared_ptr <QThread> serverThread, std::shared_ptr <boost::asio::io_service> &ioService, Mode mode) :
@@ -249,16 +250,24 @@ void UserConversation::sendFile(const QString& path) {
         sendMsg(msg);
         return;
     }
-    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(file), {});
+    std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
     file.close();
     boost::filesystem::path bPath = path.toStdString();
     msg["name"] = bPath.filename().string();
     msg["size"] = static_cast<int>(file.tellg());
-    const int frameSize = 100u;
-    for (int i = 0; i < buffer.size(); i += frameSize) {
-        msg["fileData"] = std::string(buffer.begin() + i, buffer.begin() + i + frameSize);
-        msg["currentSize"] = frameSize * (i + 1) / 100;
+    const size_t frameSize = 100u;
+    size_t iter = 0;
+    size_t size = 0;
+    for (size_t i = 0; i < buffer.size(); i += frameSize) {
+        if (i > buffer.size()) {
+            break;
+        }
+        size_t step = std::min(frameSize, buffer.size() - frameSize * iter);
+        size += step;
+        msg["fileData"] = std::string(buffer.begin() + i, buffer.begin() + i + step);
+        msg["currentSize"] = size;
         sendMsg(msg);
+        ++iter;
     }
 }
 
@@ -291,11 +300,12 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString& name, const char* data) {
+void UserConversation::setFile(const QString& name, const QString& data) {
     std::ifstream check("Config/files/" + name.toStdString());
     if (!check.is_open()) {
         std::ofstream create("Config/files/" + name.toStdString());
     }
+    std::cerr << data.toStdString() << std::endl;
     std::ofstream file("Config/files/" + name.toStdString(), std::ios::app | std::ios::binary);
-    file.write(data, sizeof(data));
+    file.write(data.toStdString().c_str(), data.toStdString().size());
 }
