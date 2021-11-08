@@ -52,14 +52,11 @@ void Server::reload(std::shared_ptr<boost::asio::io_service> &ioService) {
     socket_.reset(new tcp::socket(*ioService));
 }
 
-void Server::sendFileData(const nlohmann::json &msg, char *data, size_t size) {
+void Server::sendFileData(const char *data, size_t size) {
     boost::system::error_code ec;
-    if (msg.empty()) {
-        return;
-    }
     std::string strData(data, size);
     boost::asio::write(*socket_,
-                       boost::asio::buffer(msg.dump() + " || " + strData + '\r', msg.dump().size() + 5 + size),
+                       boost::asio::buffer(strData + '\r', strData.size() + 1),
                        ec);
     if (!ec) {
         // log

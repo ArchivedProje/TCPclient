@@ -38,7 +38,7 @@ public:
 
     void sendMessage(const nlohmann::json &msg);
 
-    void sendFileData(const nlohmann::json &msg, char *data, size_t size);
+    void sendFileData(const char *data, size_t size);
 
 public slots:
 

@@ -9,11 +9,20 @@
 #include <QString>
 #include <nlohmann/json.hpp>
 #include <NetworkCommunication.h>
+#include <boost/asio.hpp>
 
 class Handler : public QObject {
 Q_OBJECT
 private:
     void showErrMsg(const std::string& msg);
+
+    struct File {
+        QString name_;
+        int maxSize_;
+        int currentSize_;
+    };
+    File file_;
+    bool fileData_;
 public:
     typedef std::map<std::string, std::string> StringMap;
     typedef QList<QString> StringList;
@@ -50,7 +59,7 @@ signals:
     void noFile(const QString& path);
 
 public:
-    Handler() = default;
+    Handler();
 
     void request(std::string &request);
 

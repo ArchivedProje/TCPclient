@@ -252,7 +252,7 @@ void UserConversation::sendFile(const QString &path) {
             {"status", Replies::GetFile::FileExists}
     };
     std::ifstream file;
-    file.open(path.toStdString(), std::ios::in | std::ios::binary);
+    file.open(path.toStdString(), std::ios::in);
     if (!file.is_open()) {
         msg["status"] = Replies::GetFile::NoFile;
         sendMsg(msg);
@@ -272,9 +272,9 @@ void UserConversation::sendFile(const QString &path) {
         file.seekg(start, file.beg);
         char *buffer = new char[step];
         file.read(buffer, step);
-        std::cerr << buffer << std::endl;
         msg["currentSize"] = size;
-        sendFileData(msg, buffer, step);
+        sendMsg(msg);
+        sendFileData(buffer, step);
         delete[] buffer;
         ++iter;
     }
@@ -323,13 +323,13 @@ void UserConversation::setFile(const QString &name, const QString &data, int max
     file.write(data.toStdString().c_str(), data.toStdString().size());
 }
 
-void UserConversation::sendFileData(const nlohmann::json &msg, char *data, size_t size) {
+void UserConversation::sendFileData(const char *data, size_t size) {
     switch (connectionMode_) {
         case ServerMode:
-            serverConnection_->sendFileData(msg, data, size);
+            serverConnection_->sendFileData(data, size);
             break;
         case ClientMode:
-            clientConnection_->sendFileData(msg, data, size);
+            clientConnection_->sendFileData(data, size);
             break;
     }
 }

@@ -4,16 +4,12 @@
 #include <QMessageBox>
 
 void Handler::request(std::string &request) {
-    std::string sep = " || ";
-    auto delim = request.find(sep);
-    nlohmann::json jsonRequest;
-    std::string data;
-    if (delim == std::string::npos) {
-        jsonRequest = nlohmann::json::parse(request);
-    } else {
-        jsonRequest = nlohmann::json::parse(request.substr(0, delim));
-        data = request.substr(delim + sep.size(), request.size() - delim - sep.size());
+    if (fileData_) {
+        fileData_ = false;
+        emit setFile(file_.name_, QString::fromStdString(request), file_.maxSize_, file_.currentSize_);
+        return;
     }
+    auto jsonRequest = nlohmann::json::parse(request);
     if (jsonRequest["type"] == Requests::Auth) {
         if (jsonRequest["data"] == Replies::Auth::Successful) {
             emit authorizeSucceed();
@@ -68,9 +64,10 @@ void Handler::request(std::string &request) {
             if (jsonRequest["status"] == Replies::GetFile::NoFile) {
                 emit noFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
             } else if (jsonRequest["status"] == Replies::GetFile::FileExists) {
-                emit setFile(QString::fromStdString(jsonRequest["name"].get<std::string>()),
-                             QString::fromStdString(data),
-                             jsonRequest["size"].get<int>(), jsonRequest["currentSize"].get<int>());
+                fileData_ = true;
+                file_.name_ = QString::fromStdString(jsonRequest["name"].get<std::string>());
+                file_.currentSize_ = jsonRequest["currentSize"].get<int>();
+                file_.maxSize_ = jsonRequest["size"].get<int>();
             }
         }
     }
@@ -91,3 +88,5 @@ void Handler::showErrMsg(const std::string &msg) {
     msgBox.setText(QString::fromStdString(msg));
     msgBox.exec();
 }
+
+Handler::Handler() : fileData_(false) {}

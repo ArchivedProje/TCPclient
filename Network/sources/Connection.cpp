@@ -82,13 +82,11 @@ int Connection::Connect(const std::string &ip_, int port_) {
     return 0;
 }
 
-void Connection::sendFileData(const nlohmann::json &msg, char *data, size_t size) {
+void Connection::sendFileData(const char *data, size_t size) {
     boost::system::error_code ec;
-    if (msg.empty()) {
-        return;
-    }
     std::string strData(data, size);
-    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + " || " + strData + '\r', msg.dump().size() + 5 + size),
+    boost::asio::write(*socket_,
+                       boost::asio::buffer(strData + '\r', strData.size() + 1),
                        ec);
     if (!ec) {
         // log
