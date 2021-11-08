@@ -21,6 +21,7 @@ protected:
     std::shared_ptr<tcp::socket> socket_;
     boost::asio::deadline_timer deadline_;
     boost::asio::streambuf data_;
+    const std::string delim_;
 
     void checkDeadline();
 

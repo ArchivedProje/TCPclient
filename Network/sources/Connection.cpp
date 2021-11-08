@@ -6,7 +6,7 @@
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
 
-Connection::Connection() : ioService_(std::make_shared<boost::asio::io_service>()), socket_(std::make_shared<tcp::socket>(*ioService_)), deadline_(*ioService_), handler_(std::make_unique<Handler>()) {
+Connection::Connection() : ioService_(std::make_shared<boost::asio::io_service>()), socket_(std::make_shared<tcp::socket>(*ioService_)), deadline_(*ioService_), handler_(std::make_unique<Handler>()), delim_("MSGEND") {
     deadline_.expires_at(boost::posix_time::pos_infin);
     checkDeadline();
 }
@@ -44,7 +44,7 @@ void Connection::sendMessage(const nlohmann::json &msg) {
     if (msg.empty()) {
         return;
     }
-    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + '\r', msg.dump().size() + 1),
+    boost::asio::write(*socket_, boost::asio::buffer(msg.dump() + delim_, msg.dump().size() + delim_.size()),
                        ec);
     if (!ec) {
         // log
@@ -55,11 +55,11 @@ void Connection::sendMessage(const nlohmann::json &msg) {
 
 void Connection::getMessage() {
     boost::system::error_code ec;
-    boost::asio::read_until(*socket_, data_, '\r', ec);
+    boost::asio::read_until(*socket_, data_, delim_, ec);
     if (!ec) {
         std::istream ss(&data_);
-        std::string sData;
-        std::getline(ss, sData, '\r');
+        std::string sData(std::istreambuf_iterator<char>(ss), {});
+        sData.erase(sData.end() - delim_.size(), sData.end());
         handler_->request(sData);
     }
 }
@@ -86,7 +86,7 @@ void Connection::sendFileData(const char *data, size_t size) {
     boost::system::error_code ec;
     std::string strData(data, size);
     boost::asio::write(*socket_,
-                       boost::asio::buffer(strData + '\r', strData.size() + 1),
+                       boost::asio::buffer(strData + delim_, strData.size() + delim_.size()),
                        ec);
     if (!ec) {
         // log

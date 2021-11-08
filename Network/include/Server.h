@@ -18,7 +18,7 @@ private:
     std::shared_ptr<tcp::acceptor> acceptor_;
     std::shared_ptr<tcp::socket> socket_;
     boost::asio::streambuf data_;
-
+    const std::string delim_;
     void getMessage();
 
 public:

@@ -252,7 +252,7 @@ void UserConversation::sendFile(const QString &path) {
             {"status", Replies::GetFile::FileExists}
     };
     std::ifstream file;
-    file.open(path.toStdString(), std::ios::in);
+    file.open(path.toStdString(), std::ios::in | std::ios::binary);
     if (!file.is_open()) {
         msg["status"] = Replies::GetFile::NoFile;
         sendMsg(msg);
@@ -274,6 +274,7 @@ void UserConversation::sendFile(const QString &path) {
         file.read(buffer, step);
         msg["currentSize"] = size;
         sendMsg(msg);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         sendFileData(buffer, step);
         delete[] buffer;
         ++iter;
