@@ -265,19 +265,13 @@ void UserConversation::sendFile(const QString &path) {
     const size_t frameSize = 100u;
     size_t iter = 0u;
     size_t size = 0u;
-    while (size < maxSize) {
-        size_t start = iter * frameSize;
-        size_t step = std::min(frameSize, maxSize - start);
-        size += step;
-        file.seekg(start, file.beg);
-        char *buffer = new char[step];
-        file.read(buffer, step);
+    char buffer[frameSize];
+    while (file.read(buffer, sizeof(buffer)).gcount() > 0) {
+        size += frameSize;
         msg["currentSize"] = size;
         sendMsg(msg);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        sendFileData(buffer, step);
-        delete[] buffer;
-        ++iter;
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        sendFileData(buffer, frameSize);
     }
 }
 
