@@ -7,7 +7,6 @@
 #include <QClipboard>
 #include <FileSettings.h>
 #include <fstream>
-#include <iostream>
 
 UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> clientThread,
                                    std::shared_ptr<QThread> serverThread,
@@ -252,7 +251,7 @@ void UserConversation::sendFile(const QString &path) {
             {"status", Replies::GetFile::FileExists}
     };
     std::ifstream file;
-    file.open(path.toStdString(), std::ios::in | std::ios::binary);
+    file.open(path.toStdString(), std::ios::binary);
     if (!file.is_open()) {
         msg["status"] = Replies::GetFile::NoFile;
         sendMsg(msg);
@@ -263,15 +262,13 @@ void UserConversation::sendFile(const QString &path) {
     msg["name"] = bPath.filename().string();
     msg["size"] = maxSize;
     const size_t frameSize = 100u;
-    size_t iter = 0u;
-    size_t size = 0u;
     char buffer[frameSize];
-    while (file.read(buffer, sizeof(buffer)).gcount() > 0) {
-        size += frameSize;
+    while (file.read(buffer, sizeof(buffer))) {
+        auto size = static_cast<size_t>(file.gcount());
         msg["currentSize"] = size;
         sendMsg(msg);
         std::this_thread::sleep_for(std::chrono::milliseconds(2));
-        sendFileData(buffer, frameSize);
+        sendFileData(buffer, size);
     }
 }
 
@@ -304,7 +301,7 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString &name, const QString &data, int maxSize, int currentSize) {
+void UserConversation::setFile(const QString &name, const char* data, int maxSize, int size) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
@@ -313,9 +310,10 @@ void UserConversation::setFile(const QString &name, const QString &data, int max
     } else if (static_cast<int>(check.tellg()) == maxSize) {
         return;
     }
-    progress_->setValue(currentSize);
+    progress_->setValue(progress_->value() + size);
     std::ofstream file(path, std::ios::app | std::ios::binary);
-    file.write(data.toStdString().c_str(), data.toStdString().size());
+    file.write(data, size);
+    file.close();
 }
 
 void UserConversation::sendFileData(const char *data, size_t size) {
