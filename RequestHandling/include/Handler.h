@@ -26,6 +26,7 @@ private:
 public:
     typedef std::map<std::string, std::string> StringMap;
     typedef QList<QString> StringList;
+    typedef std::string String;
 signals:
 
     void authorizeFailed();
@@ -54,7 +55,7 @@ signals:
 
     void sendFile(const QString& path);
 
-    void setFile(const QString &name, const char* data, int maxSize, int size);
+    void setFile(const QString &name, const Handler::String& data, int maxSize, int size);
 
     void noFile(const QString& path);
 

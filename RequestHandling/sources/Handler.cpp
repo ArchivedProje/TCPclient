@@ -6,7 +6,7 @@
 void Handler::request(std::string &request) {
     if (fileData_) {
         fileData_ = false;
-        emit setFile(file_.name_, request.c_str(), file_.maxSize_, file_.currentSize_);
+        emit setFile(file_.name_, request, file_.maxSize_, file_.currentSize_);
         return;
     }
     auto jsonRequest = nlohmann::json::parse(request);
