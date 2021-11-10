@@ -269,6 +269,7 @@ void UserConversation::sendFile(const QString &path) {
     size_t i = 1;
     std::streamsize size;
     while (file.read(buffer.c_array(), static_cast<std::streamsize>(buffer.size()))) {
+        size = file.gcount();
         sendMsg(msg);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         sendFileData(buffer.data(), size);
@@ -277,7 +278,6 @@ void UserConversation::sendFile(const QString &path) {
         setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
     }
     size = file.gcount();
-    msg["currentSize"] = size;
     sendMsg(msg);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     sendFileData(buffer.c_array(), size);
