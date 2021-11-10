@@ -19,7 +19,7 @@ private:
     struct File {
         QString name_;
         int maxSize_;
-        int currentSize_;
+        std::streamsize currentSize_;
     };
     File file_;
     bool fileData_;

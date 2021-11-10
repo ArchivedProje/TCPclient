@@ -66,7 +66,7 @@ void Handler::request(std::string &request) {
             } else if (jsonRequest["status"] == Replies::GetFile::FileExists) {
                 fileData_ = true;
                 file_.name_ = QString::fromStdString(jsonRequest["name"].get<std::string>());
-                file_.currentSize_ = jsonRequest["currentSize"].get<int>();
+                file_.currentSize_ = jsonRequest["currentSize"].get<std::streamsize>();
                 file_.maxSize_ = jsonRequest["size"].get<int>();
             }
         }

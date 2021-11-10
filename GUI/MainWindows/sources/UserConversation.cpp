@@ -7,6 +7,8 @@
 #include <QClipboard>
 #include <FileSettings.h>
 #include <fstream>
+#include <boost/array.hpp>
+#include <iostream>
 
 UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> clientThread,
                                    std::shared_ptr<QThread> serverThread,
@@ -262,19 +264,26 @@ void UserConversation::sendFile(const QString &path) {
     msg["name"] = bPath.filename().string();
     msg["size"] = static_cast<int>(file.tellg());
     const size_t frameSize = 100u;
-    char buffer[frameSize];
-    while (file.read(buffer, sizeof(buffer))) {
-        auto size = static_cast<size_t>(file.gcount());
+    boost::array<char, frameSize> buffer{};
+    size_t i = 1;
+    while (file.read(buffer.c_array(), static_cast<std::streamsize>(buffer.size()))) {
+        auto size = file.gcount();
         msg["currentSize"] = size;
         sendMsg(msg);
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        sendFileData(buffer, size);
+        sendFileData(buffer.c_array(), size);
+        std::cerr << i << ' ' << size << ' ' << buffer.c_array() << std::endl;
+        ++i;
+        setFile(QString::fromStdString(bPath.filename().string()), std::string(buffer.c_array(), size), 1000, size);
     }
     auto size = static_cast<size_t>(file.gcount());
     msg["currentSize"] = size;
     sendMsg(msg);
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    sendFileData(buffer, size);
+    sendFileData(buffer.c_array(), size);
+    std::cerr << i << ' ' << size << ' ' << buffer.c_array() << std::endl;
+    ++i;
+    setFile(QString::fromStdString(bPath.filename().string()), std::string(buffer.c_array(), size), 1000, size);
 }
 
 void UserConversation::sendAllFiles() {
@@ -306,12 +315,15 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString &name, const Handler::String& data, int maxSize, int size) {
+void UserConversation::setFile(const QString &name, const Handler::String& data, int maxSize, std::streamsize size) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
         std::ofstream create(path);
+        create.close();
+        check.close();
         progress_->setMaximum(maxSize);
+        progress_->setValue(0);
     } else if (static_cast<int>(check.tellg()) == maxSize) {
         return;
     }
