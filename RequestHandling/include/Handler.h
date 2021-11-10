@@ -25,6 +25,7 @@ public:
     typedef std::map<std::string, std::string> StringMap;
     typedef QList<QString> StringList;
     typedef boost::array<char, 1000> Array;
+    typedef std::streamsize StreamSize;
 signals:
 
     void authorizeFailed();
@@ -53,7 +54,7 @@ signals:
 
     void sendFile(const QString& path);
 
-    void setFile(const QString &name, const Handler::Array& data, int maxSize, std::streamsize gcount);
+    void setFile(const QString &name, const Handler::Array& data, int maxSize, Handler::StreamSize gcount);
 
     void noFile(const QString& path);
 

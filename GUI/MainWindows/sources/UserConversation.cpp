@@ -66,6 +66,7 @@ UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> cli
     connect(serverConnection_->handler_.get(), &Handler::sendFile, this, &UserConversation::sendFile);
     connect(serverConnection_->handler_.get(), &Handler::noFile, this, &UserConversation::noFile);
     qRegisterMetaType<Handler::Array>("Handler::Array");
+    qRegisterMetaType<Handler::StreamSize>("Handler::StreamSize");
     connect(serverConnection_->handler_.get(), &Handler::setFile, this, &UserConversation::setFile);
 
     connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
@@ -314,7 +315,7 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString &name, const Handler::Array& data, int maxSize, std::streamsize gcount) {
+void UserConversation::setFile(const QString &name, const Handler::Array& data, int maxSize, Handler::StreamSize gcount) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
