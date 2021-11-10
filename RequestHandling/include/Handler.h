@@ -9,8 +9,7 @@
 #include <QString>
 #include <nlohmann/json.hpp>
 #include <NetworkCommunication.h>
-#include <boost/asio.hpp>
-
+#include <boost/array.hpp>
 class Handler : public QObject {
 Q_OBJECT
 private:
@@ -19,14 +18,13 @@ private:
     struct File {
         QString name_;
         int maxSize_;
-        std::streamsize currentSize_;
     };
     File file_;
     bool fileData_;
 public:
     typedef std::map<std::string, std::string> StringMap;
     typedef QList<QString> StringList;
-    typedef std::string String;
+    typedef boost::array<char, 1000> Array;
 signals:
 
     void authorizeFailed();
@@ -55,14 +53,14 @@ signals:
 
     void sendFile(const QString& path);
 
-    void setFile(const QString &name, const Handler::String& data, int maxSize, int size);
+    void setFile(const QString &name, const Handler::Array& data, int maxSize);
 
     void noFile(const QString& path);
 
 public:
     Handler();
 
-    void request(std::string &request);
+    void request(const std::string &request, std::istream& stream);
 
     nlohmann::json reply(const std::string& sender, const std::string &reply, Requests requestType);
 };

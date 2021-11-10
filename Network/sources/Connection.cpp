@@ -60,7 +60,7 @@ void Connection::getMessage() {
         std::istream ss(&data_);
         std::string sData(std::istreambuf_iterator<char>(ss), {});
         sData.erase(sData.end() - delim_.size(), sData.end());
-        handler_->request(sData);
+        handler_->request(sData, ss);
     }
 }
 

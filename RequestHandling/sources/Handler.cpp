@@ -3,10 +3,14 @@
 #include <Handler.h>
 #include <QMessageBox>
 
-void Handler::request(std::string &request) {
+void Handler::request(const std::string &request, std::istream& stream) {
     if (fileData_) {
         fileData_ = false;
-        emit setFile(file_.name_, request, file_.maxSize_, file_.currentSize_);
+        Handler::Array buffer;
+        do {
+            stream.read(buffer.data(), buffer.size());
+            emit setFile(file_.name_, buffer, file_.maxSize_);
+        } while(stream.gcount() > 0);
         return;
     }
     auto jsonRequest = nlohmann::json::parse(request);
@@ -66,7 +70,6 @@ void Handler::request(std::string &request) {
             } else if (jsonRequest["status"] == Replies::GetFile::FileExists) {
                 fileData_ = true;
                 file_.name_ = QString::fromStdString(jsonRequest["name"].get<std::string>());
-                file_.currentSize_ = jsonRequest["currentSize"].get<std::streamsize>();
                 file_.maxSize_ = jsonRequest["size"].get<int>();
             }
         }
