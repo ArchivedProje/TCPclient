@@ -268,23 +268,21 @@ void UserConversation::sendFile(const QString &path) {
     size_t i = 1;
     std::streamsize size;
     while (file.read(buffer.c_array(), static_cast<std::streamsize>(buffer.size()))) {
-        size = file.gcount();
-        msg["currentSize"] = size;
         sendMsg(msg);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        sendFileData(buffer.c_array(), size);
+        sendFileData(buffer.data(), size);
         std::cerr << i << ' ' << size << ' ' << buffer.c_array() << std::endl;
         ++i;
-        setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000);
+        setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
     }
     size = file.gcount();
     msg["currentSize"] = size;
     sendMsg(msg);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     sendFileData(buffer.c_array(), size);
-    std::cerr << i << ' ' << size << ' ' << buffer.c_array() << std::endl;
+    std::cerr << i << ' ' << size << ' ' << buffer.data() << std::endl;
     ++i;
-    setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000);
+    setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
 }
 
 void UserConversation::sendAllFiles() {
@@ -316,7 +314,7 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString &name, const Handler::Array& data, int maxSize) {
+void UserConversation::setFile(const QString &name, const Handler::Array& data, int maxSize, std::streamsize gcount) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
@@ -328,9 +326,9 @@ void UserConversation::setFile(const QString &name, const Handler::Array& data, 
     } else if (static_cast<int>(check.tellg()) == maxSize) {
         return;
     }
-    progress_->setValue(progress_->value() + data.size());
+//    progress_->setValue(progress_->value() + data.size());
     std::ofstream file(path, std::ios::app | std::ios::binary);
-    file.write(data.data(), data.size());
+    file.write(data.data(), gcount);
     file.close();
 }
 

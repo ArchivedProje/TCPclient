@@ -53,7 +53,7 @@ signals:
 
     void sendFile(const QString& path);
 
-    void setFile(const QString &name, const Handler::Array& data, int maxSize);
+    void setFile(const QString &name, const Handler::Array& data, int maxSize, std::streamsize gcount);
 
     void noFile(const QString& path);
 

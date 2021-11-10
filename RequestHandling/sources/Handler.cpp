@@ -9,7 +9,7 @@ void Handler::request(const std::string &request, std::istream& stream) {
         Handler::Array buffer;
         do {
             stream.read(buffer.data(), buffer.size());
-            emit setFile(file_.name_, buffer, file_.maxSize_);
+            emit setFile(file_.name_, buffer, file_.maxSize_, stream.gcount());
         } while(stream.gcount() > 0);
         return;
     }
