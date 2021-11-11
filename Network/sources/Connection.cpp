@@ -6,7 +6,7 @@
 #include <boost/bind/bind.hpp>
 #include <nlohmann/json.hpp>
 
-Connection::Connection() : ioService_(std::make_shared<boost::asio::io_service>()), socket_(std::make_shared<tcp::socket>(*ioService_)), deadline_(*ioService_), handler_(std::make_unique<Handler>()), delim_("MSGEND") {
+Connection::Connection() : ioService_(std::make_shared<boost::asio::io_service>()), socket_(std::make_shared<tcp::socket>(*ioService_)), deadline_(*ioService_), handler_(std::make_unique<Handler>()), delim_("MSGEND"), read_(true) {
     deadline_.expires_at(boost::posix_time::pos_infin);
     checkDeadline();
 }
@@ -54,6 +54,9 @@ void Connection::sendMessage(const nlohmann::json &msg) {
 }
 
 void Connection::getMessage() {
+    if (!read_) {
+        return;
+    }
     boost::system::error_code ec;
     boost::asio::read_until(*socket_, data_, delim_, ec);
     if (!ec) {
@@ -98,4 +101,12 @@ void Connection::sendFileData(const char *data, size_t size) {
 std::pair<boost::array<char, 1000>, size_t> Connection::readSome() {
     auto bytes = boost::asio::read(*socket_, boost::asio::buffer(buffer_.data(), buffer_.size()));
     return {buffer_, bytes};
+}
+
+void Connection::setDontRead() {
+    read_ = false;
+}
+
+void Connection::setRead() {
+    read_ = true;
 }

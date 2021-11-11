@@ -50,6 +50,8 @@ signals:
 
     void noFile(const QString& path);
 
+    void dontRead();
+
 public:
 
     void request(const std::string &request);

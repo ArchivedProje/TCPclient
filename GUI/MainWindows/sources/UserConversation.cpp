@@ -66,6 +66,8 @@ UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> cli
     connect(serverConnection_->handler_.get(), &Handler::sendFile, this, &UserConversation::sendFile);
     connect(serverConnection_->handler_.get(), &Handler::noFile, this, &UserConversation::noFile);
     connect(serverConnection_->handler_.get(), &Handler::setFile, this, &UserConversation::setFile);
+    connect(serverConnection_->handler_.get(), &Handler::dontRead, serverConnection_.get(), &Server::setDontRead);
+
 
     connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connect(clientConnection_->handler_.get(), &Handler::connectionAbort, this,
@@ -75,6 +77,7 @@ UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> cli
     connect(clientConnection_->handler_.get(), &Handler::sendFile, this, &UserConversation::sendFile);
     connect(clientConnection_->handler_.get(), &Handler::noFile, this, &UserConversation::noFile);
     connect(clientConnection_->handler_.get(), &Handler::setFile, this, &UserConversation::setFile);
+    connect(clientConnection_->handler_.get(), &Handler::dontRead, clientConnection_.get(), &ClientConnection::setDontRead);
 
     connect(sendBtn_.get(), &QPushButton::clicked, this, &UserConversation::sendBtnClicked);
     connect(lineEdit_.get(), &QLineEdit::returnPressed, this, &UserConversation::sendBtnClicked);
@@ -328,9 +331,11 @@ void UserConversation::setFile(const QString &name, int maxSize) {
     switch (connectionMode_) {
         case ServerMode:
             data = serverConnection_->readSome();
+            serverConnection_->setRead();
             break;
         case ClientMode:
             data = clientConnection_->readSome();
+            clientConnection_->setRead();
             break;
     }
     progress_->setValue(progress_->value() + data.second);
