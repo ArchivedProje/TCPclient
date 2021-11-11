@@ -5,8 +5,9 @@
 
 void Handler::request(const std::string &request) {
     if (fileData_) {
-        emit setFile(QString::fromStdString(file_.name_), request.data(), file_.maxSize_, request.size());
+        emit setFile(QString::fromStdString(file_.name_), request, file_.maxSize_, request.size());
         fileData_ = false;
+        return;
     }
     auto jsonRequest = nlohmann::json::parse(request);
     if (jsonRequest["type"] == Requests::Auth) {

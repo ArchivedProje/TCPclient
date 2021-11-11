@@ -1,7 +1,6 @@
 // Copyright 2021 byteihq <kotov038@gmail.com>
 
 #include <Server.h>
-#include <iostream>
 
 Server::Server(std::shared_ptr<boost::asio::io_service> &ioService) : acceptor_(
         std::make_shared<tcp::acceptor>(*ioService, tcp::endpoint(tcp::v4(), 2002))),

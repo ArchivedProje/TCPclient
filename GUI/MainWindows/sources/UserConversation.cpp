@@ -58,6 +58,7 @@ UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> cli
     connect(serverThread_.get(), &QThread::started, serverConnection_.get(), &Server::listen);
 
     qRegisterMetaType<Handler::StringList>("Handler::StringList");
+    qRegisterMetaType<Handler::String>("Handler::String");
     connect(serverConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
     connect(serverConnection_->handler_.get(), &Handler::connectionAbort, this,
             &UserConversation::disconnectBtnClicked);
@@ -263,26 +264,19 @@ void UserConversation::sendFile(const QString &path) {
     boost::filesystem::path bPath = path.toStdString();
     msg["name"] = bPath.filename().string();
     msg["size"] = static_cast<int>(file.tellg());
-    const size_t frameSize = 100;
+    const size_t frameSize = 1000;
     char buffer[frameSize];
-    size_t i = 1;
     std::streamsize size;
     while (file.read(buffer, static_cast<std::streamsize>(frameSize))) {
         size = file.gcount();
         sendMsg(msg);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         sendFileData(buffer, size);
-        std::cerr << i << ' ' << size << ' ' << buffer << std::endl;
-        ++i;
-//        setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
     }
     size = file.gcount();
     sendMsg(msg);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     sendFileData(buffer, size);
-    std::cerr << i << ' ' << size << ' ' << buffer << std::endl;
-    ++i;
-//    setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
 }
 
 void UserConversation::sendAllFiles() {
@@ -314,7 +308,7 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString &name, const char* data, int maxSize, int size) {
+void UserConversation::setFile(const QString &name, const Handler::String& data, int maxSize, int size) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
@@ -323,12 +317,10 @@ void UserConversation::setFile(const QString &name, const char* data, int maxSiz
         check.close();
         progress_->setMaximum(maxSize);
         progress_->setValue(0);
-    } else if (static_cast<int>(check.tellg()) == maxSize) {
-        return;
     }
     progress_->setValue(progress_->value() + size);
     std::ofstream file(path, std::ios::app | std::ios::binary);
-    file.write(data, size);
+    file.write(data.c_str(), size);
     file.close();
 }
 
