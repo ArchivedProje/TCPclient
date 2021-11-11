@@ -8,7 +8,6 @@
 #include <FileSettings.h>
 #include <fstream>
 #include <boost/array.hpp>
-#include <iostream>
 
 UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> clientThread,
                                    std::shared_ptr<QThread> serverThread,
