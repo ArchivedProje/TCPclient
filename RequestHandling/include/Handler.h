@@ -18,6 +18,13 @@ private:
 public:
     typedef std::map<std::string, std::string> StringMap;
     typedef QList<QString> StringList;
+
+    struct File {
+        std::string name_;
+        int maxSize_;
+    };
+    File file_;
+    bool fileData_;
 signals:
 
     void authorizeFailed();
@@ -46,13 +53,13 @@ signals:
 
     void sendFile(const QString& path);
 
-    void setFile(const QString &name, int maxSize);
+    void setFile(const QString &name, const char* data, int maxSize, int size);
 
     void noFile(const QString& path);
 
-    void dontRead();
-
 public:
+
+    Handler();
 
     void request(const std::string &request);
 

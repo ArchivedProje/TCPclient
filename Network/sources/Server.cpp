@@ -7,12 +7,9 @@ Server::Server(std::shared_ptr<boost::asio::io_service> &ioService) : acceptor_(
         std::make_shared<tcp::acceptor>(*ioService, tcp::endpoint(tcp::v4(), 2002))),
                                                                       socket_(std::make_shared<tcp::socket>(
                                                                               *ioService)),
-                                                                      handler_(std::make_unique<Handler>()), delim_("MSGEND"), read_(true) {}
+                                                                      handler_(std::make_unique<Handler>()), delim_("MSGEND") {}
 
 void Server::getMessage() {
-    if (!read_) {
-        return;
-    }
     boost::system::error_code ec;
     boost::asio::read_until(*socket_, data_, delim_, ec);
     if (!ec) {
@@ -67,17 +64,4 @@ void Server::sendFileData(const char *data, size_t size) {
     } else {
         // log
     }
-}
-
-std::pair<boost::array<char, 1000>, size_t> Server::readSome() {
-    auto bytes = boost::asio::read(*socket_, boost::asio::buffer(buffer_.data(), buffer_.size()));
-    return {buffer_, bytes};
-}
-
-void Server::setDontRead() {
-    read_ = false;
-}
-
-void Server::setRead() {
-    read_ = true;
 }
