@@ -85,7 +85,7 @@ private slots:
 
     void setAllFiles(const Handler::StringList& paths);
 
-    void setFile(const QString &name, const Handler::Array& data, int maxSize, Handler::StreamSize gcount);
+    void setFile(const QString &name, int maxSize);
 
     void sendFileData(const char* data, size_t size);
 

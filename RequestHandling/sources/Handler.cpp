@@ -3,16 +3,7 @@
 #include <Handler.h>
 #include <QMessageBox>
 
-void Handler::request(const std::string &request, std::istream& stream) {
-    if (fileData_) {
-        fileData_ = false;
-        Handler::Array buffer;
-        do {
-            stream.read(buffer.data(), buffer.size());
-            emit setFile(file_.name_, buffer, file_.maxSize_, stream.gcount());
-        } while(stream.gcount() > 0);
-        return;
-    }
+void Handler::request(const std::string &request) {
     auto jsonRequest = nlohmann::json::parse(request);
     if (jsonRequest["type"] == Requests::Auth) {
         if (jsonRequest["data"] == Replies::Auth::Successful) {
@@ -68,9 +59,7 @@ void Handler::request(const std::string &request, std::istream& stream) {
             if (jsonRequest["status"] == Replies::GetFile::NoFile) {
                 emit noFile(QString::fromStdString(jsonRequest["path"].get<std::string>()));
             } else if (jsonRequest["status"] == Replies::GetFile::FileExists) {
-                fileData_ = true;
-                file_.name_ = QString::fromStdString(jsonRequest["name"].get<std::string>());
-                file_.maxSize_ = jsonRequest["size"].get<int>();
+                emit setFile(QString::fromStdString(jsonRequest["name"].get<std::string>()), jsonRequest["size"].get<int>());
             }
         }
     }
@@ -91,5 +80,3 @@ void Handler::showErrMsg(const std::string &msg) {
     msgBox.setText(QString::fromStdString(msg));
     msgBox.exec();
 }
-
-Handler::Handler() : fileData_(false) {}

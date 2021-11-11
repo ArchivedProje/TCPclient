@@ -65,8 +65,6 @@ UserConversation::UserConversation(QWidget *parent, std::shared_ptr<QThread> cli
     connect(serverConnection_->handler_.get(), &Handler::setAllFiles, this, &UserConversation::setAllFiles);
     connect(serverConnection_->handler_.get(), &Handler::sendFile, this, &UserConversation::sendFile);
     connect(serverConnection_->handler_.get(), &Handler::noFile, this, &UserConversation::noFile);
-    qRegisterMetaType<Handler::Array>("Handler::Array");
-    qRegisterMetaType<Handler::StreamSize>("Handler::StreamSize");
     connect(serverConnection_->handler_.get(), &Handler::setFile, this, &UserConversation::setFile);
 
     connect(clientConnection_->handler_.get(), &Handler::newUserMsg, this, &UserConversation::showNewMsg);
@@ -264,8 +262,7 @@ void UserConversation::sendFile(const QString &path) {
     boost::filesystem::path bPath = path.toStdString();
     msg["name"] = bPath.filename().string();
     msg["size"] = static_cast<int>(file.tellg());
-    const size_t frameSize = 1000u;
-    boost::array<char, frameSize> buffer{};
+    boost::array<char, 1000> buffer{};
     size_t i = 1;
     std::streamsize size;
     while (file.read(buffer.c_array(), static_cast<std::streamsize>(buffer.size()))) {
@@ -275,7 +272,7 @@ void UserConversation::sendFile(const QString &path) {
         sendFileData(buffer.data(), size);
         std::cerr << i << ' ' << size << ' ' << buffer.c_array() << std::endl;
         ++i;
-        setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
+//        setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
     }
     size = file.gcount();
     sendMsg(msg);
@@ -283,7 +280,7 @@ void UserConversation::sendFile(const QString &path) {
     sendFileData(buffer.c_array(), size);
     std::cerr << i << ' ' << size << ' ' << buffer.data() << std::endl;
     ++i;
-    setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
+//    setFile(QString::fromStdString(bPath.filename().string()), buffer, 1000, size);
 }
 
 void UserConversation::sendAllFiles() {
@@ -315,7 +312,7 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString &name, const Handler::Array& data, int maxSize, Handler::StreamSize gcount) {
+void UserConversation::setFile(const QString &name, int maxSize) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
@@ -327,9 +324,18 @@ void UserConversation::setFile(const QString &name, const Handler::Array& data, 
     } else if (static_cast<int>(check.tellg()) == maxSize) {
         return;
     }
-//    progress_->setValue(progress_->value() + data.size());
+    std::pair<boost::array<char, 1000>, size_t> data;
+    switch (connectionMode_) {
+        case ServerMode:
+            data = serverConnection_->readSome();
+            break;
+        case ClientMode:
+            data = clientConnection_->readSome();
+            break;
+    }
+    progress_->setValue(progress_->value() + data.second);
     std::ofstream file(path, std::ios::app | std::ios::binary);
-    file.write(data.data(), gcount);
+    file.write(data.first.data(), data.second);
     file.close();
 }
 

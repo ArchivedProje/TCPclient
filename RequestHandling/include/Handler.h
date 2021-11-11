@@ -15,17 +15,9 @@ Q_OBJECT
 private:
     void showErrMsg(const std::string& msg);
 
-    struct File {
-        QString name_;
-        int maxSize_;
-    };
-    File file_;
-    bool fileData_;
 public:
     typedef std::map<std::string, std::string> StringMap;
     typedef QList<QString> StringList;
-    typedef boost::array<char, 1000> Array;
-    typedef std::streamsize StreamSize;
 signals:
 
     void authorizeFailed();
@@ -54,14 +46,13 @@ signals:
 
     void sendFile(const QString& path);
 
-    void setFile(const QString &name, const Handler::Array& data, int maxSize, Handler::StreamSize gcount);
+    void setFile(const QString &name, int maxSize);
 
     void noFile(const QString& path);
 
 public:
-    Handler();
 
-    void request(const std::string &request, std::istream& stream);
+    void request(const std::string &request);
 
     nlohmann::json reply(const std::string& sender, const std::string &reply, Requests requestType);
 };

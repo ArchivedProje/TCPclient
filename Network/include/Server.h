@@ -19,6 +19,7 @@ private:
     std::shared_ptr<tcp::socket> socket_;
     boost::asio::streambuf data_;
     const std::string delim_;
+    boost::array<char, 1000> buffer_;
     void getMessage();
 
 public:
@@ -33,6 +34,8 @@ public:
     void reload(std::shared_ptr<boost::asio::io_service> &ioService);
 
     void sendFileData(const char *data, size_t size);
+
+    std::pair<boost::array<char, 1000>, size_t> readSome();
 
 public slots:
 

@@ -16,7 +16,7 @@ void Server::getMessage() {
         std::istream ss(&data_);
         std::string sData(std::istreambuf_iterator<char>(ss), {});
         sData.erase(sData.end() - delim_.size(), sData.end());
-        handler_->request(sData, ss);
+        handler_->request(sData);
     }
 }
 
@@ -64,4 +64,9 @@ void Server::sendFileData(const char *data, size_t size) {
     } else {
         // log
     }
+}
+
+std::pair<boost::array<char, 1000>, size_t> Server::readSome() {
+    auto bytes = boost::asio::read(*socket_, boost::asio::buffer(buffer_.data(), buffer_.size()));
+    return {buffer_, bytes};
 }

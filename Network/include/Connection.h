@@ -22,6 +22,7 @@ protected:
     boost::asio::deadline_timer deadline_;
     boost::asio::streambuf data_;
     const std::string delim_;
+    boost::array<char, 1000> buffer_;
 
     void checkDeadline();
 
@@ -40,6 +41,8 @@ public:
     void sendMessage(const nlohmann::json &msg);
 
     void sendFileData(const char *data, size_t size);
+
+    std::pair<boost::array<char, 1000>, size_t> readSome();
 
 public slots:
 
