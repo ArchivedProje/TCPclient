@@ -313,7 +313,7 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString &name, Handler::String &data, int maxSize, int size) {
+void UserConversation::setFile(const QString &name, const Handler::String &data, int maxSize, int size) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
@@ -322,9 +322,6 @@ void UserConversation::setFile(const QString &name, Handler::String &data, int m
         check.close();
         progress_->setMaximum(maxSize);
         progress_->setValue(0);
-    }
-    for (size_t i = 0; i < data.size(); ++i) {
-        data[i] >>= i % name.size();
     }
     progress_->setValue(progress_->value() + size);
     std::ofstream file(path, std::ios::app | std::ios::binary);

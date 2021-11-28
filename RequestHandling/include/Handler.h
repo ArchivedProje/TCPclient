@@ -53,7 +53,7 @@ signals:
 
     void sendFile(const QString& path);
 
-    void setFile(const QString &name, Handler::String& data, int maxSize, int size);
+    void setFile(const QString &name, const Handler::String& data, int maxSize, int size);
 
     void noFile(const QString& path);
 
