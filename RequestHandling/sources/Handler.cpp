@@ -6,7 +6,7 @@
 void Handler::request(std::string &request) {
     if (fileData_) {
         for (size_t i = 0; i < request.size(); ++i) {
-            request[i] >>= i % file_.name_.size();
+            request[i] ^= i % file_.name_.size();
         }
         emit setFile(QString::fromStdString(file_.name_), request, file_.maxSize_, request.size());
         fileData_ = false;

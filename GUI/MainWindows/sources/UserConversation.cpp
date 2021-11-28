@@ -271,7 +271,7 @@ void UserConversation::sendFile(const QString &path) {
         sendMsg(msg);
         std::this_thread::sleep_for(std::chrono::milliseconds(40));
         for (size_t i = 0; i < frameSize; ++i) {
-            buffer[i] <<= i % msg["name"].get<std::string>().size();
+            buffer[i] ^= i % msg["name"].get<std::string>().size();
         }
         sendFileData(buffer, size);
     }
@@ -279,7 +279,7 @@ void UserConversation::sendFile(const QString &path) {
     sendMsg(msg);
     std::this_thread::sleep_for(std::chrono::milliseconds(40));
     for (size_t i = 0; i < frameSize; ++i) {
-        buffer[i] <<= i % msg["name"].get<std::string>().size();
+        buffer[i] ^= i % msg["name"].get<std::string>().size();
     }
     sendFileData(buffer, size);
 }
