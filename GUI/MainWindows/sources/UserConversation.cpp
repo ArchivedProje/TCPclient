@@ -269,12 +269,18 @@ void UserConversation::sendFile(const QString &path) {
     while (file.read(buffer, static_cast<std::streamsize>(frameSize))) {
         size = file.gcount();
         sendMsg(msg);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        for (size_t i = 0; i < frameSize; ++i) {
+            buffer[i] <<= i % msg["name"].get<std::string>().size();
+        }
         sendFileData(buffer, size);
     }
     size = file.gcount();
     sendMsg(msg);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(40));
+    for (size_t i = 0; i < frameSize; ++i) {
+        buffer[i] <<= i % msg["name"].get<std::string>().size();
+    }
     sendFileData(buffer, size);
 }
 
@@ -307,7 +313,7 @@ void UserConversation::noFile(const QString &path) {
     }
 }
 
-void UserConversation::setFile(const QString &name, const Handler::String& data, int maxSize, int size) {
+void UserConversation::setFile(const QString &name, Handler::String &data, int maxSize, int size) {
     auto path = "Files/" + name.toStdString();
     std::ifstream check(path);
     if (!check.is_open()) {
@@ -316,6 +322,9 @@ void UserConversation::setFile(const QString &name, const Handler::String& data,
         check.close();
         progress_->setMaximum(maxSize);
         progress_->setValue(0);
+    }
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] >>= i % name.size();
     }
     progress_->setValue(progress_->value() + size);
     std::ofstream file(path, std::ios::app | std::ios::binary);

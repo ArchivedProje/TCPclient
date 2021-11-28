@@ -3,7 +3,7 @@
 #include <Handler.h>
 #include <QMessageBox>
 
-void Handler::request(const std::string &request) {
+void Handler::request(std::string &request) {
     if (fileData_) {
         emit setFile(QString::fromStdString(file_.name_), request, file_.maxSize_, request.size());
         fileData_ = false;

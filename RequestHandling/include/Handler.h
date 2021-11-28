@@ -53,7 +53,7 @@ signals:
 
     void sendFile(const QString& path);
 
-    void setFile(const QString &name, const Handler::String& data, int maxSize, int size);
+    void setFile(const QString &name, Handler::String& data, int maxSize, int size);
 
     void noFile(const QString& path);
 
@@ -61,7 +61,7 @@ public:
 
     Handler();
 
-    void request(const std::string &request);
+    void request(std::string &request);
 
     nlohmann::json reply(const std::string& sender, const std::string &reply, Requests requestType);
 };

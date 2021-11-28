@@ -54,8 +54,8 @@ ConnectWindow::ConnectWindow(std::shared_ptr<ServerConnection> connection,
     gridLayout_->addWidget(portLabel_.get(), 2, 0);
     gridLayout_->addWidget(portLine_.get(), 2, 1);
 
-    loginLine_->setText("user2");
-    passLine_->setText("65432u1");
+    loginLine_->setText("user1");
+    passLine_->setText("1u23456");
 
     gridLayout_->addWidget(loginLabel_.get(), 3, 0);
     gridLayout_->addWidget(loginLine_.get(), 3, 1);
